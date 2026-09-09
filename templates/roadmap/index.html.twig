@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Roadmap Senior PHP & Symfony{% endblock %}
+
+{% block body %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1 class="page-title">
+            {{ icons.icon('map', 22) }}
+            <span>Roadmap de Aprendizaje Profesional</span>
+        </h1>
+        <p class="page-subtitle">
+            M&aacute;quina de estados con validaci&oacute;n estricta de prerrequisitos. Ninguna lecci&oacute;n avanzada puede abrirse sin dominar sus bases.
+        </p>
+    </div>
+
+    <!-- 5-State Summary Counters -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="user-badge" style="background: rgba(206, 145, 120, 0.15); border-color: rgba(206, 145, 120, 0.4); color: #ce9178;">
+            {{ icons.icon('award', 12) }}
+            <span>{{ counts.mastered }} Dominadas</span>
+        </span>
+        <span class="user-badge" style="background: rgba(137, 209, 133, 0.15); border-color: rgba(137, 209, 133, 0.4); color: #89d185;">
+            {{ icons.icon('check-circle', 12) }}
+            <span>{{ counts.completed }} Completadas</span>
+        </span>
+        <span class="user-badge" style="background: rgba(220, 220, 170, 0.15); border-color: rgba(220, 220, 170, 0.4); color: #dcdcaa;">
+            {{ icons.icon('play', 12) }}
+            <span>{{ counts.in_progress }} En progreso</span>
+        </span>
+        <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff;">
+            {{ icons.icon('circle', 12) }}
+            <span>{{ counts.available }} Disponibles</span>
+        </span>
+        <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: #858585;">
+            {{ icons.icon('shield', 12) }}
+            <span>{{ counts.locked }} Bloqueadas</span>
+        </span>
+    </div>
+</div>
+
+<!-- Modules Listing -->
+{% set totalLearningModules = 0 %}
+{% for s in roadmap_sections %}
+    {% if s.lessons is defined %}
+        {% set totalLearningModules = totalLearningModules + 1 %}
+    {% endif %}
+{% endfor %}
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+    {% set learningIndex = 0 %}
+    {% for key, section in roadmap_sections %}
+        {% if section.lessons is defined %}
+            {% set learningIndex = learningIndex + 1 %}
+            <div class="metric-card" style="padding: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        {{ icons.icon(section.icon|default('folder'), 24) }}
+                        <div>
+                            <h2 style="font-size: 15px; font-weight: 600; color: #ffffff;">{{ section.title }}</h2>
+                            <span style="font-size: 11.5px; color: #858585;">{{ section.category|default('M&oacute;dulo') }} &bull; {{ section.lessons|length }} lecciones formativas</span>
+                        </div>
+                    </div>
+                    <span class="user-badge" style="background: rgba(255,255,255,0.05); border-color: var(--border-main); color: #cccccc;">
+                        M&oacute;dulo {{ learningIndex }} de {{ totalLearningModules }} (Secci&oacute;n {{ loop.index }} del Roadmap)
+                    </span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px;">
+                    {% for lesson in section.lessons %}
+                        {% set st = status_map[lesson.slug] %}
+                        
+                        {% if st.value == 'LOCKED' %}
+                            <!-- Locked Card (Disabled, Not clickable) -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #161616; border: 1px solid #2d2d2d; border-radius: 4px; opacity: 0.6; cursor: not-allowed;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    {{ icons.icon('shield', 15) }}
+                                    <div>
+                                        <div style="font-size: 12.5px; font-weight: 500; color: #888888;">{{ lesson.title }}</div>
+                                        <div style="font-size: 11px; color: #555555;">{{ lesson.minutes }} min &bull; {{ lesson.difficulty }}</div>
+                                    </div>
+                                </div>
+                                <span style="font-size: 10px; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; {{ st.badgeStyle }}">
+                                    {{ st.label }}
+                                </span>
+                            </div>
+                        {% else %}
+                            <!-- Accessible Card (Available, InProgress, Completed, Mastered) -->
+                            <a href="{{ path('app_lesson', {lessonSlug: lesson.slug}) }}" 
+                               style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #1a1a1a; border: 1px solid var(--border-light); border-radius: 4px; text-decoration: none; color: var(--text-primary); transition: all 0.15s ease;"
+                               onmouseover="this.style.background='#222222'; this.style.borderColor='var(--accent-blue)';" 
+                               onmouseout="this.style.background='#1a1a1a'; this.style.borderColor='var(--border-light)';">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    {{ icons.icon(st.icon, 15) }}
+                                    <div>
+                                        <div style="font-size: 12.5px; font-weight: 500; color: #ffffff;">{{ lesson.title }}</div>
+                                        <div style="font-size: 11px; color: #858585;">{{ lesson.minutes }} min &bull; {{ lesson.difficulty }}</div>
+                                    </div>
+                                </div>
+                                <span style="font-size: 10px; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; {{ st.badgeStyle }}">
+                                    {{ st.label }}
+                                </span>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

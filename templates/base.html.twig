@@ -1,0 +1,202 @@
+{% import 'components/icons.html.twig' as icons %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Senior PHP & Symfony Platform{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><ellipse cx='16' cy='16' rx='14' ry='9' fill='%234F5D95'/><text x='16' y='19.5' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='8.5' fill='%23FFF'>php</text></svg>">
+    <link rel="stylesheet" href="{{ asset('css/vscode.css') }}">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+    <!-- VS Code Top Titlebar -->
+    <header class="vscode-titlebar">
+        <div class="titlebar-left">
+            <div class="brand-badge">
+                {{ icons.icon('php', 18) }}
+                <span>Senior DevLab</span>
+            </div>
+            <nav class="menu-items">
+                <a href="{{ path('app_dashboard') }}" class="menu-item">Dashboard</a>
+                <a href="{{ path('app_roadmap') }}" class="menu-item">Roadmap</a>
+                <a href="{{ path('app_system_design') }}" class="menu-item">System Design</a>
+                <a href="{{ path('app_module', {moduleSlug: 'php-fundamentals'}) }}" class="menu-item">PHP 8.4</a>
+                <a href="{{ path('app_module', {moduleSlug: 'symfony'}) }}" class="menu-item">Symfony</a>
+            </nav>
+        </div>
+
+        <div class="titlebar-center">
+            {{ icons.icon('search', 14) }}
+            <span>senior-platform &gt; roadmap &gt; {{ current_tab_title|default('dashboard.php') }}</span>
+        </div>
+
+        <div class="titlebar-right">
+            <div class="user-badge">
+                {{ icons.icon('user', 13) }}
+                <span>{{ current_user.displayName|default('Dilan') }} ({{ current_user.currentLevel|default('Junior') }})</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Workspace Grid -->
+    <div class="vscode-workspace">
+        
+        <!-- Activity Bar (Leftmost vertical rail) -->
+        <aside class="activity-bar">
+            <div class="activity-group">
+                <a href="{{ path('app_dashboard') }}" class="activity-btn {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}" title="Dashboard">
+                    {{ icons.icon('layout-dashboard', 22) }}
+                </a>
+                <a href="{{ path('app_roadmap') }}" class="activity-btn {{ app.request.attributes.get('_route') == 'app_roadmap' ? 'active' : '' }}" title="Roadmap">
+                    {{ icons.icon('map', 22) }}
+                </a>
+                <a href="{{ path('app_system_design') }}" class="activity-btn {{ app.request.attributes.get('_route') == 'app_system_design' ? 'active' : '' }}" title="System Design Lab">
+                    {{ icons.icon('sliders', 22) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'php-fundamentals'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'php-fundamentals' ? 'active' : '' }}" title="PHP Moderno">
+                    {{ icons.icon('php', 22) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'symfony'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'symfony' ? 'active' : '' }}" title="Symfony Internals">
+                    {{ icons.icon('symfony', 22) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'twig'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'twig' ? 'active' : '' }}" title="Twig">
+                    {{ icons.icon('twig', 22) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'databases'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'databases' ? 'active' : '' }}" title="Bases de Datos & Doctrine">
+                    {{ icons.icon('mysql', 22) }}
+                </a>
+            </div>
+
+            <div class="activity-group">
+                <a href="{{ path('app_settings') }}" class="activity-btn" title="Configuración">
+                    {{ icons.icon('settings', 20) }}
+                </a>
+            </div>
+        </aside>
+
+        <!-- Sidebar / Explorer -->
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <span>EXPLORER: ROADMAP</span>
+                {{ icons.icon('list-tree', 14) }}
+            </div>
+            <div class="sidebar-content">
+                {% set sections = roadmap_sections|default({}) %}
+                {% for key, section in sections %}
+                    {% if section.lessons is defined %}
+                        <div class="explorer-section-title">
+                            {{ icons.icon('chevron-down', 12) }}
+                            {{ icons.icon(section.icon|default('folder'), 14) }}
+                            <span>{{ section.title }}</span>
+                        </div>
+                        <ul class="tree-list">
+                            {% for lesson in section.lessons %}
+                                <li>
+                                    <a href="{{ path('app_lesson', {lessonSlug: lesson.slug}) }}" class="tree-item {{ current_lesson_slug|default('') == lesson.slug ? 'active' : '' }}">
+                                        {{ icons.icon('file-code', 13) }}
+                                        <span>{{ lesson.title }}</span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <a href="{{ path(section.route, section.route_params|default({})) }}" class="tree-item {{ app.request.attributes.get('_route') == section.route ? 'active' : '' }}">
+                            {{ icons.icon(section.icon|default('file-code'), 14) }}
+                            <span>{{ section.title }}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </aside>
+
+        <!-- Main Editor Viewport -->
+        <main class="editor-main">
+            <!-- Tabs Bar -->
+            <div class="tabs-bar">
+                <a href="{{ path('app_dashboard') }}" class="tab {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}">
+                    {{ icons.icon('layout-dashboard', 13) }}
+                    <span>Dashboard.php</span>
+                </a>
+                <a href="{{ path('app_roadmap') }}" class="tab {{ app.request.attributes.get('_route') == 'app_roadmap' ? 'active' : '' }}">
+                    {{ icons.icon('map', 13) }}
+                    <span>Roadmap.yaml</span>
+                </a>
+                <a href="{{ path('app_system_design') }}" class="tab {{ app.request.attributes.get('_route') == 'app_system_design' ? 'active' : '' }}">
+                    {{ icons.icon('sliders', 13) }}
+                    <span>SystemDesignLab.canvas</span>
+                </a>
+                {% if active_tab is defined and active_tab %}
+                    <div class="tab active">
+                        {{ icons.icon(active_tab_icon|default('file-code'), 13) }}
+                        <span>{{ active_tab }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs-bar">
+                <a href="{{ path('app_dashboard') }}" class="breadcrumb-item">senior-platform</a>
+                <span>&gt;</span>
+                <span class="breadcrumb-item">{{ breadcrumb_category|default('core') }}</span>
+                <span>&gt;</span>
+                <span class="breadcrumb-item current">{{ breadcrumb_current|default('Dashboard') }}</span>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-viewport">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div style="padding: 10px 16px; margin-bottom: 16px; border-radius: 4px; font-size: 12.5px; display: flex; align-items: center; gap: 8px; {{ label == 'warning' ? 'background: rgba(204, 167, 0, 0.15); border: 1px solid rgba(204, 167, 0, 0.5); color: #ffe066;' : (label == 'success' ? 'background: rgba(137, 209, 133, 0.15); border: 1px solid rgba(137, 209, 133, 0.5); color: #89d185;' : 'background: rgba(241, 76, 76, 0.15); border: 1px solid rgba(241, 76, 76, 0.5); color: #f14c4c;') }}">
+                            {{ icons.icon(label == 'warning' ? 'shield' : (label == 'success' ? 'check-circle' : 'help-circle'), 16) }}
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Status Bar (Bottom) -->
+    <footer class="vscode-statusbar">
+        <div class="statusbar-left">
+            <div class="statusbar-item">
+                {{ icons.icon('git-branch', 12) }}
+                <span>main</span>
+            </div>
+            <div class="statusbar-item">
+                {{ icons.icon('refresh-cw', 11) }}
+                <span>Sync</span>
+            </div>
+            <div class="statusbar-item">
+                <span>0 errors, 0 warnings</span>
+            </div>
+        </div>
+
+        <div class="statusbar-right">
+            <div class="statusbar-item">
+                {{ icons.icon('php', 14) }}
+                <span>PHP 8.4.7</span>
+            </div>
+            <div class="statusbar-item">
+                {{ icons.icon('symfony', 13) }}
+                <span>Symfony 8.1</span>
+            </div>
+            <div class="statusbar-item">
+                {{ icons.icon('mysql', 13) }}
+                <span>MySQL 8.0:3306</span>
+            </div>
+            <div class="statusbar-item">
+                <span>UTF-8</span>
+            </div>
+            <div class="statusbar-item">
+                <span>Senior Path: Active</span>
+            </div>
+        </div>
+    </footer>
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

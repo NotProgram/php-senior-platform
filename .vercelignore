@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env.local
+.env.*.local
+var/cache
+var/log
+scratch
+tests
+phpunit.xml.dist
+composer.phar
+.php-custom

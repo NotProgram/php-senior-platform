@@ -1,0 +1,353 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}System Design Lab | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .lab-container {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 16px;
+        height: calc(100vh - 160px);
+    }
+    .canvas-panel {
+        background-color: #141414;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    .canvas-toolbar {
+        height: 40px;
+        background: #1e1e1e;
+        border-bottom: 1px solid var(--border-main);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .canvas-stage {
+        flex: 1;
+        position: relative;
+        overflow: auto;
+    }
+    .arch-node {
+        position: absolute;
+        background: #252526;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 10px 14px;
+        min-width: 140px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .arch-node:hover {
+        border-color: var(--accent-blue);
+        transform: scale(1.03);
+    }
+    .arch-node.selected {
+        border-color: #4fc1ff;
+        box-shadow: 0 0 0 2px rgba(79, 193, 255, 0.3);
+    }
+    .node-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+    .node-type {
+        font-size: 10.5px;
+        color: var(--text-muted);
+    }
+    .inspector-panel {
+        background-color: #1e1e1e;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .inspector-header {
+        height: 40px;
+        background: #252526;
+        border-bottom: 1px solid var(--border-main);
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .inspector-body {
+        padding: 16px;
+        overflow-y: auto;
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: var(--text-primary);
+    }
+    .inspector-tag {
+        font-size: 10.5px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        background: #333333;
+        color: #cccccc;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px;">
+    <div>
+        <h1 class="page-title" style="font-size: 20px;">
+            {{ icons.icon('sliders', 22) }}
+            <span>System Design Lab &mdash; Arquitectura Distribuida</span>
+        </h1>
+        <p class="page-subtitle">
+            Entorno interactivo para inspeccionar componentes de alta concurrencia, balanceo de carga y flujos de petici&oacute;n enterprise.
+        </p>
+    </div>
+    <div style="font-size: 12px; color: #858585;">
+        <span>Haz clic sobre cualquier nodo para auditar su arquitectura</span>
+    </div>
+</div>
+
+<div class="lab-container">
+    <!-- Interactive Canvas -->
+    <div class="canvas-panel">
+        <div class="canvas-toolbar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                {{ icons.icon('sliders', 14) }}
+                <span>Escenario: E-commerce de Alto Tr&aacute;fico (10k req/sec)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span>Flujo: Cliente &rarr; CDN &rarr; LB &rarr; Symfony &rarr; DB/Cache/Queue</span>
+            </div>
+        </div>
+
+        <div class="canvas-stage" id="canvasStage">
+            <!-- SVG Arrow Connectors -->
+            <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#007acc" />
+                    </marker>
+                </defs>
+                <!-- Line: Client to CDN -->
+                <line x1="160" y1="90" x2="230" y2="90" stroke="#007acc" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+                <!-- Line: CDN to LB -->
+                <line x1="370" y1="90" x2="440" y2="90" stroke="#007acc" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+                <!-- Line: LB to Symfony -->
+                <line x1="510" y1="130" x2="510" y2="190" stroke="#007acc" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+                <!-- Line: Symfony to Redis -->
+                <line x1="440" y1="230" x2="350" y2="230" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
+                <!-- Line: Symfony to MySQL -->
+                <line x1="580" y1="230" x2="660" y2="230" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
+                <!-- Line: Symfony to Queue -->
+                <line x1="510" y1="270" x2="510" y2="340" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
+                <!-- Line: Queue to Workers -->
+                <line x1="580" y1="380" x2="660" y2="380" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
+            </svg>
+
+            <!-- Node 1: Client -->
+            <div class="arch-node selected" style="top: 60px; left: 30px;" onclick="selectNode('client')">
+                <div class="node-header">
+                    {{ icons.icon('user', 14) }}
+                    <span>Browser / Mobile</span>
+                </div>
+                <div class="node-type">Cliente HTTP/3</div>
+            </div>
+
+            <!-- Node 2: CDN -->
+            <div class="arch-node" style="top: 60px; left: 240px;" onclick="selectNode('cdn')">
+                <div class="node-header">
+                    {{ icons.icon('zap', 14) }}
+                    <span>Edge CDN</span>
+                </div>
+                <div class="node-type">Cloudflare / Fastly</div>
+            </div>
+
+            <!-- Node 3: Load Balancer -->
+            <div class="arch-node" style="top: 60px; left: 450px;" onclick="selectNode('lb')">
+                <div class="node-header">
+                    {{ icons.icon('layers', 14) }}
+                    <span>Load Balancer</span>
+                </div>
+                <div class="node-type">HAProxy / Nginx</div>
+            </div>
+
+            <!-- Node 4: Symfony App Cluster -->
+            <div class="arch-node" style="top: 200px; left: 440px;" onclick="selectNode('symfony')">
+                <div class="node-header">
+                    {{ icons.icon('symfony', 16) }}
+                    <span>Symfony Pods</span>
+                </div>
+                <div class="node-type">PHP 8.4-FPM Cluster</div>
+            </div>
+
+            <!-- Node 5: Redis -->
+            <div class="arch-node" style="top: 200px; left: 210px;" onclick="selectNode('redis')">
+                <div class="node-header">
+                    {{ icons.icon('redis', 16) }}
+                    <span>Redis Cluster</span>
+                </div>
+                <div class="node-type">Sessions &amp; Cache</div>
+            </div>
+
+            <!-- Node 6: MySQL -->
+            <div class="arch-node" style="top: 200px; left: 670px;" onclick="selectNode('mysql')">
+                <div class="node-header">
+                    {{ icons.icon('mysql', 16) }}
+                    <span>MySQL 8.0 Primary</span>
+                </div>
+                <div class="node-type">InnoDB ACID Storage</div>
+            </div>
+
+            <!-- Node 7: Queue (Symfony Messenger) -->
+            <div class="arch-node" style="top: 350px; left: 440px;" onclick="selectNode('queue')">
+                <div class="node-header">
+                    {{ icons.icon('sliders', 14) }}
+                    <span>Message Broker</span>
+                </div>
+                <div class="node-type">RabbitMQ / Redis Streams</div>
+            </div>
+
+            <!-- Node 8: Workers -->
+            <div class="arch-node" style="top: 350px; left: 670px;" onclick="selectNode('workers')">
+                <div class="node-header">
+                    {{ icons.icon('cpu', 14) }}
+                    <span>Async Workers</span>
+                </div>
+                <div class="node-type">messenger:consume CLI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inspector Panel (Right) -->
+    <div class="inspector-panel">
+        <div class="inspector-header">
+            {{ icons.icon('sliders', 14) }}
+            <span>Auditor&iacute;a de Nodo</span>
+        </div>
+        <div class="inspector-body" id="inspectorContent">
+            <span class="inspector-tag" id="nodeTag">EDGE / CLIENTE</span>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 6px;" id="nodeTitle">Browser / Mobile Client</h3>
+            <div style="font-size: 11.5px; color: var(--accent-blue); margin-bottom: 14px;" id="nodeProtocol">Protocolo: HTTP/2 &bull; TLS 1.3</div>
+
+            <div style="margin-bottom: 14px;">
+                <div style="font-weight: 600; color: #ffffff; font-size: 12px; margin-bottom: 4px;">Responsabilidad:</div>
+                <p id="nodeResponsibility">Inicia peticiones web seguras, procesa respuestas HTML/JSON y almacena tokens de sesi&oacute;n.</p>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <div style="font-weight: 600; color: #ffffff; font-size: 12px; margin-bottom: 4px;">Posible Cuello de Botella:</div>
+                <p style="color: var(--accent-yellow);" id="nodeBottleneck">Latencia de red del &uacute;ltimo kil&oacute;metro y conexi&oacute;n inestable en redes celulares.</p>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <div style="font-weight: 600; color: #ffffff; font-size: 12px; margin-bottom: 4px;">Criterio Senior:</div>
+                <p style="color: #89d185;" id="nodeSeniorCriterion">Implementar compresi&oacute;n Brotli, cach&eacute; HTTP agresivo con cabeceras Cache-Control e Immutable para recursos est&aacute;ticos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const nodeDetails = {
+        client: {
+            tag: 'EDGE / CLIENTE',
+            title: 'Browser / Mobile Client',
+            protocol: 'HTTP/2 | HTTP/3 sobre TLS 1.3',
+            resp: 'Inicia peticiones web seguras, renderiza la vista y almacena cookies HttpOnly de sesión.',
+            bottleneck: 'Latencia de red del último kilómetro y retransmisión TCP bajo redes móviles deficientes.',
+            senior: 'Establecer cabeceras Cache-Control con max-age largo para assets y habilitar DNS prefetching.'
+        },
+        cdn: {
+            tag: 'CACHE DISTRIBUIDO',
+            title: 'Edge CDN (Cloudflare / Fastly)',
+            protocol: 'Anycast DNS | Reverse Proxy',
+            resp: 'Descargar el 80% del tráfico estático (CSS, JS, imágenes) del origen y mitigar ataques DDoS.',
+            bottleneck: 'Invalidación tardía de caché (Cache Invalidation) si se publican cambios urgentes.',
+            senior: 'Usar tags de cache (Cache-Tags) y versionado de assets con hashes criptográficos (Symfony AssetMapper).'
+        },
+        lb: {
+            tag: 'BALANCEO DE CARGA',
+            title: 'Load Balancer (HAProxy / Nginx)',
+            protocol: 'TCP / SSL Termination -> FastCGI/HTTP',
+            resp: 'Distribuir el tráfico entrante uniformemente entre el clúster de servidores de backend mediante Round Robin o Least Connections.',
+            bottleneck: 'Single Point of Failure (SPOF) si solo hay un balanceador activo.',
+            senior: 'Desplegar pares redundantes de balanceadores con Keepalived / VRRP y realizar terminación SSL en el LB para liberar CPU de los pods de Symfony.'
+        },
+        symfony: {
+            tag: 'COMPUTE / BACKEND',
+            title: 'Symfony 7 Cluster (PHP 8.4-FPM)',
+            protocol: 'FastCGI / HTTP Interno',
+            resp: 'Ejecutar la lógica de negocio pura, validación de DTOs, orquestación de servicios y render de Twig.',
+            bottleneck: 'Agotamiento de workers PHP-FPM (pm.max_children) ante queries de base de datos bloqueantes o llamadas síncronas a APIs externas.',
+            senior: 'Hacer el backend 100% Stateless (sin estado local en disco). Las sesiones van a Redis. Tareas mayores a 50ms se despachan a la cola.'
+        },
+        redis: {
+            tag: 'IN-MEMORY STORE',
+            title: 'Redis Cluster',
+            protocol: 'RESP Protocol (Sub-millisecond TCP)',
+            resp: 'Almacenar sesiones compartidas de Symfony, rate limiting tokens y caché de queries de Doctrine.',
+            bottleneck: 'Límite de memoria RAM y políticas de evicción (OOM) si se satura sin expiración (TTL).',
+            senior: 'Establecer siempre TTL explícito en cada clave y configurar política de evicción volatile-lru.'
+        },
+        mysql: {
+            tag: 'PERSISTENCIA TRANSACCIONAL',
+            title: 'MySQL 8.0 Primary',
+            protocol: 'MySQL Native TCP (Puerto 3306)',
+            resp: 'Garantizar transacciones ACID para pedidos, pagos y datos críticos de integridad de negocio.',
+            bottleneck: 'Full Table Scans por falta de índices compuestos, bloqueos de filas (Row Locks) y queries N+1.',
+            senior: 'Nunca usar ORM a ciegas en listados masivos: optimizar con DQL parcial o Read Models dedicados. Usar réplica de lectura para consultas pesadas.'
+        },
+        queue: {
+            tag: 'ASYNCHRONOUS MESSAGING',
+            title: 'Symfony Messenger / RabbitMQ',
+            protocol: 'AMQP 0-9-1 / Redis Streams',
+            resp: 'Desacoplar tareas lentas (generación de facturas PDF, emails, sincronización ERP) del ciclo HTTP.',
+            bottleneck: 'Acumulación de mensajes no consumidos si la tasa de ingestión supera a los workers disponibles.',
+            senior: 'Implementar Dead Letter Queues (DLQ) para reintentos fallidos y alertas automáticas de retardo de cola (Queue Lag).'
+        },
+        workers: {
+            tag: 'BACKGROUND PROCESSING',
+            title: 'Async Workers (CLI Daemons)',
+            protocol: 'bin/console messenger:consume',
+            resp: 'Procesos CLI en segundo plano supervisados por Supervisor o systemd que consumen mensajes de la cola de forma continua.',
+            bottleneck: 'Memory leaks en procesos de larga duración si no se reinician tras N mensajes.',
+            senior: 'Usar flags de seguridad de Symfony: `--time-limit=3600 --memory-limit=128M` para reciclaje automático sin fugas de memoria.'
+        }
+    };
+
+    function selectNode(id) {
+        document.querySelectorAll('.arch-node').forEach(el => el.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+
+        const info = nodeDetails[id];
+        if (!info) return;
+
+        document.getElementById('nodeTag').innerText = info.tag;
+        document.getElementById('nodeTitle').innerText = info.title;
+        document.getElementById('nodeProtocol').innerText = 'Protocolo: ' + info.protocol;
+        document.getElementById('nodeResponsibility').innerText = info.resp;
+        document.getElementById('nodeBottleneck').innerText = info.bottleneck;
+        document.getElementById('nodeSeniorCriterion').innerText = info.senior;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,498 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}{{ lesson.title }} | Senior DevLab{% endblock %}
+
+{% block body %}
+<!-- Lesson Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(79, 93, 149, 0.2); border-color: rgba(79, 93, 149, 0.4); color: #9bb0ff;">
+                {{ icons.icon(module.icon ?? 'code', 14) }}
+                <span>{{ module.title }}</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                {{ lesson.minutes }} minutos &bull; Nivel {{ lesson.difficulty }}
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('file-code', 22) }}
+            <span>{{ lesson.title }}</span>
+        </h1>
+    </div>
+
+    <div>
+        {% if current_status.value == 'MASTERED' %}
+            <div style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(206, 145, 120, 0.2); border: 1px solid rgba(206, 145, 120, 0.5); border-radius: 4px; color: #e5a085; font-weight: 600; font-size: 12px;">
+                {{ icons.icon('award', 16) }}
+                <span>DOMINADO &bull; 100% XP</span>
+            </div>
+        {% elseif current_status.value == 'COMPLETED' %}
+            <div style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(137, 209, 133, 0.15); border: 1px solid rgba(137, 209, 133, 0.4); border-radius: 4px; color: var(--accent-success); font-weight: 600; font-size: 12px;">
+                {{ icons.icon('check-circle', 16) }}
+                <span>COMPLETADA &bull; +50 XP</span>
+            </div>
+        {% else %}
+            <form action="{{ path('app_lesson_complete', {lessonSlug: lesson.slug}) }}" method="POST">
+                <button type="submit" class="btn-vs">
+                    {{ icons.icon('check-circle', 14) }}
+                    <span>Marcar como Completada</span>
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Navigation Anchors for Quick Jump -->
+<div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+    <a href="#teoria" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+        {{ icons.icon('help-circle', 13) }} <span>Concepto &amp; Internals</span>
+    </a>
+    <a href="#senior-thinking" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+        {{ icons.icon('award', 13) }} <span>Cómo lo pensaría un Senior</span>
+    </a>
+    <a href="#junior-vs-senior" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+        {{ icons.icon('sliders', 13) }} <span>Junior vs Senior Thinking</span>
+    </a>
+    <a href="#exercise-section" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+        {{ icons.icon('terminal', 13) }} <span>Reto de Código</span>
+    </a>
+    <a href="#quiz-section" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+        {{ icons.icon('award', 13) }} <span>Quiz de Evaluación</span>
+    </a>
+</div>
+
+<!-- 1. Concepto y Problema -->
+<div id="teoria" style="margin-bottom: 28px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('help-circle', 16) }}
+        <span>1. Qué problema resuelve y por qué existe</span>
+    </h2>
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px; margin-bottom: 16px;">
+        <p style="color: #cccccc; font-size: 13.5px; line-height: 1.7; margin-bottom: 12px;">
+            {{ details.overview.concept }}
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+            <div style="background: #201515; border-left: 3px solid var(--accent-red); padding: 12px 14px; border-radius: 0 4px 4px 0;">
+                <div style="font-size: 12px; font-weight: 700; color: var(--accent-red); margin-bottom: 4px;">{{ details.overview.problem_label ?? 'El Problema Arquitectural:' }}</div>
+                <div style="font-size: 12.5px; color: #d4d4d4; line-height: 1.6;">{{ details.overview.problem }}</div>
+            </div>
+            <div style="background: #152218; border-left: 3px solid var(--accent-success); padding: 12px 14px; border-radius: 0 4px 4px 0;">
+                <div style="font-size: 12px; font-weight: 700; color: var(--accent-success); margin-bottom: 4px;">{{ details.overview.solution_label ?? 'La Solución de Diseño Senior:' }}</div>
+                <div style="font-size: 12.5px; color: #d4d4d4; line-height: 1.6;">{{ details.overview.solution }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Cómo funciona internamente (Internals) -->
+<div style="margin-bottom: 28px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('cpu', 16) }}
+        <span>2. {{ details.internals.title }}</span>
+    </h2>
+    
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px;">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            {% for step in details.internals.steps %}
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; white-space: nowrap; margin-top: 2px;">
+                        Paso {{ loop.index }}
+                    </span>
+                    <div>
+                        <div style="font-weight: 600; color: #ffffff; font-size: 13px; margin-bottom: 3px;">{{ step.phase }}</div>
+                        <div style="font-size: 12.5px; color: #cccccc; line-height: 1.6;">{{ step.description }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 3. Código Arquitectural de Referencia estilo VS Code -->
+<div class="editor-code-container" style="margin-bottom: 28px;">
+    <div class="editor-code-header">
+        <div class="editor-code-title">
+            {{ icons.icon('file-code', 14) }}
+            <span>{{ details.architecture_code.filename ?? 'ArchitectureReference.php' }} &mdash; {{ details.architecture_code.title ?? 'Implementación Arquitectónica de Referencia' }}</span>
+        </div>
+        <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 11px;">
+            {{ details.architecture_code.tag ?? 'PHP 8.4 Senior Pattern' }}
+        </span>
+    </div>
+    <div class="editor-code-body" style="padding: 16px; overflow-x: auto; background: #181818; line-height: 1.6;">
+        <pre style="margin: 0; font-family: var(--font-mono); font-size: 12.5px; color: #d4d4d4; white-space: pre-wrap;"><code>{{ details.architecture_code.code ?? "declare(strict_types=1);\n\n// Código arquitectural de referencia\n" }}</code></pre>
+    </div>
+</div>
+
+<!-- 4. Cómo lo pensaría un Senior -->
+<div id="senior-thinking" class="senior-thinking-callout">
+    <div class="senior-thinking-title">
+        {{ icons.icon('award', 18) }}
+        <span>Cómo lo pensaría un Senior: Proceso Mental y Preguntas Críticas</span>
+    </div>
+    <p style="color: #d4d4d4; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px;">
+        {{ details.senior_mindset.thought_process }}
+    </p>
+    <div style="font-weight: 600; color: #ffffff; font-size: 12.5px; margin-bottom: 8px;">Preguntas que deberías hacerte antes de implementar esto:</div>
+    <ul style="margin-left: 20px; color: #d4d4d4; font-size: 12.5px; line-height: 1.7;">
+        {% for q in details.senior_mindset.critical_questions %}
+            <li>{{ q }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- 5. Comparador Junior vs Senior Thinking -->
+<div id="junior-vs-senior" style="margin-top: 32px; margin-bottom: 32px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('sliders', 16) }}
+        <span>Junior vs Senior Thinking: Análisis de Caso Real</span>
+    </h2>
+    <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+        <strong>Escenario:</strong> {{ details.junior_vs_senior.problem_statement }}
+    </div>
+
+    <div class="senior-diff-grid">
+        <div class="diff-column junior">
+            <div class="diff-column-header">
+                <span style="color: var(--accent-red);">Junior Developer Approach</span>
+                <span>Foco en terminar rápido</span>
+            </div>
+            <div class="diff-column-body">
+                <div style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">Implementación:</div>
+                <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.junior.approach }}</p>
+                <div style="font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">Fallas Críticas &amp; Cuellos de Botella:</div>
+                {% for flaw in details.junior_vs_senior.junior.flaws %}
+                    <div class="diff-point">{{ flaw }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="diff-column senior">
+            <div class="diff-column-header">
+                <span style="color: var(--accent-success);">Senior Software Engineer</span>
+                <span>Foco en arquitectura &amp; escalabilidad</span>
+            </div>
+            <div class="diff-column-body">
+                <div style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">Solución Arquitectónica:</div>
+                <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.senior.approach }}</p>
+                <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 6px;">Justificación de Valor:</div>
+                {% for rationale in details.junior_vs_senior.senior.rationale %}
+                    <div class="diff-point">{{ rationale }}</div>
+                {% endfor %}
+                <div style="margin-top: 12px; font-size: 11.5px; color: #858585; border-top: 1px solid var(--border-light); padding-top: 8px;">
+                    <strong>Trade-offs:</strong> {{ details.junior_vs_senior.senior.trade_offs }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Laboratorio de Ejercicio & Reto de Código -->
+<div id="exercise-section" style="margin-top: 36px; margin-bottom: 36px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+            {{ icons.icon('terminal', 16) }}
+            <span>6. {{ details.exercise.title }}</span>
+        </h2>
+        {% if latest_exercise %}
+            <span class="user-badge" style="{{ latest_exercise.isPassed ? 'background: rgba(137,209,133,0.15); color: #89d185; border-color: rgba(137,209,133,0.4);' : 'background: rgba(241,76,76,0.15); color: #f14c4c; border-color: rgba(241,76,76,0.4);' }}">
+                {{ latest_exercise.isPassed ? 'Reto Superado' : 'Requiere Ajustes' }}
+            </span>
+        {% endif %}
+    </div>
+
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px; margin-bottom: 14px;">
+        <div style="font-size: 13px; color: #d4d4d4; margin-bottom: 10px;">
+            <strong>Objetivo:</strong> {{ details.exercise.objective }}
+        </div>
+        <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+            {{ details.exercise.instructions }}
+        </div>
+
+        <!-- Code Editor Form with Monaco Editor -->
+        <form id="exercise-form" action="{{ path('app_lesson_exercise', {lessonSlug: lesson.slug}) }}" method="POST">
+            <div style="border: 1px solid var(--border-main); border-radius: 4px; overflow: hidden; margin-bottom: 12px; background: #1e1e1e;">
+                <div style="background: #252526; padding: 6px 14px; font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-main);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {{ icons.icon('php', 14) }}
+                        <span style="color: var(--text-bright); font-weight: 500;">{{ details.exercise.filename ?? (lesson.slug ~ '.php') }} (Monaco Editor)</span>
+                        <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10.5px;">PHP 8.4</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <!-- Real-time Lint Badge -->
+                        <div id="lint-status-badge">
+                            <span style="color: var(--accent-success); display: flex; align-items: center; gap: 4px;">
+                                {{ icons.icon('check-circle', 12) }}
+                                <span>Sintaxis válida (0 errores)</span>
+                            </span>
+                        </div>
+
+                        <!-- Editor Actions -->
+                        <button type="button" class="btn-vs btn-vs-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="formatCode()" title="Formatear Código (Shift+Alt+F)">
+                            {{ icons.icon('code', 11) }}
+                            <span>Formatear</span>
+                        </button>
+                        <button type="button" class="btn-vs btn-vs-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="resetCode()" title="Restablecer Código Inicial">
+                            {{ icons.icon('refresh-cw', 10) }}
+                            <span>Restablecer</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Monaco Container -->
+                <div id="monaco-editor" style="height: 380px; width: 100%;"></div>
+
+                <!-- Fallback & Form Submission Input -->
+                <textarea id="fallback-code" name="submitted_code" style="display: none;">{{ latest_exercise ? latest_exercise.submittedCode : details.exercise.starter_code }}</textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <button type="submit" class="btn-vs">
+                    {{ icons.icon('play', 13) }}
+                    <span>Ejecutar y Validar Reto</span>
+                </button>
+                <button type="button" class="btn-vs btn-vs-secondary" onclick="document.getElementById('solutionBlock').style.display = document.getElementById('solutionBlock').style.display === 'none' ? 'block' : 'none';">
+                    {{ icons.icon('file-code', 13) }}
+                    <span>Ver Solución Senior Explicada</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Solution Block (Collapsible) -->
+        <div id="solutionBlock" style="display: none; margin-top: 16px; border-top: 1px solid var(--border-light); padding-top: 14px;">
+            <div style="font-size: 12px; font-weight: 700; color: #4fc1ff; margin-bottom: 8px;">Solución de Referencia Senior:</div>
+            <pre style="background: #141414; border: 1px solid var(--border-main); border-radius: 4px; padding: 12px; font-family: var(--font-mono); font-size: 12px; color: #89d185; overflow-x: auto;"><code>{{ details.exercise.solution_code }}</code></pre>
+            <p style="font-size: 12px; color: #a0a0a0; margin-top: 8px;">{{ details.exercise.explanation }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- 7. Evaluación Técnica: Quiz Senior -->
+<div id="quiz-section" style="margin-top: 36px; margin-bottom: 36px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+            {{ icons.icon('award', 16) }}
+            <span>7. {{ details.quiz.title }}</span>
+        </h2>
+        {% if latest_quiz %}
+            <span class="user-badge" style="{{ latest_quiz.isPassed ? 'background: rgba(137,209,133,0.15); color: #89d185; border-color: rgba(137,209,133,0.4);' : 'background: rgba(241,76,76,0.15); color: #f14c4c; border-color: rgba(241,76,76,0.4);' }}">
+                Puntaje: {{ latest_quiz.scorePercentage }}% &bull; {{ latest_quiz.isPassed ? 'Aprobado' : 'Pendiente' }}
+            </span>
+        {% endif %}
+    </div>
+
+    <form action="{{ path('app_lesson_quiz', {lessonSlug: lesson.slug}) }}" method="POST">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for q in details.quiz.questions %}
+                <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px;">
+                    <div style="font-size: 13.5px; font-weight: 600; color: #ffffff; margin-bottom: 12px;">
+                        {{ loop.index }}. {{ q.question }}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        {% for optKey, optText in q.options %}
+                            <label style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #252526; border: 1px solid var(--border-light); border-radius: 4px; cursor: pointer; font-size: 12.5px; color: #d4d4d4;">
+                                <input type="radio" name="answers[{{ q.id }}]" value="{{ optKey }}" required 
+                                    {{ latest_quiz and latest_quiz.answers[q.id]|default('') == optKey ? 'checked' : '' }}>
+                                <span><strong>{{ optKey|upper }})</strong> {{ optText }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div style="margin-top: 10px;">
+                <button type="submit" class="btn-vs">
+                    {{ icons.icon('check-circle', 14) }}
+                    <span>Enviar Evaluación y Calificar</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script>
+    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+
+    let editorInstance = null;
+    const initialCode = {{ (latest_exercise ? latest_exercise.submittedCode : details.exercise.starter_code)|json_encode|raw }};
+    const starterCode = {{ details.exercise.starter_code|json_encode|raw }};
+
+    require(['vs/editor/editor.main'], function () {
+        // Register custom IntelliSense completions for Senior PHP
+        monaco.languages.registerCompletionItemProvider('php', {
+            provideCompletionItems: function(model, position) {
+                const suggestions = [
+                    {
+                        label: 'strict_types',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: 'declare(strict_types=1);\n',
+                        documentation: 'Declaración de tipado estricto requerida para PHP moderno y arquitecturas Senior.'
+                    },
+                    {
+                        label: 'readonly class',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "readonly class ${1:ClassName}\n{\n    public function __construct(\n        public ${2:string} $${3:property}\n    ) {}\n}",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Clase inmutable de PHP 8.2+ con propiedades readonly por defecto.'
+                    },
+                    {
+                        label: 'enum',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "enum ${1:Status}: ${2|string,int|}\n{\n    case ${3:CaseName} = '${4:value}';\n\n    public function isTerminal(): bool\n    {\n        return match (\$this) {\n            self::${3:CaseName} => false,\n        };\n    }\n}",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Backed Enum de PHP 8.1+ para modelar estados finitos seguros.'
+                    },
+                    {
+                        label: 'interface',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "interface ${1:ContractName}Interface\n{\n    public function ${2:execute}(${3:\$param}): ${4:void};\n}",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Interfaz para desacoplar comportamiento y aplicar el principio de composición sobre herencia.'
+                    },
+                    {
+                        label: 'match',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "\$result = match (\$${1:variable}) {\n    ${2:Condition} => ${3:Value},\n    default => ${4:DefaultValue},\n};",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Expresión match exhaustiva con verificación estricta de tipos de PHP 8.0+.'
+                    },
+                    {
+                        label: 'DomainException',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "throw new \\DomainException('${1:Mensaje de violación de invariante}');",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Excepción de dominio semántica para salvaguardar invariantes de negocio.'
+                    },
+                    {
+                        label: 'microtime',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText: 'microtime(true)',
+                        documentation: 'Obtiene el timestamp actual de Unix con microsegundos en coma flotante (float).'
+                    },
+                    {
+                        label: 'TwigFilter',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "new TwigFilter('${1:filter_name}', [\$this, '${2:methodName}'], ['is_safe' => ['html']])",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Registro de filtro tipado para Twig Extension.'
+                    },
+                    {
+                        label: 'TwigFunction',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "new TwigFunction('${1:function_name}', [\$this, '${2:methodName}'])",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Registro de función auxiliar para plantillas Twig.'
+                    },
+                    {
+                        label: 'htmlspecialchars',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "htmlspecialchars(\$${1:text}, ENT_QUOTES, 'UTF-8')",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Escapado seguro de entidades HTML conforme a estándares de defensa contra XSS.'
+                    },
+                    {
+                        label: 'InvalidArgumentException',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: "throw new \\InvalidArgumentException('${1:Mensaje de validación de argumento}');",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'Excepción estándar lanzada cuando un argumento no respeta las restricciones requeridas.'
+                    }
+                ];
+                return { suggestions: suggestions };
+            }
+        });
+
+        // Initialize Monaco Editor
+        editorInstance = monaco.editor.create(document.getElementById('monaco-editor'), {
+            value: initialCode,
+            language: 'php',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            fontSize: 13,
+            fontFamily: 'Consolas, "Cascadia Code", "Fira Code", monospace',
+            lineNumbers: 'on',
+            tabSize: 4,
+            insertSpaces: true,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            renderWhitespace: 'selection',
+            bracketPairColorization: { enabled: true },
+            suggestOnTriggerCharacters: true,
+            formatOnPaste: true,
+            formatOnType: true
+        });
+
+        // Real-time debounced linter
+        let lintTimeout = null;
+        editorInstance.onDidChangeModelContent(function() {
+            document.getElementById('fallback-code').value = editorInstance.getValue();
+            clearTimeout(lintTimeout);
+            lintTimeout = setTimeout(runLinter, 400);
+        });
+
+        runLinter();
+    });
+
+    function runLinter() {
+        if (!editorInstance) return;
+        const code = editorInstance.getValue();
+        const badge = document.getElementById('lint-status-badge');
+
+        fetch('{{ path("app_api_lint") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const model = editorInstance.getModel();
+            const markers = [];
+
+            if (!data.valid && data.errors && data.errors.length > 0) {
+                data.errors.forEach(err => {
+                    markers.push({
+                        startLineNumber: err.line,
+                        startColumn: 1,
+                        endLineNumber: err.line,
+                        endColumn: 1000,
+                        message: err.message,
+                        severity: monaco.MarkerSeverity.Error
+                    });
+                });
+                monaco.editor.setModelMarkers(model, 'php-linter', markers);
+                badge.innerHTML = '<span style="color: var(--accent-red); display: flex; align-items: center; gap: 4px;">{{ icons.icon("shield", 12)|escape("js") }} <span>Error sintáctico en línea ' + data.errors[0].line + '</span></span>';
+            } else {
+                monaco.editor.setModelMarkers(model, 'php-linter', []);
+                badge.innerHTML = '<span style="color: var(--accent-success); display: flex; align-items: center; gap: 4px;">{{ icons.icon("check-circle", 12)|escape("js") }} <span>Sintaxis válida (0 errores)</span></span>';
+            }
+        })
+        .catch(() => {});
+    }
+
+    function formatCode() {
+        if (editorInstance) {
+            editorInstance.getAction('editor.action.formatDocument').run();
+        }
+    }
+
+    function resetCode() {
+        if (editorInstance && confirm('¿Deseas restablecer el código al estado inicial?')) {
+            editorInstance.setValue(starterCode);
+            document.getElementById('fallback-code').value = starterCode;
+            runLinter();
+        }
+    }
+
+    document.getElementById('exercise-form').addEventListener('submit', function() {
+        if (editorInstance) {
+            document.getElementById('fallback-code').value = editorInstance.getValue();
+        }
+    });
+</script>
+{% endblock %}
