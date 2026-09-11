@@ -12,6 +12,12 @@ readonly class UnlockedSkill
         public string $icon,
         public bool $isUnlocked,
         public string $masteryLevel,
-        public string $description
+        public string $description,
+        public ?string $tier = null
     ) {}
+
+    public function getTier(): string
+    {
+        return $this->tier ?? $this->masteryLevel;
+    }
 }

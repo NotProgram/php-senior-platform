@@ -169,6 +169,13 @@ body {
     padding: 6px 0;
     flex-shrink: 0;
     z-index: 10;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+}
+
+.activity-bar::-webkit-scrollbar {
+    display: none;
 }
 
 .activity-group {

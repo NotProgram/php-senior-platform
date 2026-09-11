@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 {% import 'components/icons.html.twig' as icons %}
 
-{% block title %}Roadmap Senior PHP & Symfony{% endblock %}
+{% block title %}Roadmap Profesional & Niveles de Carrera | Senior DevLab{% endblock %}
 
 {% block body %}
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
     <div>
-        <h1 class="page-title">
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 10px; font-size: 22px; margin-bottom: 6px;">
             {{ icons.icon('map', 22) }}
-            <span>Roadmap de Aprendizaje Profesional</span>
+            <span>Roadmap de Ingenier&iacute;a &amp; Niveles de Carrera</span>
         </h1>
-        <p class="page-subtitle">
-            M&aacute;quina de estados con validaci&oacute;n estricta de prerrequisitos. Ninguna lecci&oacute;n avanzada puede abrirse sin dominar sus bases.
+        <p class="page-subtitle" style="color: var(--text-muted); font-size: 13px; margin: 0;">
+            Grafo dirigido de competencias (DAG) con validaci&oacute;n estricta de prerrequisitos y progresi&oacute;n de 18 niveles profesionales.
         </p>
     </div>
 
@@ -40,15 +40,27 @@
     </div>
 </div>
 
-<!-- Modules Listing -->
-{% set totalLearningModules = 0 %}
-{% for s in roadmap_sections %}
-    {% if s.lessons is defined %}
-        {% set totalLearningModules = totalLearningModules + 1 %}
-    {% endif %}
-{% endfor %}
+<!-- Mode Switcher Tabs -->
+<div style="display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-main); padding-bottom: 8px;">
+    <button id="tabBtnModules" onclick="switchView('modules')" class="btn btn-primary" style="font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+        {{ icons.icon('layers', 14) }}
+        <span>M&oacute;dulos Curriculares &amp; Prerrequisitos</span>
+    </button>
+    <button id="tabBtnCareer" onclick="switchView('career')" class="btn btn-secondary" style="font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+        {{ icons.icon('activity', 14) }}
+        <span>L&iacute;nea de Carrera (18 Niveles: L0 &rarr; L17)</span>
+    </button>
+</div>
 
-<div style="display: flex; flex-direction: column; gap: 20px;">
+<!-- VIEW 1: Modules & Lessons Listing -->
+<div id="viewModules" style="display: flex; flex-direction: column; gap: 20px;">
+    {% set totalLearningModules = 0 %}
+    {% for s in roadmap_sections %}
+        {% if s.lessons is defined %}
+            {% set totalLearningModules = totalLearningModules + 1 %}
+        {% endif %}
+    {% endfor %}
+
     {% set learningIndex = 0 %}
     {% for key, section in roadmap_sections %}
         {% if section.lessons is defined %}
@@ -56,24 +68,24 @@
             <div class="metric-card" style="padding: 20px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        {{ icons.icon(section.icon|default('folder'), 24) }}
+                        {{ icons.icon(section.icon|default('folder'), 22) }}
                         <div>
-                            <h2 style="font-size: 15px; font-weight: 600; color: #ffffff;">{{ section.title }}</h2>
+                            <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin: 0 0 4px 0;">{{ section.title }}</h2>
                             <span style="font-size: 11.5px; color: #858585;">{{ section.category|default('M&oacute;dulo') }} &bull; {{ section.lessons|length }} lecciones formativas</span>
                         </div>
                     </div>
                     <span class="user-badge" style="background: rgba(255,255,255,0.05); border-color: var(--border-main); color: #cccccc;">
-                        M&oacute;dulo {{ learningIndex }} de {{ totalLearningModules }} (Secci&oacute;n {{ loop.index }} del Roadmap)
+                        M&oacute;dulo {{ learningIndex }} de {{ totalLearningModules }}
                     </span>
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px;">
                     {% for lesson in section.lessons %}
-                        {% set st = status_map[lesson.slug] %}
+                        {% set st = status_map[lesson.slug]|default(null) %}
                         
-                        {% if st.value == 'LOCKED' %}
+                        {% if st and st.value == 'LOCKED' %}
                             <!-- Locked Card (Disabled, Not clickable) -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #161616; border: 1px solid #2d2d2d; border-radius: 4px; opacity: 0.6; cursor: not-allowed;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #161616; border: 1px solid #2d2d2d; border-radius: 4px; opacity: 0.6; cursor: not-allowed;" title="Requiere completar prerrequisitos previos">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     {{ icons.icon('shield', 15) }}
                                     <div>
@@ -92,14 +104,14 @@
                                onmouseover="this.style.background='#222222'; this.style.borderColor='var(--accent-blue)';" 
                                onmouseout="this.style.background='#1a1a1a'; this.style.borderColor='var(--border-light)';">
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    {{ icons.icon(st.icon, 15) }}
+                                    {{ icons.icon(st ? st.icon : 'file-code', 15) }}
                                     <div>
                                         <div style="font-size: 12.5px; font-weight: 500; color: #ffffff;">{{ lesson.title }}</div>
                                         <div style="font-size: 11px; color: #858585;">{{ lesson.minutes }} min &bull; {{ lesson.difficulty }}</div>
                                     </div>
                                 </div>
-                                <span style="font-size: 10px; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; {{ st.badgeStyle }}">
-                                    {{ st.label }}
+                                <span style="font-size: 10px; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; {{ st ? st.badgeStyle : '' }}">
+                                    {{ st ? st.label : 'DISPONIBLE' }}
                                 </span>
                             </a>
                         {% endif %}
@@ -109,4 +121,70 @@
         {% endif %}
     {% endfor %}
 </div>
+
+<!-- VIEW 2: 18-Level Career Progression Ladder -->
+<div id="viewCareer" style="display: none; flex-direction: column; gap: 14px;">
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px 20px; margin-bottom: 8px;">
+        <div style="font-size: 13px; color: #d4d4d4; line-height: 1.5;">
+            La progresi&oacute;n senior no es arbitraria ni est&aacute; basada en a&ntilde;os de antig&uuml;edad: est&aacute; fundamentada en la <strong style="color: #9cdcfe;">amplitud de impacto sist&eacute;mico</strong>, capacidad de mitigaci&oacute;n de riesgos y toma de decisiones irreversibles.
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
+        {% for level in career_levels|default([]) %}
+            <div style="background: #1e1e1e; border: 1px solid var(--border-light); border-left: 4px solid var(--accent-blue); border-radius: 4px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 11px; font-family: Consolas, monospace; color: var(--accent-blue); font-weight: 700; text-transform: uppercase;">
+                            Level {{ level.level }}
+                        </span>
+                        <span style="font-size: 10px; padding: 1px 6px; border-radius: 3px; background: #252526; color: #858585; border: 1px solid var(--border-light);">
+                            {{ level.subtitle }}
+                        </span>
+                    </div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: #ffffff; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px;">
+                        {{ icons.icon(level.icon|default('layers'), 14) }}
+                        <span>{{ level.title }}</span>
+                    </h3>
+                    <p style="font-size: 12px; color: #a0a0a0; line-height: 1.5; margin: 0 0 12px 0;">
+                        {{ level.focus }}
+                    </p>
+                </div>
+                <div>
+                    <div style="font-size: 10.5px; text-transform: uppercase; color: #858585; font-weight: 700; margin-bottom: 4px;">
+                        M&oacute;dulos Vinculados:
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                        {% for mod in level.modules %}
+                            <span style="font-size: 10px; font-family: Consolas, monospace; background: #141414; border: 1px solid var(--border-light); padding: 2px 6px; border-radius: 2px; color: #9cdcfe;">
+                                {{ mod }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function switchView(view) {
+    const modulesDiv = document.getElementById('viewModules');
+    const careerDiv = document.getElementById('viewCareer');
+    const btnModules = document.getElementById('tabBtnModules');
+    const btnCareer = document.getElementById('tabBtnCareer');
+
+    if (view === 'career') {
+        modulesDiv.style.display = 'none';
+        careerDiv.style.display = 'flex';
+        btnCareer.className = 'btn btn-primary';
+        btnModules.className = 'btn btn-secondary';
+    } else {
+        careerDiv.style.display = 'none';
+        modulesDiv.style.display = 'flex';
+        btnModules.className = 'btn btn-primary';
+        btnCareer.className = 'btn btn-secondary';
+    }
+}
+</script>
 {% endblock %}

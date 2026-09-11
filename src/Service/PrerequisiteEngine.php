@@ -17,6 +17,18 @@ class PrerequisiteEngine
      * @var array<string, list<string>>
      */
     private const PREREQUISITE_MAP = [
+        // Software Engineering Fundamentals Track
+        'se-sdlc-requirements' => [],
+        'se-clean-code-quality' => ['se-sdlc-requirements'],
+        'se-solid-principles' => ['se-clean-code-quality'],
+        'se-refactoring-code-smells' => ['se-solid-principles'],
+
+        // Git & GitHub Track
+        'git-fundamentals-plumbing' => [],
+        'git-branching-strategies' => ['git-fundamentals-plumbing'],
+        'git-pr-code-review' => ['git-branching-strategies'],
+        'git-github-collaboration' => ['git-pr-code-review'],
+
         // PHP Moderno Track
         'php-request-lifecycle' => [],
         'php-types-memory' => ['php-request-lifecycle'],
@@ -54,17 +66,22 @@ class PrerequisiteEngine
         'apis-rest-architecture' => ['doctrine-n-plus-one-optimization'],
         'apis-rate-limiting-auth' => ['apis-rest-architecture'],
 
-        // Testing & TDD
-        'testing-unit-vs-integration' => ['apis-rate-limiting-auth'],
-        'testing-tdd-pragmatic' => ['testing-unit-vs-integration'],
+        // Testing & Calidad Track
+        'testing-fundamentals-pyramid' => ['apis-rate-limiting-auth'],
+        'testing-phpunit-mastery' => ['testing-fundamentals-pyramid'],
+        'testing-unit-vs-integration' => ['testing-phpunit-mastery'],
+        'testing-symfony-functional' => ['testing-unit-vs-integration'],
+        'testing-tdd-pragmatic' => ['testing-symfony-functional'],
 
         // Design Patterns
         'patterns-factory-strategy' => ['testing-tdd-pragmatic'],
         'patterns-decorator-proxy' => ['patterns-factory-strategy'],
 
         // Architecture & System Design
-        'arch-hexagonal-clean' => ['patterns-decorator-proxy'],
-        'arch-pragmatic-ddd' => ['arch-hexagonal-clean'],
+        'arch-patterns-comparison' => ['patterns-decorator-proxy'],
+        'arch-hexagonal-clean' => ['arch-patterns-comparison'],
+        'arch-microservices-tradeoffs' => ['arch-hexagonal-clean'],
+        'arch-pragmatic-ddd' => ['arch-microservices-tradeoffs'],
         'system-design-canvas' => ['arch-pragmatic-ddd'],
         'system-design-high-throughput' => ['system-design-canvas'],
 
@@ -77,18 +94,28 @@ class PrerequisiteEngine
         'perf-redis-caching-queues' => ['perf-profiling-blackfire'],
 
         // DevOps & Infrastructure
-        'devops-docker-fpm-nginx' => ['perf-redis-caching-queues'],
+        'devops-linux-cli-internals' => ['perf-redis-caching-queues'],
+        'devops-docker-fpm-nginx' => ['devops-linux-cli-internals'],
         'devops-ci-cd-github-actions' => ['devops-docker-fpm-nginx'],
 
+        // Professional Developer Track
+        'prof-team-communication' => ['devops-ci-cd-github-actions'],
+        'prof-adr-technical-decisions' => ['prof-team-communication'],
+        'prof-failure-engineering' => ['prof-adr-technical-decisions'],
+        'prof-incident-management-logs' => ['prof-failure-engineering'],
+
         // Guided Projects
-        'project-01-senior-crud' => ['devops-ci-cd-github-actions'],
-        'project-07-capstone-distributed' => ['project-01-senior-crud'],
+        'project-01-senior-crud' => ['prof-team-communication'],
+        'project-02-symfony-testing' => ['project-01-senior-crud'],
+        'project-03-rest-api-jwt' => ['project-02-symfony-testing'],
+        'project-04-ecommerce-queues' => ['project-03-rest-api-jwt'],
+        'project-07-capstone-distributed' => ['project-04-ecommerce-queues'],
 
         // Evaluations
         'eval-senior-code-review' => ['project-07-capstone-distributed'],
 
         // Reference Resources
-        'resources-php-rfcs' => ['php-request-lifecycle'],
+        'resources-php-rfcs' => [],
     ];
 
     public function __construct(
@@ -106,8 +133,8 @@ class PrerequisiteEngine
             return ProgressStatus::tryFrom($existing->getStatus()) ?? ProgressStatus::Available;
         }
 
-        // Only the foundational entry point is available unconditionally
-        if ($lessonSlug === 'php-request-lifecycle') {
+        // Foundational entry points are available unconditionally
+        if (in_array($lessonSlug, ['php-request-lifecycle', 'se-sdlc-requirements', 'git-fundamentals-plumbing', 'resources-php-rfcs'], true)) {
             return ProgressStatus::Available;
         }
 
@@ -202,6 +229,12 @@ class PrerequisiteEngine
 
     private function resolveModuleSlug(string $lessonSlug): string
     {
+        if (str_starts_with($lessonSlug, 'se-')) {
+            return 'software-engineering';
+        }
+        if (str_starts_with($lessonSlug, 'git-')) {
+            return 'git';
+        }
         if (str_starts_with($lessonSlug, 'poo-')) {
             return 'poo';
         }
@@ -217,8 +250,41 @@ class PrerequisiteEngine
         if (str_starts_with($lessonSlug, 'doctrine-')) {
             return 'doctrine';
         }
-        if (str_starts_with($lessonSlug, 'arch-') || str_starts_with($lessonSlug, 'system-design-')) {
+        if (str_starts_with($lessonSlug, 'apis-')) {
+            return 'apis';
+        }
+        if (str_starts_with($lessonSlug, 'testing-')) {
+            return 'testing';
+        }
+        if (str_starts_with($lessonSlug, 'patterns-')) {
+            return 'design-patterns';
+        }
+        if (str_starts_with($lessonSlug, 'arch-')) {
             return 'architecture';
+        }
+        if (str_starts_with($lessonSlug, 'system-design-')) {
+            return 'system-design';
+        }
+        if (str_starts_with($lessonSlug, 'security-')) {
+            return 'security';
+        }
+        if (str_starts_with($lessonSlug, 'perf-')) {
+            return 'performance';
+        }
+        if (str_starts_with($lessonSlug, 'devops-')) {
+            return 'devops';
+        }
+        if (str_starts_with($lessonSlug, 'prof-')) {
+            return 'professional-developer';
+        }
+        if (str_starts_with($lessonSlug, 'project-')) {
+            return 'projects';
+        }
+        if (str_starts_with($lessonSlug, 'eval-')) {
+            return 'evaluations';
+        }
+        if (str_starts_with($lessonSlug, 'resources-')) {
+            return 'resources';
         }
 
         return 'php-fundamentals';

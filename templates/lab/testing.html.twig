@@ -1,0 +1,312 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}PHPUnit Interactive Testing Lab | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .testing-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        min-height: calc(100vh - 160px);
+    }
+    .test-pane {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .pane-header {
+        background: #252526;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border-main);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .editor-container {
+        flex: 1;
+        min-height: 380px;
+        position: relative;
+    }
+    .test-result-box {
+        background: #141414;
+        border-top: 1px solid var(--border-main);
+        padding: 14px 16px;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+    }
+    .test-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: var(--font-sans);
+    }
+    .badge-pass { background: rgba(137, 209, 133, 0.2); color: #89d185; border: 1px solid rgba(137, 209, 133, 0.4); }
+    .badge-fail { background: rgba(241, 76, 76, 0.2); color: #f14c4c; border: 1px solid rgba(241, 76, 76, 0.4); }
+    .badge-error { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;">
+                {{ icons.icon('phpunit', 14) }}
+                <span>Laboratorio de Pruebas Unitarias</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                PHPUnit 11 &bull; Test-Driven Debugging
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('test-tube', 22) }}
+            <span>Laboratorio Interactivo de Testing: Detecta & Repara el Bug</span>
+        </h1>
+        <p class="page-subtitle">
+            Aprende la mentalidad de ingeniería de calidad: lee código de producción sospechoso, escribe assertions rigurosas, ejecuta la suite de pruebas y refactoriza la solución.
+        </p>
+    </div>
+
+    <div>
+        <button type="button" class="btn-vs" id="run-tests-btn" onclick="executeTestSuite()">
+            {{ icons.icon('play', 14) }}
+            <span>Ejecutar Test Suite</span>
+        </button>
+    </div>
+</div>
+
+<div class="testing-layout">
+    <!-- Left Pane: Implementation Under Test -->
+    <div class="test-pane">
+        <div class="pane-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                {{ icons.icon('file-code', 14) }}
+                <span>src/Service/TieredPricingCalculator.php</span>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">Código Bajo Prueba</span>
+        </div>
+        
+        <div style="padding: 12px 16px; background: #1f1f1f; border-bottom: 1px solid var(--border-main); font-size: 12px; color: var(--text-muted);">
+            <strong>Reglas de Negocio:</strong>
+            <ul style="margin: 4px 0 0 0; padding-left: 16px; line-height: 1.5;">
+                <li>Menos de 10 unidades: 0% descuento.</li>
+                <li>De 10 a 49 unidades: 10% descuento.</li>
+                <li>50 o más unidades: 20% descuento.</li>
+                <li>Clientes VIP reciben 5% adicional acumulable sobre el subtotal.</li>
+                <li>Cantidades negativas o precio cero deben lanzar <code>\InvalidArgumentException</code>.</li>
+            </ul>
+        </div>
+
+        <div class="editor-container" id="code-editor-container"></div>
+    </div>
+
+    <!-- Right Pane: PHPUnit Test Suite -->
+    <div class="test-pane">
+        <div class="pane-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                {{ icons.icon('test-tube', 14) }}
+                <span>tests/Unit/TieredPricingCalculatorTest.php</span>
+            </div>
+            <span style="color: #60a5fa; font-size: 11px;">Suite PHPUnit</span>
+        </div>
+
+        <div class="editor-container" id="test-editor-container"></div>
+
+        <!-- Terminal Test Results Output -->
+        <div class="test-result-box" id="test-result-display">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-weight: 700; color: #ffffff;">Salida de Consola PHPUnit:</span>
+                <span id="suite-summary-badge" class="test-badge badge-fail">FAILURES: 2 Fallos, 1 Error</span>
+            </div>
+            <div id="test-log-output" style="line-height: 1.6; color: #cccccc;">
+                PHPUnit 11.0.8 by Sebastian Bergmann and contributors.<br>
+                Runtime: PHP 8.4.17<br><br>
+                <span style="color: var(--accent-success);">.</span>
+                <span style="color: var(--accent-red);">F</span>
+                <span style="color: var(--accent-red);">F</span>
+                <span style="color: #facc15;">E</span> [4 / 4 (100%)]<br><br>
+                <div style="color: var(--accent-red); font-weight: 700;">1) testTenItemsReceivesTenPercentDiscount</div>
+                <div style="color: #d4d4d4; padding-left: 12px;">Failed asserting that 100.0 matches expected 90.0 (Bug en frontera: usó &gt; en lugar de &gt;=).</div>
+                <br>
+                <div style="color: var(--accent-red); font-weight: 700;">2) testVipCustomerCumulativeDiscount</div>
+                <div style="color: #d4d4d4; padding-left: 12px;">Failed asserting that 85.5 matches expected 85.0 (Cálculo incorrecto de porcentaje compuesto).</div>
+                <br>
+                <div style="color: #facc15; font-weight: 700;">3) testNegativeQuantityThrowsInvalidArgumentException</div>
+                <div style="color: #d4d4d4; padding-left: 12px;">Expected exception \InvalidArgumentException was not thrown (Falta validación de invariantes de entrada).</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script>
+    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+
+    let codeEditor = null;
+    let testEditor = null;
+
+    const initialCode = `<?php
+
+declare(strict_types=1);
+
+namespace App\\Service;
+
+use InvalidArgumentException;
+
+class TieredPricingCalculator
+{
+    public function calculate(float $unitPrice, int $quantity, bool $isVip = false): float
+    {
+        // TODO: Corrige las validaciones de invariantes
+        // BUG 1: Permite cantidades <= 0
+        
+        $discount = 0.0;
+        
+        // BUG 2: Usa '>' en lugar de '>=' para el tramo de 10 unidades
+        if ($quantity > 10 && $quantity < 50) {
+            $discount = 0.10;
+        } elseif ($quantity >= 50) {
+            $discount = 0.20;
+        }
+
+        // BUG 3: VIP no calcula correctamente el descuento acumulativo
+        if ($isVip) {
+            $discount += 0.05;
+        }
+
+        $subtotal = $unitPrice * $quantity;
+        return round($subtotal * (1 - $discount), 2);
+    }
+}
+`;
+
+    const initialTest = `<?php
+
+declare(strict_types=1);
+
+namespace App\\Tests\\Unit;
+
+use App\\Service\\TieredPricingCalculator;
+use InvalidArgumentException;
+use PHPUnit\\Framework\\TestCase;
+
+class TieredPricingCalculatorTest extends TestCase
+{
+    private TieredPricingCalculator $calculator;
+
+    protected function setUp(): void
+    {
+        $this->calculator = new TieredPricingCalculator();
+    }
+
+    public function testLessThanTenItemsReceivesNoDiscount(): void
+    {
+        $total = $this->calculator->calculate(unitPrice: 10.0, quantity: 5, isVip: false);
+        $this->assertSame(50.0, $total);
+    }
+
+    public function testTenItemsReceivesTenPercentDiscount(): void
+    {
+        // 10 unidades * $10.0 = $100. Con 10% de descuento debe ser $90.0
+        $total = $this->calculator->calculate(unitPrice: 10.0, quantity: 10, isVip: false);
+        $this->assertSame(90.0, $total);
+    }
+
+    public function testVipCustomerCumulativeDiscount(): void
+    {
+        // 10 unidades * $10.0 = $100. Descuento 10% + 5% VIP = 15% -> $85.0
+        $total = $this->calculator->calculate(unitPrice: 10.0, quantity: 10, isVip: true);
+        $this->assertSame(85.0, $total);
+    }
+
+    public function testNegativeQuantityThrowsInvalidArgumentException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->calculator->calculate(unitPrice: 10.0, quantity: -2, isVip: false);
+    }
+}
+`;
+
+    require(['vs/editor/editor.main'], function () {
+        codeEditor = monaco.editor.create(document.getElementById('code-editor-container'), {
+            value: initialCode,
+            language: 'php',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            fontSize: 12.5,
+            fontFamily: 'Consolas, monospace',
+            minimap: { enabled: false },
+            lineNumbers: 'on',
+            scrollBeyondLastLine: false,
+        });
+
+        testEditor = monaco.editor.create(document.getElementById('test-editor-container'), {
+            value: initialTest,
+            language: 'php',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            fontSize: 12.5,
+            fontFamily: 'Consolas, monospace',
+            minimap: { enabled: false },
+            lineNumbers: 'on',
+            scrollBeyondLastLine: false,
+        });
+    });
+
+    function executeTestSuite() {
+        const code = codeEditor.getValue();
+        const test = testEditor.getValue();
+        const badge = document.getElementById('suite-summary-badge');
+        const log = document.getElementById('test-log-output');
+
+        // Check if user fixed the bugs:
+        const hasInvariantsCheck = code.includes('InvalidArgumentException') && (code.includes('$quantity <= 0') || code.includes('$quantity < 1') || code.includes('$quantity < 0'));
+        const hasFixedBoundary = code.includes('$quantity >= 10');
+        const hasVipMath = code.includes('$discount += 0.05');
+
+        if (hasInvariantsCheck && hasFixedBoundary && hasVipMath) {
+            badge.className = 'test-badge badge-pass';
+            badge.textContent = 'OK (4 tests, 5 assertions) - ALL PASS';
+            log.innerHTML = `
+                PHPUnit 11.0.8 by Sebastian Bergmann and contributors.<br>
+                Runtime: PHP 8.4.17<br><br>
+                <span style="color: var(--accent-success);">....</span> [4 / 4 (100%)]<br><br>
+                <span style="color: var(--accent-success); font-weight: 700;">OK (4 tests, 5 assertions)</span><br>
+                Tiempo de ejecución: 12 ms. Consumo de memoria: 4.00 MB.<br><br>
+                <strong>¡Excelente trabajo Senior!</strong> Has corregido el caso de frontera, protegido las invariantes con tipos estrictos y asegurado que los tests verifiquen el contrato de dominio sin ambigüedades.
+            `;
+        } else {
+            badge.className = 'test-badge badge-fail';
+            badge.textContent = 'FAILURES: Casos de frontera o invariantes sin resolver';
+            let issues = [];
+            if (!hasInvariantsCheck) {
+                issues.push('<strong>Fallo:</strong> Falta validar que $quantity > 0 y lanzar <code>InvalidArgumentException</code>.');
+            }
+            if (!hasFixedBoundary) {
+                issues.push('<strong>Fallo:</strong> La frontera para 10 unidades sigue usando <code>$quantity > 10</code> en vez de <code>$quantity >= 10</code>.');
+            }
+            log.innerHTML = `
+                PHPUnit 11.0.8 by Sebastian Bergmann and contributors.<br>
+                Runtime: PHP 8.4.17<br><br>
+                <span style="color: var(--accent-red);">F.FE</span> [4 / 4 (100%)]<br><br>
+                ${issues.join('<br>')}<br><br>
+                <span style="color: var(--accent-red);">FAILURES! Tests: 4, Assertions: 3, Failures: ${issues.length}.</span>
+            `;
+        }
+    }
+</script>
+{% endblock %}
