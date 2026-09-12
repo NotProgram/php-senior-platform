@@ -21,9 +21,15 @@
             <nav class="menu-items">
                 <a href="{{ path('app_dashboard') }}" class="menu-item">Dashboard</a>
                 <a href="{{ path('app_roadmap') }}" class="menu-item">Roadmap</a>
+                <a href="{{ path('app_labs') }}" class="menu-item">DevLabs</a>
                 <a href="{{ path('app_system_design') }}" class="menu-item">System Design</a>
+                <a href="{{ path('app_module', {moduleSlug: 'software-engineering'}) }}" class="menu-item">Ingeniería</a>
+                <a href="{{ path('app_module', {moduleSlug: 'git'}) }}" class="menu-item">Git</a>
                 <a href="{{ path('app_module', {moduleSlug: 'php-fundamentals'}) }}" class="menu-item">PHP 8.4</a>
                 <a href="{{ path('app_module', {moduleSlug: 'symfony'}) }}" class="menu-item">Symfony</a>
+                <a href="{{ path('app_module', {moduleSlug: 'testing'}) }}" class="menu-item">Testing</a>
+                <a href="{{ path('app_module', {moduleSlug: 'architecture'}) }}" class="menu-item">Arquitectura</a>
+                <a href="{{ path('app_module', {moduleSlug: 'devops'}) }}" class="menu-item">DevOps</a>
             </nav>
         </div>
 
@@ -47,25 +53,37 @@
         <aside class="activity-bar">
             <div class="activity-group">
                 <a href="{{ path('app_dashboard') }}" class="activity-btn {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}" title="Dashboard">
-                    {{ icons.icon('layout-dashboard', 22) }}
+                    {{ icons.icon('layout-dashboard', 20) }}
                 </a>
                 <a href="{{ path('app_roadmap') }}" class="activity-btn {{ app.request.attributes.get('_route') == 'app_roadmap' ? 'active' : '' }}" title="Roadmap">
-                    {{ icons.icon('map', 22) }}
+                    {{ icons.icon('map', 20) }}
+                </a>
+                <a href="{{ path('app_labs') }}" class="activity-btn {{ app.request.attributes.get('_route') starts with 'app_lab' ? 'active' : '' }}" title="Interactive DevLabs">
+                    {{ icons.icon('terminal', 20) }}
                 </a>
                 <a href="{{ path('app_system_design') }}" class="activity-btn {{ app.request.attributes.get('_route') == 'app_system_design' ? 'active' : '' }}" title="System Design Lab">
-                    {{ icons.icon('sliders', 22) }}
+                    {{ icons.icon('sliders', 20) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'software-engineering'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'software-engineering' ? 'active' : '' }}" title="Ingeniería de Software">
+                    {{ icons.icon('book-open', 20) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'git'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'git' ? 'active' : '' }}" title="Git & GitHub">
+                    {{ icons.icon('git', 20) }}
                 </a>
                 <a href="{{ path('app_module', {moduleSlug: 'php-fundamentals'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'php-fundamentals' ? 'active' : '' }}" title="PHP Moderno">
-                    {{ icons.icon('php', 22) }}
+                    {{ icons.icon('php', 20) }}
                 </a>
                 <a href="{{ path('app_module', {moduleSlug: 'symfony'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'symfony' ? 'active' : '' }}" title="Symfony Internals">
-                    {{ icons.icon('symfony', 22) }}
+                    {{ icons.icon('symfony', 20) }}
                 </a>
-                <a href="{{ path('app_module', {moduleSlug: 'twig'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'twig' ? 'active' : '' }}" title="Twig">
-                    {{ icons.icon('twig', 22) }}
+                <a href="{{ path('app_module', {moduleSlug: 'testing'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'testing' ? 'active' : '' }}" title="Testing & Calidad">
+                    {{ icons.icon('test-tube', 20) }}
                 </a>
-                <a href="{{ path('app_module', {moduleSlug: 'databases'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'databases' ? 'active' : '' }}" title="Bases de Datos & Doctrine">
-                    {{ icons.icon('mysql', 22) }}
+                <a href="{{ path('app_module', {moduleSlug: 'architecture'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'architecture' ? 'active' : '' }}" title="Arquitectura de Software">
+                    {{ icons.icon('layers', 20) }}
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'devops'}) }}" class="activity-btn {{ app.request.attributes.get('moduleSlug') == 'devops' ? 'active' : '' }}" title="DevOps & Flujo">
+                    {{ icons.icon('docker', 20) }}
                 </a>
             </div>
 
@@ -122,6 +140,10 @@
                 <a href="{{ path('app_roadmap') }}" class="tab {{ app.request.attributes.get('_route') == 'app_roadmap' ? 'active' : '' }}">
                     {{ icons.icon('map', 13) }}
                     <span>Roadmap.yaml</span>
+                </a>
+                <a href="{{ path('app_labs') }}" class="tab {{ app.request.attributes.get('_route') starts with 'app_lab' ? 'active' : '' }}">
+                    {{ icons.icon('terminal', 13) }}
+                    <span>InteractiveLabs.sh</span>
                 </a>
                 <a href="{{ path('app_system_design') }}" class="tab {{ app.request.attributes.get('_route') == 'app_system_design' ? 'active' : '' }}">
                     {{ icons.icon('sliders', 13) }}

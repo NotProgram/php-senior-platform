@@ -48,6 +48,7 @@ class RoadmapController extends AbstractController
         return $this->render('roadmap/index.html.twig', [
             'current_user' => $user,
             'roadmap_sections' => $sections,
+            'career_levels' => $roadmapService->getCareerLevels(),
             'status_map' => $statusMap,
             'counts' => $counts,
             'current_tab_title' => 'Roadmap.yaml',
@@ -72,6 +73,14 @@ class RoadmapController extends AbstractController
         }
 
         $statusMap = $prerequisiteEngine->resolveFullStatusMap($user, [$moduleSlug => $module]);
+
+        $totalMinutes = 0;
+        if (isset($module['lessons']) && is_array($module['lessons'])) {
+            foreach ($module['lessons'] as $lesson) {
+                $totalMinutes += (int) ($lesson['minutes'] ?? 45);
+            }
+        }
+        $module['total_minutes'] = $totalMinutes > 0 ? $totalMinutes : 180;
 
         return $this->render('roadmap/module.html.twig', [
             'current_user' => $user,

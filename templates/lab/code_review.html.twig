@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Code Review & Smells Lab | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .cr-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 16px;
+        min-height: calc(100vh - 160px);
+    }
+    .pr-container {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .pr-header {
+        background: #252526;
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--border-main);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .diff-viewer {
+        background: #141414;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow-x: auto;
+        padding: 12px 0;
+    }
+    .diff-line {
+        display: flex;
+        padding: 1px 16px;
+        cursor: pointer;
+        transition: background 0.1s;
+    }
+    .diff-line:hover {
+        background: #202020;
+    }
+    .diff-line-num {
+        width: 32px;
+        color: var(--text-muted);
+        user-select: none;
+        text-align: right;
+        padding-right: 12px;
+    }
+    .diff-line-content {
+        flex: 1;
+        white-space: pre;
+    }
+    .diff-add {
+        background: rgba(137, 209, 133, 0.1);
+        color: #89d185;
+    }
+    .diff-flagged {
+        background: rgba(241, 76, 76, 0.2) !important;
+        border-left: 3px solid var(--accent-red);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(229, 160, 133, 0.15); border-color: rgba(229, 160, 133, 0.4); color: #e5a085;">
+                {{ icons.icon('award', 14) }}
+                <span>Simulador de Revisión Técnica</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                Pull Request #104 &bull; 6 Smells Críticos Ocultos
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('git-pull-request', 22) }}
+            <span>Code Review Lab: Detección de Smells & Vulnerabilidades</span>
+        </h1>
+        <p class="page-subtitle">
+            Un desarrollador junior ha enviado el PR #104 a producción. Analiza el diff, identifica los anti-patrones de diseño y seguridad, y compara tu dictamen con el veredicto de un Arquitecto Senior.
+        </p>
+    </div>
+
+    <div>
+        <button type="button" class="btn-vs" onclick="revealSeniorReview()">
+            {{ icons.icon('award', 14) }}
+            <span>Ver Veredicto del Arquitecto Senior</span>
+        </button>
+    </div>
+</div>
+
+<div class="cr-layout">
+    <!-- Left: Pull Request Diff Viewer -->
+    <div class="pr-container">
+        <div class="pr-header">
+            <div>
+                <span class="badge" style="background: rgba(137, 209, 133, 0.2); color: #89d185; font-size: 11px; padding: 2px 6px; border-radius: 3px; font-weight: 700;">Open PR</span>
+                <strong style="color: #ffffff; margin-left: 8px; font-size: 13px;">feat: add OrderReportController for VIP export</strong>
+            </div>
+            <span style="font-size: 11.5px; color: var(--text-muted);">src/Controller/OrderReportController.php</span>
+        </div>
+
+        <div class="diff-viewer" id="pr-diff">
+            <div class="diff-line diff-add"><span class="diff-line-num">1</span><span class="diff-line-content">&lt;?php</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">2</span><span class="diff-line-content"></span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">3</span><span class="diff-line-content">namespace App\Controller;</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">4</span><span class="diff-line-content"></span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(1)"><span class="diff-line-num">5</span><span class="diff-line-content">// SMELL 1: Controlador no hereda de AbstractController y usa funciones globales</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(1)"><span class="diff-line-num">6</span><span class="diff-line-content">class OrderReportController</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">7</span><span class="diff-line-content">{</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(2)"><span class="diff-line-num">8</span><span class="diff-line-content">    // SMELL 2: Llave secreta hardcodeada en el código fuente</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(2)"><span class="diff-line-num">9</span><span class="diff-line-content">    private const STRIPE_KEY = 'sk_live_9948275918237492817';</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">10</span><span class="diff-line-content"></span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">11</span><span class="diff-line-content">    public function exportReport(): void</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">12</span><span class="diff-line-content">    {</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(3)"><span class="diff-line-num">13</span><span class="diff-line-content">        // SMELL 3: SQL Injection crítico con $_GET sin sanitizar</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(3)"><span class="diff-line-num">14</span><span class="diff-line-content">        $userId = $_GET['user_id'];</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(3)"><span class="diff-line-num">15</span><span class="diff-line-content">        $sql = "SELECT * FROM orders WHERE user_id = " . $userId;</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(3)"><span class="diff-line-num">16</span><span class="diff-line-content">        $orders = (new \PDO('mysql:host=localhost;dbname=app', 'root', 'root'))->query($sql)->fetchAll();</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">17</span><span class="diff-line-content"></span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(4)"><span class="diff-line-num">18</span><span class="diff-line-content">        // SMELL 4: N+1 Query loop dentro de foreach</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(4)"><span class="diff-line-num">19</span><span class="diff-line-content">        foreach ($orders as $order) {</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(4)"><span class="diff-line-num">20</span><span class="diff-line-content">            $items = (new \PDO('mysql:host=localhost;dbname=app', 'root', 'root'))</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(4)"><span class="diff-line-num">21</span><span class="diff-line-content">                ->query("SELECT * FROM order_items WHERE order_id = " . $order['id'])->fetchAll();</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(4)"><span class="diff-line-num">22</span><span class="diff-line-content">        }</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">23</span><span class="diff-line-content"></span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(5)"><span class="diff-line-num">24</span><span class="diff-line-content">        // SMELL 5: DateTime mutable en lugar de DateTimeImmutable</span></div>
+            <div class="diff-line diff-add" onclick="toggleSmell(5)"><span class="diff-line-num">25</span><span class="diff-line-content">        $generatedAt = new \DateTime();</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">26</span><span class="diff-line-content">        $expiresAt = $generatedAt->modify('+7 days'); // ¡Mutó la variable original!</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">27</span><span class="diff-line-content"></span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">28</span><span class="diff-line-content">        echo json_encode(['status' => 'ok']);</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">29</span><span class="diff-line-content">    }</span></div>
+            <div class="diff-line diff-add"><span class="diff-line-num">30</span><span class="diff-line-content">}</span></div>
+        </div>
+    </div>
+
+    <!-- Right: Review Checklist & Senior Verdict -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        
+        <!-- Interactive Checklist -->
+        <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 12px;">
+                Checklist de Code Review (Selecciona los Smells)
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12px; color: #d4d4d4;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="smell-sql" onchange="checkSmell()">
+                    <span>Vulnerabilidad de SQL Injection (Líneas 14-16)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="smell-secrets" onchange="checkSmell()">
+                    <span>Credenciales / API Secret hardcodeado (Línea 9)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="smell-nplusone" onchange="checkSmell()">
+                    <span>Problema de N+1 Queries en ciclo (Líneas 19-22)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="smell-datetime" onchange="checkSmell()">
+                    <span>Efecto secundario por DateTime mutable (Líneas 25-26)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="smell-di" onchange="checkSmell()">
+                    <span>Instanciación manual de PDO sin Dependency Injection</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="smell-tests" onchange="checkSmell()">
+                    <span>Falta total de pruebas automatizadas (0 tests agregados)</span>
+                </label>
+            </div>
+
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-light); font-size: 12px;">
+                Smells detectados: <strong id="smell-count" style="color: #60a5fa;">0</strong> de 6
+            </div>
+        </div>
+
+        <!-- Senior Architect Verdict (Hidden initially) -->
+        <div id="senior-verdict-box" style="display: none; background: #181818; border: 1px solid var(--accent-success); border-radius: 6px; padding: 16px; font-size: 12px; line-height: 1.6;">
+            <div style="font-weight: 700; color: var(--accent-success); font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                {{ icons.icon('check-circle', 14) }}
+                <span>Veredicto del Arquitecto Senior: CHANGES REQUESTED</span>
+            </div>
+            <div style="color: #d4d4d4;">
+                <p><strong>1. Qué está mal:</strong> Este PR introduce un fallo crítico de inyección SQL (CVSS 9.8), filtra una llave secreta de producción en git, colapsará la base de datos por un bucle N+1 de consultas PDO y muta objetos de fecha.</p>
+                <p><strong>2. Por qué está mal:</strong> PDO manual anula el connection pool de Doctrine y la inyección de dependencias. Una petición con 1,000 pedidos abrirá 1,000 conexiones TCP a MySQL.</p>
+                <p><strong>3. Cómo mejorarlo:</strong> Delegar la consulta a <code>OrderRepository::findVipReportQueryBuilder()</code> con JOIN FETCH para traer los items en 1 sola consulta SQL. Inyectar la llave Stripe mediante <code>%env(STRIPE_SECRET)%</code> y usar <code>DateTimeImmutable</code>.</p>
+                <p><strong>4. Por qué la solución Senior es mejor:</strong> Cero vulnerabilidades, latencia reducida de 1.8s a 15ms y 100% testeable con mocks.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function toggleSmell(id) {
+        if (id === 1 || id === 3) document.getElementById('smell-sql').checked = true;
+        if (id === 2) document.getElementById('smell-secrets').checked = true;
+        if (id === 4) document.getElementById('smell-nplusone').checked = true;
+        if (id === 5) document.getElementById('smell-datetime').checked = true;
+        checkSmell();
+    }
+
+    function checkSmell() {
+        const ids = ['smell-sql', 'smell-secrets', 'smell-nplusone', 'smell-datetime', 'smell-di', 'smell-tests'];
+        let count = 0;
+        ids.forEach(id => {
+            if (document.getElementById(id).checked) count++;
+        });
+        document.getElementById('smell-count').textContent = count;
+    }
+
+    function revealSeniorReview() {
+        const box = document.getElementById('senior-verdict-box');
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+{% endblock %}

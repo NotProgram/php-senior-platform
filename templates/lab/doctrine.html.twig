@@ -1,0 +1,292 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Doctrine Unit of Work & Identity Map Lab | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .doctrine-layout {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 16px;
+        min-height: calc(100vh - 160px);
+    }
+    .entity-stage-panel {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .lifecycle-states-bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 12px;
+    }
+    .state-card {
+        background: #202020;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 12px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    .state-card.active {
+        border-color: var(--accent-blue);
+        background: #252526;
+        box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.3);
+    }
+    .state-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 3px;
+    }
+    .sql-terminal {
+        background: #121212;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 14px;
+        font-family: Consolas, monospace;
+        font-size: 11.5px;
+        color: #d4d4d4;
+        min-height: 180px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(0, 117, 143, 0.15); border-color: rgba(0, 117, 143, 0.4); color: #38bdf8;">
+                {{ icons.icon('database', 14) }}
+                <span>Persistencia & ORM Internals</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                Doctrine ORM 3.7 &bull; Unit of Work &bull; Identity Map
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('database', 22) }}
+            <span>Doctrine Unit of Work & Identity Map Lab</span>
+        </h1>
+        <p class="page-subtitle">
+            Aprende por qué $em->persist() no ejecuta SQL y cómo el Unit of Work calcula el ChangeSet exacto antes de emitir una transacción ACID a MySQL.
+        </p>
+    </div>
+
+    <div>
+        <button type="button" class="btn-vs" onclick="resetDoctrineSim()">
+            {{ icons.icon('refresh-cw', 13) }}
+            <span>Reiniciar Simulador</span>
+        </button>
+    </div>
+</div>
+
+<div class="doctrine-layout">
+    <!-- Left: Lifecycle & Simulator -->
+    <div class="entity-stage-panel">
+        
+        <!-- Lifecycle 4 States Bar -->
+        <div class="lifecycle-states-bar">
+            <div class="state-card" id="state-new">
+                <span class="state-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15;">NEW</span>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Objeto instanciado en heap. Sin ID ni tracking.</div>
+            </div>
+            <div class="state-card" id="state-managed">
+                <span class="state-badge" style="background: rgba(137, 209, 133, 0.2); color: #89d185;">MANAGED</span>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Registrado en Identity Map y Unit of Work.</div>
+            </div>
+            <div class="state-card" id="state-detached">
+                <span class="state-badge" style="background: rgba(0, 122, 204, 0.2); color: #4fc1ff;">DETACHED</span>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Tiene ID pero ya no es rastreado por el EM.</div>
+            </div>
+            <div class="state-card" id="state-removed">
+                <span class="state-badge" style="background: rgba(241, 76, 76, 0.2); color: #f14c4c;">REMOVED</span>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Programado para DELETE en el próximo flush().</div>
+            </div>
+        </div>
+
+        <!-- Current Entity State Card -->
+        <div style="background: #202020; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Entidad en Memoria: App\Entity\User</span>
+                <span id="entity-state-pill" class="state-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15;">ESTADO: NEW</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-family: Consolas, monospace; font-size: 12px;">
+                <div>id: <span id="entity-id-val" style="color: var(--text-muted);">null (sin persistir)</span></div>
+                <div>email: <span id="entity-email-val" style="color: #ce9178;">'dilan@devlab.io'</span></div>
+                <div>displayName: <span id="entity-name-val" style="color: #ce9178;">'Dilan Garrido'</span></div>
+                <div>streakDays: <span id="entity-streak-val" style="color: #b5cea8;">1</span></div>
+            </div>
+        </div>
+
+        <!-- Identity Map Table Inspector -->
+        <div style="background: #1e1e1e; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 8px;">
+                Identity Map en Memoria ($unitOfWork->getIdentityMap())
+            </div>
+            <div id="identity-map-display" style="font-family: Consolas, monospace; font-size: 11.5px; color: var(--text-muted);">
+                [Vacio]: No hay entidades gestionadas con ID primario en este momento.
+            </div>
+        </div>
+
+        <!-- Live SQL Queries Console -->
+        <div>
+            <div style="font-size: 12px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                {{ icons.icon('terminal', 13) }}
+                <span>Consultas SQL Emitidas a MySQL 8.0</span>
+            </div>
+            <div class="sql-terminal" id="sql-terminal-box">
+                -- Conexión MySQL establecida: mysql://db:3306/db
+                -- Esperando llamadas transaccionales...
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right: Action Buttons & Senior Advice -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 12px;">
+                Paso a Paso del Desarrollador
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" class="btn-vs" id="btn-step1" style="justify-content: flex-start;" onclick="step1New()">
+                    1. $user = new User(...)
+                </button>
+                <button type="button" class="btn-vs" id="btn-step2" style="justify-content: flex-start;" onclick="step2Persist()">
+                    2. $em->persist($user);
+                </button>
+                <button type="button" class="btn-vs" id="btn-step3" style="justify-content: flex-start;" onclick="step3Modify()">
+                    3. $user->setStreakDays(5);
+                </button>
+                <button type="button" class="btn-vs" id="btn-step4" style="justify-content: flex-start;" onclick="step4Flush()">
+                    4. $em->flush(); (Transacción ACID)
+                </button>
+                <button type="button" class="btn-vs" id="btn-step5" style="justify-content: flex-start;" onclick="step5Detach()">
+                    5. $em->detach($user);
+                </button>
+            </div>
+        </div>
+
+        <!-- Senior Rulebook -->
+        <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px; font-size: 12px;">
+            <div style="font-weight: 700; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                {{ icons.icon('award', 13) }}
+                <span>Senior Doctrine Invariants</span>
+            </div>
+            <ul style="color: var(--text-muted); line-height: 1.6; padding-left: 16px; margin: 0;">
+                <li><strong>persist() no es INSERT:</strong> Solo marca la entidad para que el Unit of Work la observe.</li>
+                <li><strong>flush() es el costo I/O:</strong> Agrupa todos los cambios en un solo viaje de red hacia MySQL.</li>
+                <li><strong>Nunca llames a flush() en un bucle:</strong> Si procesas 1,000 registros, haz un flush cada 100 iteraciones y luego <code>$em->clear()</code> para vaciar la memoria.</li>
+                <li><strong>Identity Map garantiza unicidad:</strong> Dos consultas con el mismo ID devuelven exactamente la misma instancia en memoria (<code>$a === $b</code>).</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    let simState = 'NEW'; // NEW, MANAGED, DETACHED, REMOVED
+    let entityId = null;
+    let streakDays = 1;
+
+    function updateView() {
+        document.querySelectorAll('.state-card').forEach(el => el.classList.remove('active'));
+        const activeCard = document.getElementById('state-' + simState.toLowerCase());
+        if (activeCard) activeCard.classList.add('active');
+
+        const pill = document.getElementById('entity-state-pill');
+        pill.textContent = 'ESTADO: ' + simState;
+
+        const idVal = document.getElementById('entity-id-val');
+        idVal.textContent = entityId ? entityId : 'null (sin persistir)';
+        idVal.style.color = entityId ? '#b5cea8' : 'var(--text-muted)';
+
+        document.getElementById('entity-streak-val').textContent = streakDays;
+
+        const idMap = document.getElementById('identity-map-display');
+        if (simState === 'MANAGED' && entityId) {
+            idMap.innerHTML = `<span style="color: #4ec9b0;">App\\Entity\\User</span>[#${entityId}] =&gt; instance #0001 (Streak: ${streakDays})`;
+        } else if (simState === 'MANAGED' && !entityId) {
+            idMap.innerHTML = `[UnitOfWork ScheduledInsertions]: App\\Entity\\User instance #0001 (Pendiente de flush)`;
+        } else {
+            idMap.innerHTML = `[Vacio]: No hay entidades gestionadas activas en la Identity Map.`;
+        }
+    }
+
+    function appendSql(sql) {
+        const box = document.getElementById('sql-terminal-box');
+        const line = document.createElement('div');
+        line.style.color = sql.startsWith('--') ? 'var(--text-muted)' : '#89d185';
+        line.style.marginTop = '4px';
+        line.textContent = sql;
+        box.appendChild(line);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function step1New() {
+        simState = 'NEW';
+        entityId = null;
+        streakDays = 1;
+        updateView();
+        appendSql('-- $user = new User("dilan@devlab.io", "Dilan Garrido"); (Cero llamadas SQL)');
+    }
+
+    function step2Persist() {
+        simState = 'MANAGED';
+        updateView();
+        appendSql('-- $em->persist($user);');
+        appendSql('-- UnitOfWork: Entidad registrada en $entityInsertions. NO se ejecutó SQL aún.');
+    }
+
+    function step3Modify() {
+        if (simState !== 'MANAGED') {
+            alert('Debes llamar primero a $em->persist() para que la entidad sea MANAGED.');
+            return;
+        }
+        streakDays = 5;
+        updateView();
+        appendSql('-- $user->setStreakDays(5);');
+        appendSql('-- UnitOfWork: Propiedad "streakDays" marcada como sucia en ChangeSet (1 -> 5). Cero SQL.');
+    }
+
+    function step4Flush() {
+        if (simState === 'MANAGED' && !entityId) {
+            entityId = 42;
+            updateView();
+            appendSql('START TRANSACTION;');
+            appendSql('INSERT INTO users (email, display_name, streak_days, current_level, created_at) VALUES ("dilan@devlab.io", "Dilan Garrido", 5, "Junior", NOW());');
+            appendSql('-- MySQL generó AUTO_INCREMENT ID = 42');
+            appendSql('COMMIT;');
+            appendSql('-- Entidad sincronizada con la base de datos.');
+        } else if (simState === 'MANAGED' && entityId) {
+            appendSql('START TRANSACTION;');
+            appendSql('UPDATE users SET streak_days = 5 WHERE id = 42;');
+            appendSql('COMMIT;');
+        }
+    }
+
+    function step5Detach() {
+        simState = 'DETACHED';
+        updateView();
+        appendSql('-- $em->detach($user);');
+        appendSql('-- Entidad retirada de la Identity Map. Cualquier modificación posterior será ignorada por flush().');
+    }
+
+    function resetDoctrineSim() {
+        document.getElementById('sql-terminal-box').innerHTML = '-- Simulador reiniciado.';
+        step1New();
+    }
+
+    step1New();
+</script>
+{% endblock %}

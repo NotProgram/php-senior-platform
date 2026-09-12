@@ -1,38 +1,191 @@
 {% extends 'base.html.twig' %}
 {% import 'components/icons.html.twig' as icons %}
 
-{% block title %}{{ module.title }} | Roadmap Senior{% endblock %}
+{% block title %}{{ module.title }} | Roadmap Senior Academy{% endblock %}
 
 {% block body %}
-<div class="page-header">
-    <h1 class="page-title">
-        {{ icons.icon(module.icon|default('folder'), 24) }}
+<!-- Encabezado del Módulo -->
+<div class="page-header" style="margin-bottom: 24px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 11px;">
+            {{ module.category|default('Especialización Senior') }}
+        </span>
+        {% if module.lessons is defined %}
+            <span style="font-size: 12px; color: #858585;">
+                {{ module.lessons|length }} Lecciones &bull; Estimado: {{ module.total_minutes|default(180) }} minutos
+            </span>
+        {% endif %}
+    </div>
+    <h1 class="page-title" style="display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; color: #ffffff;">
+        {{ icons.icon(module.icon|default('folder'), 26) }}
         <span>{{ module.title }}</span>
     </h1>
-    <p class="page-subtitle">
-        {{ module.description|default('M&oacute;dulo de especializaci&oacute;n y perfeccionamiento profesional.') }}
+    <p class="page-subtitle" style="color: #cccccc; font-size: 13.5px; line-height: 1.6; max-width: 900px; margin-top: 8px;">
+        {{ module.description|default('Módulo formativo de ingeniería de software avanzada, arquitectura de sistemas y buenas prácticas.') }}
     </p>
 </div>
 
-<div style="display: flex; flex-direction: column; gap: 12px;">
-    {% if module.lessons is defined %}
-        {% for lesson in module.lessons %}
-            <div class="metric-card" style="padding: 16px; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 14px;">
-                    {{ icons.icon('file-code', 20) }}
-                    <div>
-                        <h3 style="font-size: 14px; font-weight: 600; color: #ffffff;">{{ lesson.title }}</h3>
-                        <span style="font-size: 11.5px; color: #858585;">Duraci&oacute;n: {{ lesson.minutes }} min &bull; Nivel: {{ lesson.difficulty }}</span>
-                    </div>
+<!-- 1. Video Masterclass Principal del Módulo -->
+{% if module.video is defined and module.video %}
+<div style="margin-bottom: 32px;">
+    <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('video', 16) }}
+        <span>Video Masterclass del Módulo: {{ module.video.title }}</span>
+    </h2>
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px;">
+        <div style="display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start;">
+            <div>
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid #2d2d2d; background: #000000;">
+                    <iframe 
+                        src="https://www.youtube-nocookie.com/embed/{{ module.video.youtube_id }}" 
+                        title="{{ module.video.title }}"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                        loading="lazy"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;">
+                    </iframe>
                 </div>
-                <a href="{{ path('app_lesson', {lessonSlug: lesson.slug}) }}" class="btn-vs">
-                    {{ icons.icon('play', 12) }}
-                    <span>Abrir Lecci&oacute;n</span>
-                </a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 8px;">
+                    <span style="font-size: 11px; font-weight: 700; color: #4fc1ff; text-transform: uppercase;">{{ module.video.speaker|default('Conferencia Técnica') }}</span>
+                    <span style="font-size: 11px; color: #858585;">{{ module.video.duration }}</span>
+                </div>
+                <p style="font-size: 12.5px; color: #cccccc; line-height: 1.6; margin: 0;">
+                    {{ module.video.description }}
+                </p>
+                {% if module.video.key_takeaways is defined and module.video.key_takeaways %}
+                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 14px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #4fc1ff; text-transform: uppercase; margin-bottom: 8px;">Conceptos Clave del Video:</div>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: #d4d4d4; line-height: 1.7;">
+                            {% for item in module.video.key_takeaways %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 2. Citas Técnicas y Fundamentos del Módulo -->
+{% if module.citations is defined and module.citations %}
+<div style="margin-bottom: 32px;">
+    <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('quote', 16) }}
+        <span>Fundamentos Canónicos &amp; Citas de Referencia</span>
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
+        {% for citation in module.citations %}
+            <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 11px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px;">{{ citation.topic }}</span>
+                    <span style="font-size: 11px; color: #858585;">{{ citation.source }}</span>
+                </div>
+                <blockquote style="margin: 0 0 10px 0; font-style: italic; color: #e5e5e5; font-size: 12.5px; line-height: 1.6; border-left: 2px solid #333333; padding-left: 10px;">
+                    &ldquo;{{ citation.quote }}&rdquo;
+                </blockquote>
+                <div style="font-size: 11.5px; color: #858585; text-align: right;">&mdash; <strong>{{ citation.author }}</strong></div>
+                <div style="margin-top: 10px; font-size: 12px; color: #cccccc; line-height: 1.5; background: #121212; padding: 8px 10px; border-radius: 4px;">
+                    <strong style="color: #9cdcfe;">Por qué importa en la práctica:</strong> {{ citation.explanation }}
+                </div>
             </div>
         {% endfor %}
-    {% else %}
-        <p style="color: #858585;">Este m&oacute;dulo est&aacute; en constante expansi&oacute;n.</p>
-    {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- 3. Enlaces Oficiales y Documentación de Referencia -->
+{% if module.resources is defined and module.resources %}
+<div style="margin-bottom: 32px;">
+    <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('external-link', 16) }}
+        <span>Documentación Oficial &amp; Especificaciones Recomendadas</span>
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+        {% for resource in module.resources %}
+            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px; text-decoration: none; transition: border-color 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-main)'">
+                <div style="flex: 1; min-width: 0; padding-right: 10px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #4fc1ff; display: flex; align-items: center; gap: 6px;">
+                        <span>{{ resource.title }}</span>
+                        {{ icons.icon('external-link', 11) }}
+                    </div>
+                    <div style="font-size: 11.5px; color: #858585; margin-top: 4px; line-height: 1.4;">{{ resource.description }}</div>
+                </div>
+                <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10.5px; white-space: nowrap;">
+                    {{ resource.type|default('DOCS') }}
+                </span>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- 4. Lista de Lecciones del Módulo -->
+<div style="margin-bottom: 32px;">
+    <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('book-open', 16) }}
+        <span>Ruta de Aprendizaje: Lecciones del Módulo</span>
+    </h2>
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% if module.lessons is defined and module.lessons %}
+            {% for lesson in module.lessons %}
+                {% set status = status_map[lesson.slug] ?? null %}
+                <div class="metric-card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span class="user-badge" style="background: rgba(0, 122, 204, 0.12); border-color: rgba(0, 122, 204, 0.35); color: #4fc1ff; font-size: 12px; font-weight: 700; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                            {{ loop.index }}
+                        </span>
+                        <div>
+                            <h3 style="font-size: 14px; font-weight: 600; color: #ffffff; margin: 0 0 4px 0;">{{ lesson.title }}</h3>
+                            <div style="display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: #858585;">
+                                <span>Duración: {{ lesson.minutes }} min</span>
+                                <span>&bull;</span>
+                                <span style="color: #9cdcfe;">Dificultad: {{ lesson.difficulty }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        {% if status and status.value == 'completed' %}
+                            <span class="user-badge" style="background: rgba(137,209,133,0.15); color: #89d185; border-color: rgba(137,209,133,0.4);">
+                                {{ icons.icon('check-circle', 11) }} Completado
+                            </span>
+                        {% elseif status and status.value == 'in_progress' %}
+                            <span class="user-badge" style="background: rgba(245,158,11,0.15); color: #f59e0b; border-color: rgba(245,158,11,0.4);">
+                                En Progreso
+                            </span>
+                        {% elseif status and status.value == 'locked' %}
+                            <span class="user-badge" style="background: rgba(120,120,120,0.15); color: #858585; border-color: rgba(120,120,120,0.3);">
+                                {{ icons.icon('shield', 11) }} Bloqueado
+                            </span>
+                        {% else %}
+                            <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); color: #4fc1ff; border-color: rgba(0, 122, 204, 0.4);">
+                                Disponible
+                            </span>
+                        {% endif %}
+
+                        {% if status and status.value == 'locked' %}
+                            <button class="btn-vs" disabled style="opacity: 0.5; cursor: not-allowed; display: flex; align-items: center; gap: 6px;">
+                                {{ icons.icon('shield', 12) }}
+                                <span>Bloqueado</span>
+                            </button>
+                        {% else %}
+                            <a href="{{ path('app_lesson', {lessonSlug: lesson.slug}) }}" class="btn-vs" style="display: flex; align-items: center; gap: 6px;">
+                                {{ icons.icon('play', 12) }}
+                                <span>Iniciar Lección</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #858585;">Este módulo está en constante expansión.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

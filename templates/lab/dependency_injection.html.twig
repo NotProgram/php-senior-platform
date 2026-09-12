@@ -1,0 +1,290 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Dependency Injection & Container Lab | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .di-layout {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 16px;
+        min-height: calc(100vh - 160px);
+    }
+    .graph-stage {
+        background: #141414;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+    }
+    .di-node {
+        background: #1e1e1e;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 12px 16px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .di-node:hover {
+        border-color: var(--accent-blue);
+    }
+    .di-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-blue);
+        font-size: 11px;
+        font-family: Consolas, monospace;
+        gap: 6px;
+    }
+    .di-controls-panel {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .control-section {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-light);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(127, 169, 44, 0.15); border-color: rgba(127, 169, 44, 0.4); color: #a4d13e;">
+                {{ icons.icon('layers', 14) }}
+                <span>Contenedor de Inversión de Control</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                Compiled Container &bull; Autowiring &bull; #[Target]
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('network', 22) }}
+            <span>Dependency Injection & Service Container Lab</span>
+        </h1>
+        <p class="page-subtitle">
+            Experimenta el principio de Inversión de Dependencias (DIP) y cómo el Service Container de Symfony compila el grafo estático en disco para máximo rendimiento.
+        </p>
+    </div>
+</div>
+
+<div class="di-layout">
+    <!-- Left: Dependency Graph Visualizer -->
+    <div class="graph-stage">
+        
+        <!-- Node 1: Controller -->
+        <div class="di-node" style="border-left: 4px solid #4fc1ff;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="user-badge" style="background: rgba(0, 122, 204, 0.2); color: #4fc1ff;">Controller (HTTP Entrypoint)</span>
+                <span style="font-family: Consolas; font-size: 11px; color: var(--text-muted);">public/index.php</span>
+            </div>
+            <div style="font-weight: 700; color: #ffffff; margin-top: 6px; font-size: 14px;">CheckoutController</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                Requiere inyección por constructor de <code style="color: #9cdcfe;">OrderService</code>.
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="di-arrow">
+            &darr; [Autowiring: Container inyecta OrderService singleton]
+        </div>
+
+        <!-- Node 2: Domain Service -->
+        <div class="di-node" style="border-left: 4px solid #a4d13e;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="user-badge" style="background: rgba(127, 169, 44, 0.2); color: #a4d13e;">Application Service</span>
+                <span style="font-family: Consolas; font-size: 11px; color: var(--text-muted);">services.yaml (autowire: true)</span>
+            </div>
+            <div style="font-weight: 700; color: #ffffff; margin-top: 6px; font-size: 14px;">OrderProcessorService</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                Depende de la abstracción <code style="color: #4ec9b0;">PaymentGatewayInterface</code> (No conoce implementación concreta).
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="di-arrow" id="di-interface-arrow">
+            &darr; [Resolución de Interfaz: Alias activo &rarr; <span id="arrow-gateway-label" style="font-weight: 700; color: #89d185;">StripePaymentGateway</span>]
+        </div>
+
+        <!-- Node 3: Swappable Gateway Implementation -->
+        <div class="di-node" id="gateway-node" style="border-left: 4px solid #89d185;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="user-badge" id="gateway-badge" style="background: rgba(137, 209, 133, 0.2); color: #89d185;">Implementación Concreta (Stripe)</span>
+                <span id="gateway-lazy-badge" class="badge" style="background: #252526; font-size: 10.5px; color: var(--text-muted);">Eager Singleton</span>
+            </div>
+            <div id="gateway-class-title" style="font-weight: 700; color: #ffffff; margin-top: 6px; font-size: 14px;">StripePaymentGateway</div>
+            <div id="gateway-desc" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                API REST de cobros con autenticación Bearer y webhook signature validator.
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="di-arrow">
+            &darr; [Inyección de Notificaciones]
+        </div>
+
+        <!-- Node 4: Notification Service -->
+        <div class="di-node" style="border-left: 4px solid #facc15;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="user-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15;">Notification Service</span>
+                <span style="font-family: Consolas; font-size: 11px; color: var(--text-muted);">Messenger Dispatcher</span>
+            </div>
+            <div style="font-weight: 700; color: #ffffff; margin-top: 6px; font-size: 14px;">MailerService &bull; Asynchronous Queue</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                Despacha <code style="color: #9cdcfe;">SendOrderConfirmationMessage</code> a la cola Redis sin bloquear la respuesta web.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right: Container Configuration & Controls -->
+    <div class="di-controls-panel">
+        <div style="padding: 12px 16px; background: #252526; border-bottom: 1px solid var(--border-main); font-weight: 700; font-size: 12px; text-transform: uppercase;">
+            Configuración del Service Container
+        </div>
+
+        <!-- Gateway Selector -->
+        <div class="control-section">
+            <label style="font-size: 12px; font-weight: 600; color: #ffffff; display: block; margin-bottom: 8px;">
+                Intercambiar Implementación de PaymentGatewayInterface:
+            </label>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #d4d4d4; cursor: pointer;">
+                    <input type="radio" name="gateway" value="stripe" checked onchange="changeGateway('stripe')">
+                    <span>StripePaymentGateway (Producción Principal)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #d4d4d4; cursor: pointer;">
+                    <input type="radio" name="gateway" value="paypal" onchange="changeGateway('paypal')">
+                    <span>PayPalPaymentGateway (Pasarela Alternativa)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #d4d4d4; cursor: pointer;">
+                    <input type="radio" name="gateway" value="mock" onchange="changeGateway('mock')">
+                    <span>MockPaymentGateway (Testing & Entorno Local)</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Container Modifiers -->
+        <div class="control-section">
+            <div style="font-size: 12px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Opciones de Compilación:</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; color: #d4d4d4;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="check-lazy" onchange="toggleLazy()">
+                    <span>Habilitar Servicio Lazy (Proxy Ghost / Virtual)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="check-target" checked onchange="toggleTarget()">
+                    <span>Usar Atributo <code>#[Target('stripe')]</code></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Compiled Container Code Preview -->
+        <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                Dump del Contenedor Compilado (var/cache/dev/App_KernelDevDebugContainer.php)
+            </div>
+            <pre id="compiled-dump" style="flex: 1; background: #121212; border: 1px solid var(--border-main); border-radius: 4px; padding: 12px; font-family: Consolas, monospace; font-size: 11.5px; color: #9cdcfe; margin: 0; overflow: auto; max-height: 280px;"></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    let currentGateway = 'stripe';
+    let isLazy = false;
+    let isTarget = true;
+
+    function changeGateway(type) {
+        currentGateway = type;
+        const node = document.getElementById('gateway-node');
+        const title = document.getElementById('gateway-class-title');
+        const desc = document.getElementById('gateway-desc');
+        const badge = document.getElementById('gateway-badge');
+        const arrowLabel = document.getElementById('arrow-gateway-label');
+
+        if (type === 'stripe') {
+            node.style.borderLeftColor = '#89d185';
+            badge.style.background = 'rgba(137, 209, 133, 0.2)';
+            badge.style.color = '#89d185';
+            badge.textContent = 'Implementación Concreta (Stripe)';
+            title.textContent = 'StripePaymentGateway';
+            desc.textContent = 'API REST de cobros con autenticación Bearer y webhook signature validator.';
+            arrowLabel.textContent = 'StripePaymentGateway';
+            arrowLabel.style.color = '#89d185';
+        } else if (type === 'paypal') {
+            node.style.borderLeftColor = '#007acc';
+            badge.style.background = 'rgba(0, 122, 204, 0.2)';
+            badge.style.color = '#4fc1ff';
+            badge.textContent = 'Implementación Concreta (PayPal)';
+            title.textContent = 'PayPalPaymentGateway';
+            desc.textContent = 'Integración OAuth2 con PayPal v2 Checkout Orders API y captura síncrona.';
+            arrowLabel.textContent = 'PayPalPaymentGateway';
+            arrowLabel.style.color = '#4fc1ff';
+        } else {
+            node.style.borderLeftColor = '#ce9178';
+            badge.style.background = 'rgba(206, 145, 120, 0.2)';
+            badge.style.color = '#ce9178';
+            badge.textContent = 'Implementación Mock (Test Double)';
+            title.textContent = 'MockPaymentGateway';
+            desc.textContent = 'Simulación determinista en memoria sin llamadas a red externa. Permite tests rápidos.';
+            arrowLabel.textContent = 'MockPaymentGateway';
+            arrowLabel.style.color = '#ce9178';
+        }
+
+        updateCompiledDump();
+    }
+
+    function toggleLazy() {
+        isLazy = document.getElementById('check-lazy').checked;
+        const lazyBadge = document.getElementById('gateway-lazy-badge');
+        if (isLazy) {
+            lazyBadge.style.color = '#89d185';
+            lazyBadge.style.borderColor = 'rgba(137, 209, 133, 0.4)';
+            lazyBadge.textContent = 'Lazy Proxy (Virtual Ghost Object)';
+        } else {
+            lazyBadge.style.color = 'var(--text-muted)';
+            lazyBadge.style.borderColor = 'transparent';
+            lazyBadge.textContent = 'Eager Singleton';
+        }
+        updateCompiledDump();
+    }
+
+    function toggleTarget() {
+        isTarget = document.getElementById('check-target').checked;
+        updateCompiledDump();
+    }
+
+    function updateCompiledDump() {
+        const dump = document.getElementById('compiled-dump');
+        let className = 'App\\\\Service\\\\' + (currentGateway === 'stripe' ? 'StripePaymentGateway' : (currentGateway === 'paypal' ? 'PayPalPaymentGateway' : 'MockPaymentGateway'));
+        
+        let dumpText = `// Método generado por el Container Compiler Pass:\nprotected static function getOrderProcessorService($container)\n{\n`;
+        
+        if (isLazy) {
+            dumpText += `    // Lazy proxy instanciado solo al invocar un método:\n    $gateway = $container->createProxy('${className}', ...);\n`;
+        } else {
+            dumpText += `    // Inyección eager autowireada:\n    $gateway = ($container->privates['${className}'] ?? self::get${currentGateway.charAt(0).toUpperCase() + currentGateway.slice(1)}Service($container));\n`;
+        }
+
+        dumpText += `\n    return $container->services['App\\\\Service\\\\OrderProcessorService'] = new \\App\\Service\\OrderProcessorService(\n        $gateway,\n        self::getMailerService($container)\n    );\n}`;
+
+        dump.textContent = dumpText;
+    }
+
+    updateCompiledDump();
+</script>
+{% endblock %}

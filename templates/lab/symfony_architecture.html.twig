@@ -1,0 +1,312 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Symfony Architecture & Lifecycle Lab | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .flow-layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 16px;
+        min-height: calc(100vh - 160px);
+    }
+    .stages-sidebar {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .stage-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-light);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+    }
+    .stage-item:hover {
+        background: #202020;
+    }
+    .stage-item.active {
+        background: #252526;
+        border-left: 3px solid var(--accent-blue);
+    }
+    .stage-number {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: #141414;
+        border: 1px solid var(--border-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent-blue);
+    }
+    .stage-info {
+        flex: 1;
+    }
+    .stage-title {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+    .stage-subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+    .inspector-pane {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); color: #ffffff;">
+                {{ icons.icon('symfony', 14) }}
+                <span>Arquitectura Interna del Framework</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                HttpKernel &bull; EventDispatcher &bull; Dependency Injection
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('activity', 22) }}
+            <span>Symfony Architecture & Lifecycle Lab</span>
+        </h1>
+        <p class="page-subtitle">
+            Inspecciona cada microsegundo del ciclo de vida de Symfony. Haz clic en las etapas para ver los componentes internos, eventos disparados y responsabilidades de diseño Senior.
+        </p>
+    </div>
+</div>
+
+<div class="flow-layout">
+    <!-- Left: Stages Sequence -->
+    <div class="stages-sidebar">
+        <div style="padding: 10px 16px; background: #252526; border-bottom: 1px solid var(--border-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
+            Secuencia Canónica del Ciclo HTTP
+        </div>
+        <div style="overflow-y: auto; flex: 1;">
+            <div class="stage-item active" onclick="selectStage(0)">
+                <div class="stage-number">1</div>
+                <div class="stage-info">
+                    <div class="stage-title">HTTP Request & Front Controller</div>
+                    <div class="stage-subtitle">public/index.php &bull; Globals wrap</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(1)">
+                <div class="stage-number">2</div>
+                <div class="stage-info">
+                    <div class="stage-title">HttpKernel::handle()</div>
+                    <div class="stage-subtitle">Inicio del pipeline HttpKernelInterface</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(2)">
+                <div class="stage-number">3</div>
+                <div class="stage-info">
+                    <div class="stage-title">kernel.request Event</div>
+                    <div class="stage-subtitle">RouterListener & FirewallListener</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(3)">
+                <div class="stage-number">4</div>
+                <div class="stage-info">
+                    <div class="stage-title">Controller & Argument Resolvers</div>
+                    <div class="stage-subtitle">kernel.controller & ValueResolver</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(4)">
+                <div class="stage-number">5</div>
+                <div class="stage-info">
+                    <div class="stage-title">Action Execution & Service Layer</div>
+                    <div class="stage-subtitle">Inyección de dependencias & Dominio</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(5)">
+                <div class="stage-number">6</div>
+                <div class="stage-info">
+                    <div class="stage-title">Doctrine Unit of Work & DB</div>
+                    <div class="stage-subtitle">Identity Map, EntityManager & SQL</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(6)">
+                <div class="stage-number">7</div>
+                <div class="stage-info">
+                    <div class="stage-title">kernel.response Event</div>
+                    <div class="stage-subtitle">Filtro de cabeceras, compresión & Cookies</div>
+                </div>
+            </div>
+            <div class="stage-item" onclick="selectStage(7)">
+                <div class="stage-number">8</div>
+                <div class="stage-info">
+                    <div class="stage-title">kernel.terminate & Cleanup</div>
+                    <div class="stage-subtitle">FastCGI finish_request & Tareas async</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Detailed Inspector -->
+    <div class="inspector-pane" id="stage-inspector">
+        <!-- Dynamically rendered via JavaScript -->
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    const stages = [
+        {
+            number: 1,
+            title: '1. HTTP Request Arrival & Front Controller',
+            component: 'Symfony\\Component\\HttpFoundation\\Request',
+            file: 'public/index.php',
+            events: ['Ninguno (Inicialización de Runtime)'],
+            description: 'Nginx reenvía la trama FastCGI al worker de PHP-FPM. Symfony ejecuta public/index.php donde se llama a Request::createFromGlobals(). Este método encapsula las superglobales inseguras ($_GET, $_POST, $_COOKIE, $_SERVER) en un objeto Request orientado a objetos, fuertemente tipado e inmutable.',
+            seniorMindset: 'Un desarrollador Senior nunca accede directamente a superglobales ($_GET, $_POST). Todas las lecturas van por $request->query o $request->request, facilitando testing unitario sin simular el entorno global de PHP.',
+            codeExample: `// public/index.php\nuse App\\Kernel;\nuse Symfony\\Component\\HttpFoundation\\Request;\n\nrequire_once dirname(__DIR__).'/vendor/autoload_runtime.php';\n\nreturn function (array $context) {\n    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);\n};`
+        },
+        {
+            number: 2,
+            title: '2. HttpKernel::handle() Pipeline Entrance',
+            component: 'Symfony\\Component\\HttpKernel\\HttpKernel',
+            file: 'vendor/symfony/http-kernel/HttpKernel.php',
+            events: ['HttpKernelInterface::MAIN_REQUEST'],
+            description: 'El Kernel invoca handle($request, $type, $catch). HttpKernel es el corazón arquitectural de Symfony. Implementa el patrón Decorator y Pipeline, garantizando que todo flujo de entrada resulte inequívocamente en un objeto Response o lance una excepción controlada.',
+            seniorMindset: 'HttpKernel permite peticiones anidadas (SUB_REQUEST) para componentes como render() o fragmentos ESI de Varnish sin reiniciar el framework ni crear nuevos procesos.',
+            codeExample: `public function handle(Request $request, int $type = self::MAIN_REQUEST, bool $catch = true): Response\n{\n    $request->headers->set('X-Php-Ob-Level', (string) ob_get_level());\n    return $this->handleRaw($request, $type);\n}`
+        },
+        {
+            number: 3,
+            title: '3. kernel.request Event (Routing & Security)',
+            component: 'Symfony\\Component\\HttpKernel\\EventListener\\RouterListener',
+            file: 'vendor/symfony/routing/Matcher/UrlMatcher.php',
+            events: ['kernel.request (Prioridad 32 para Router, 8 para Firewall)'],
+            description: 'EventDispatcher dispara el evento kernel.request. RouterListener compara la URL contra la tabla de rutas compilada en cache. Si encuentra coincidencia, añade los atributos _controller y los parámetros tipados al Request. Acto seguido, el Firewall de SecurityBundle autentica tokens o sesiones.',
+            seniorMindset: 'Cualquier listener en kernel.request puede retornar una Response temprana (por ejemplo un Redirect o una respuesta HTTP 304 Not Modified de caché), interrumpiendo el flujo antes de instanciar controladores.',
+            codeExample: `// RouterListener asigna el destino:\n$parameters = $this->matcher->matchRequest($request);\n$request->attributes->add($parameters); // '_controller' => 'App\\\\Controller\\\\OrderController::create'`
+        },
+        {
+            number: 4,
+            title: '4. Controller Resolution & Argument Resolvers',
+            component: 'Symfony\\Component\\HttpKernel\\Controller\\ArgumentResolver',
+            file: 'vendor/symfony/http-kernel/Controller/ArgumentResolver.php',
+            events: ['kernel.controller', 'kernel.controller_arguments'],
+            description: 'El ControllerResolver obtiene el callable del controlador. Luego, una cadena de ArgumentValueResolverInterface analiza la firma del método. Resuelve DTOs con #[MapRequestPayload], entidades con EntityValueResolver y servicios inyectados con #[Autowire].',
+            seniorMindset: 'Al utilizar #[MapRequestPayload], Symfony deserializa el JSON del body, valida restricciones de Validator y lanza un HTTP 422 Unprocessable Entity automáticamente si fallan las invariantes, sin que el controlador tenga que escribir un solo if.',
+            codeExample: `public function createOrder(\n    #[MapRequestPayload] CreateOrderDTO $dto,\n    OrderService $orderService\n): JsonResponse { ... }`
+        },
+        {
+            number: 5,
+            title: '5. Action Execution & Application Services',
+            component: 'App\\Controller\\AbstractController & Dependency Injection Container',
+            file: 'src/Controller/OrderController.php',
+            events: ['Llamada a métodos de aplicación'],
+            description: 'Se ejecuta la acción del controlador. Siguiendo el principio de "Thin Controllers, Rich Domain", el controlador delega toda la lógica pesada a servicios de aplicación (OrderService, PaymentGateway). El contenedor de inyección compilado ya ha resuelto todas las dependencias en modo singleton.',
+            seniorMindset: 'El controlador debe contener máximo 15-20 líneas. Su único trabajo es coordinar: recibir entrada validada, invocar el servicio de negocio y transformar el resultado en un Response (HTML o JSON).',
+            codeExample: `$order = $this->orderService->placeOrder($dto->toCommand());\nreturn new JsonResponse($order->toArray(), Response::HTTP_CREATED);`
+        },
+        {
+            number: 6,
+            title: '6. Doctrine Unit of Work & Persistence',
+            component: 'Doctrine\\ORM\\UnitOfWork & Doctrine\\DBAL\\Connection',
+            file: 'vendor/doctrine/orm/src/UnitOfWork.php',
+            events: ['EntityManager::persist() & EntityManager::flush()'],
+            description: 'El servicio interactúa con entidades y repositorios. Al llamar a $em->persist($order), la entidad pasa al estado MANAGED en la Identity Map sin tocar la base de datos. Al llamar a $em->flush(), el Unit of Work calcula el ChangeSet, inicia una transacción ACID de MySQL, ejecuta los INSERT/UPDATE en bloque y hace COMMIT.',
+            seniorMindset: 'Un Senior nunca llama a flush() dentro de loops. Se agrupan escrituras en batch para mantener latencias inferiores a 5ms en la base de datos.',
+            codeExample: `$this->entityManager->persist($order);\n$this->entityManager->flush(); // Inicia transacción, ejecuta SQL optimizado, commit`
+        },
+        {
+            number: 7,
+            title: '7. kernel.response Event (Headers, Caching, Compression)',
+            component: 'Symfony\\Component\\HttpKernel\\EventListener\\ResponseListener',
+            file: 'vendor/symfony/http-kernel/EventListener/ResponseListener.php',
+            events: ['kernel.response'],
+            description: 'El controlador retorna un objeto Response. EventDispatcher lanza kernel.response. Los listeners pueden inyectar cabeceras de seguridad (CSP, HSTS), configurar Cache-Control (ETags, public, s-maxage) o aplicar compresión gzip.',
+            seniorMindset: 'Las cabeceras de caché HTTP bien configuradas en kernel.response permiten que CDNs como Cloudflare o Varnish sirvan peticiones idénticas en 2ms sin consumir recursos de PHP ni MySQL.',
+            codeExample: `$response->setSharedMaxAge(3600);\n$response->headers->addCacheControlDirective('must-revalidate', true);`
+        },
+        {
+            number: 8,
+            title: '8. kernel.terminate & Background Work',
+            component: 'Symfony\\Component\\HttpKernel\\Event\\TerminateEvent',
+            file: 'vendor/symfony/http-kernel/HttpKernel.php',
+            events: ['kernel.terminate'],
+            description: 'Symfony llama a $response->send(). Se envía el contenido al cliente y se ejecuta fastcgi_finish_request(). Para el usuario la página ya terminó de cargar. En este momento, el evento kernel.terminate se ejecuta en el servidor para tareas secundarias rápidas o despacho de mensajes a colas.',
+            seniorMindset: 'Cualquier trabajo que tome más de 20ms debe enviarse como mensaje a Symfony Messenger (Redis o RabbitMQ) para que lo procese un worker CLI independiente.',
+            codeExample: `$kernel->terminate($request, $response);\n// Conexión con el cliente ya cerrada. Servidor libre.`
+        }
+    ];
+
+    function selectStage(index) {
+        document.querySelectorAll('.stage-item').forEach((el, idx) => {
+            el.classList.toggle('active', idx === index);
+        });
+
+        const s = stages[index];
+        const inspector = document.getElementById('stage-inspector');
+
+        inspector.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-main); padding-bottom: 14px;">
+                <div>
+                    <span class="user-badge" style="background: rgba(0, 122, 204, 0.2); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; margin-bottom: 6px;">
+                        Etapa ${s.number} de 8
+                    </span>
+                    <h2 style="font-size: 18px; font-weight: 700; color: #ffffff; margin-top: 4px;">${s.title}</h2>
+                </div>
+                <div style="font-family: Consolas, monospace; font-size: 11px; color: var(--text-muted); background: #141414; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-main);">
+                    ${s.file}
+                </div>
+            </div>
+
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Componente Principal</div>
+                <div style="font-family: Consolas, monospace; font-size: 13px; color: #4ec9b0;">${s.component}</div>
+            </div>
+
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Eventos & Despacho</div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    ${s.events.map(e => `<span class="badge" style="background: #252526; border: 1px solid var(--border-main); color: #dcdcaa; font-size: 11.5px; padding: 3px 8px;">${e}</span>`).join('')}
+                </div>
+            </div>
+
+            <div style="background: #1e1e1e; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px; font-size: 13px; line-height: 1.7; color: #d4d4d4;">
+                ${s.description}
+            </div>
+
+            <div style="background: #141f17; border-left: 3px solid var(--accent-success); border-radius: 0 6px 6px 0; padding: 14px; font-size: 12.5px; color: #d4d4d4; line-height: 1.6;">
+                <strong style="color: var(--accent-success); display: block; margin-bottom: 4px;">Senior Architecture Mindset:</strong>
+                ${s.seniorMindset}
+            </div>
+
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Implementación Real en Symfony 8.1</div>
+                <pre style="background: #141414; border: 1px solid var(--border-main); border-radius: 6px; padding: 12px; font-family: Consolas, monospace; font-size: 12px; color: #9cdcfe; overflow-x: auto; margin: 0;"><code>${escapeHtml(s.codeExample)}</code></pre>
+            </div>
+        `;
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Initialize first stage
+    selectStage(0);
+</script>
+{% endblock %}

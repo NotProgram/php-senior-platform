@@ -81,13 +81,18 @@ class ExerciseEvaluatorService
             'apis-rest-architecture' => $this->validateApisRestArchitecture($code, $passed, $hints),
             'apis-rate-limiting-auth' => $this->validateApisRateLimitingAuth($code, $passed, $hints),
             // Testing & TDD
+            'testing-fundamentals-pyramid' => $this->validateTestingFundamentalsPyramid($code, $passed, $hints),
+            'testing-phpunit-mastery' => $this->validateTestingPhpUnitMastery($code, $passed, $hints),
             'testing-unit-vs-integration' => $this->validateTestingUnitVsIntegration($code, $passed, $hints),
+            'testing-symfony-functional' => $this->validateTestingSymfonyFunctional($code, $passed, $hints),
             'testing-tdd-pragmatic' => $this->validateTestingTddPragmatic($code, $passed, $hints),
             // Design Patterns
             'patterns-factory-strategy' => $this->validatePatternsFactoryStrategy($code, $passed, $hints),
             'patterns-decorator-proxy' => $this->validatePatternsDecoratorProxy($code, $passed, $hints),
             // Architecture & DDD
+            'arch-patterns-comparison' => $this->validateArchPatternsComparison($code, $passed, $hints),
             'arch-hexagonal-clean' => $this->validateArchHexagonalClean($code, $passed, $hints),
+            'arch-microservices-tradeoffs' => $this->validateArchMicroservicesTradeoffs($code, $passed, $hints),
             'arch-pragmatic-ddd' => $this->validateArchPragmaticDdd($code, $passed, $hints),
             // System Design Lab
             'system-design-canvas' => $this->validateSystemDesignCanvas($code, $passed, $hints),
@@ -99,6 +104,7 @@ class ExerciseEvaluatorService
             'perf-profiling-blackfire' => $this->validatePerfProfilingBlackfire($code, $passed, $hints),
             'perf-redis-caching-queues' => $this->validatePerfRedisCachingQueues($code, $passed, $hints),
             // DevOps & Contenedores
+            'devops-linux-cli-internals' => $this->validateDevopsLinuxCliInternals($code, $passed, $hints),
             'devops-docker-fpm-nginx' => $this->validateDevopsDockerFpmNginx($code, $passed, $hints),
             'devops-ci-cd-github-actions' => $this->validateDevopsCiCdGithubActions($code, $passed, $hints),
             // Proyectos Guiados
@@ -108,6 +114,22 @@ class ExerciseEvaluatorService
             'eval-senior-code-review' => $this->validateEvalSeniorCodeReview($code, $passed, $hints),
             // Recursos & RFCs
             'resources-php-rfcs' => $this->validateResourcesPhpRfcs($code, $passed, $hints),
+            // Nuevos Módulos de Ingeniería, Git, Testing, Arquitectura y Flujo Profesional
+            'se-sdlc-requirements' => $this->validateSeSdlcRequirements($code, $passed, $hints),
+            'se-clean-code-quality' => $this->validateSeCleanCodeQuality($code, $passed, $hints),
+            'se-solid-principles' => $this->validateSeSolidPrinciples($code, $passed, $hints),
+            'se-refactoring-code-smells' => $this->validateSeRefactoringCodeSmells($code, $passed, $hints),
+            'git-fundamentals-plumbing' => $this->validateGitPlumbing($code, $passed, $hints),
+            'git-branching-strategies' => $this->validateGitBranchingStrategies($code, $passed, $hints),
+            'git-pr-code-review' => $this->validateGitPrCodeReview($code, $passed, $hints),
+            'git-github-collaboration' => $this->validateGitCollaboration($code, $passed, $hints),
+            'testing-phpunit-mastery' => $this->validateTestingPhpUnitMastery($code, $passed, $hints),
+            'arch-patterns-comparison' => $this->validateArchPatternsComparison($code, $passed, $hints),
+            'prof-team-communication' => $this->validateProfTeamCommunication($code, $passed, $hints),
+            'prof-adr-technical-decisions' => $this->validateProfAdrTechnicalDecisions($code, $passed, $hints),
+            'prof-failure-engineering' => $this->validateProfFailureEngineering($code, $passed, $hints),
+            'prof-failure-engineering-postmortems' => $this->validateProfFailureEngineering($code, $passed, $hints),
+            'prof-incident-management-logs' => $this->validateProfIncidentManagementLogs($code, $passed, $hints),
             default => null,
         };
 
@@ -693,6 +715,62 @@ class ExerciseEvaluatorService
     /**
      * @param string[] $hints
      */
+    private function validateTestingFundamentalsPyramid(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+        if (!str_contains($clean, 'class TestPyramidAuditor')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse la clase TestPyramidAuditor.';
+        }
+        if (!str_contains($clean, 'auditDistribution')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método auditDistribution(int $unitCount, int $integrationCount, int $e2eCount): array.';
+        }
+        if (!str_contains($clean, 'ICE_CREAM_CONE')) {
+            $passed = false;
+            $hints[] = 'Debe detectarse el antipatrón "ICE_CREAM_CONE" cuando las pruebas E2E superan el 30% o las unitarias son menores al 40%.';
+        }
+        if (!str_contains($clean, 'throw new InvalidArgumentException') && !str_contains($clean, 'throw new \InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debe lanzarse una InvalidArgumentException si los conteos son negativos o el total es cero.';
+        }
+        if (!str_contains($clean, 'calculateEstimatedRuntime')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método calculateEstimatedRuntime(int $unitCount, int $integrationCount, int $e2eCount, float $unitMs = 2.0, float $integrationMs = 50.0, float $e2eMs = 3000.0): float.';
+        }
+    }
+
+    /**
+     * @param string[] $hints
+     */
+    private function validateTestingSymfonyFunctional(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+        if (!str_contains($clean, 'class ApiTestResponseAssertor')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse la clase ApiTestResponseAssertor.';
+        }
+        if (!str_contains($clean, 'assertJsonResponse')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método assertJsonResponse(int $expectedStatus, int $actualStatus, string $rawBody, array $requiredKeys = []): array.';
+        }
+        if (!str_contains($clean, 'buildAuthenticatedHeaders')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método buildAuthenticatedHeaders(string $jwtToken): array.';
+        }
+        if (!str_contains($clean, 'HTTP_AUTHORIZATION') || !str_contains($clean, 'Bearer')) {
+            $passed = false;
+            $hints[] = 'El método buildAuthenticatedHeaders debe incluir la cabecera HTTP_AUTHORIZATION con el prefijo Bearer.';
+        }
+        if (!str_contains($clean, 'throw new InvalidArgumentException') && !str_contains($clean, 'throw new \InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debe lanzarse una InvalidArgumentException si los códigos HTTP no coinciden o son inválidos.';
+        }
+    }
+
+    /**
+     * @param string[] $hints
+     */
     private function validatePatternsFactoryStrategy(string $code, bool &$passed, array &$hints): void
     {
         $clean = $this->stripComments($code);
@@ -794,6 +872,35 @@ class ExerciseEvaluatorService
         if (!str_contains($clean, 'save($user)') && !str_contains($clean, 'save(')) {
             $passed = false;
             $hints[] = 'Debe persistirse el nuevo usuario a través del puerto secundario userRepository->save().';
+        }
+    }
+
+    /**
+     * @param string[] $hints
+     */
+    private function validateArchMicroservicesTradeoffs(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class ArchitectureTradeoffMatrix')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse la clase ArchitectureTradeoffMatrix.';
+        }
+        if (!str_contains($clean, 'evaluateReadiness')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método evaluateReadiness(int $engineeringTeamSize, int $boundedContextsCount, bool $requiresIndependentDeployments, float $monthlyDevOpsBudgetUsd): array.';
+        }
+        if (!str_contains($clean, 'MODULAR_MONOLITH') || !str_contains($clean, 'MICROSERVICES')) {
+            $passed = false;
+            $hints[] = 'El método evaluateReadiness debe retornar "MODULAR_MONOLITH" o "MICROSERVICES" según la matriz de costos organizacionales.';
+        }
+        if (!str_contains($clean, 'throw new InvalidArgumentException') && !str_contains($clean, 'throw new \InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debe lanzarse una InvalidArgumentException si el tamaño del equipo <= 0, contextos <= 0 o el presupuesto es negativo.';
+        }
+        if (!str_contains($clean, 'calculateNetworkOverheadMs')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método calculateNetworkOverheadMs(int $serviceHops, float $p99HopLatencyMs = 12.0): float.';
         }
     }
 
@@ -1099,6 +1206,35 @@ class ExerciseEvaluatorService
     /**
      * @param string[] $hints
      */
+    private function validateDevopsLinuxCliInternals(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class LinuxProcessSecurityAuditor')) {
+            $passed = false;
+            $hints[] = 'Debe definirse la clase LinuxProcessSecurityAuditor.';
+        }
+        if (!str_contains($clean, 'auditFilePermissions')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método auditFilePermissions(string $path, int $octalMode): array.';
+        }
+        if (!str_contains($clean, 'validateEnvVarName')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método validateEnvVarName(string $name): bool.';
+        }
+        if (!str_contains($clean, 'throw new InvalidArgumentException') && !str_contains($clean, 'throw new \InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debe lanzarse InvalidArgumentException si la ruta está vacía o el modo octal es negativo.';
+        }
+        if (!str_contains($clean, 'preg_match')) {
+            $passed = false;
+            $hints[] = 'Debe validarse el nombre de variable de entorno POSIX mediante preg_match().';
+        }
+    }
+
+    /**
+     * @param string[] $hints
+     */
     private function validateDevopsDockerFpmNginx(string $code, bool &$passed, array &$hints): void
     {
         $clean = $this->stripComments($code);
@@ -1334,6 +1470,289 @@ class ExerciseEvaluatorService
         }
     }
 
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSeSdlcRequirements(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class SlaViolationDetector')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase SlaViolationDetector.';
+        }
+        if (!str_contains($code, 'function calculateP95(') || !str_contains($code, 'function isSlaViolated(')) {
+            $passed = false;
+            $hints[] = 'La clase debe implementar los métodos calculateP95(array $latencies): float e isSlaViolated(array $latencies): bool.';
+        }
+        if (!str_contains($code, '0.95') && !str_contains($code, '95')) {
+            $passed = false;
+            $hints[] = 'Debes calcular el percentil 95 indexando el array ordenado.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSeCleanCodeQuality(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class CleanOrderValidator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase CleanOrderValidator.';
+        }
+        if (!str_contains($code, 'function isValidOrder(')) {
+            $passed = false;
+            $hints[] = 'La clase debe implementar el método isValidOrder(float $amount, int $itemsCount, bool $isCustomerVerified): bool.';
+        }
+        if (preg_match('/if\s*\([^)]+\)\s*\{[^{}]*if\s*\(/', $code)) {
+            $passed = false;
+            $hints[] = 'Clean Code: Evita anidar if dentro de if. Aplica Cláusulas de Guarda (Early Return) para mantener el código plano y legible.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSeSolidPrinciples(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'interface TaxStrategyInterface')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la interfaz TaxStrategyInterface (Open/Closed Principle).';
+        }
+        if (!str_contains($code, 'class TaxEngine')) {
+            $passed = false;
+            $hints[] = 'Debes implementar la clase TaxEngine con inyección de estrategias.';
+        }
+        if (!str_contains($code, 'supports(') || !str_contains($code, 'calculateTax(')) {
+            $passed = false;
+            $hints[] = 'TaxStrategyInterface debe definir supports(string $countryCode): bool y calculateTax(float $amount): float.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSeRefactoringCodeSmells(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class EmailAddress')) {
+            $passed = false;
+            $hints[] = 'Debes declarar el Value Object EmailAddress.';
+        }
+        if (!str_contains($code, 'function getDomain(')) {
+            $passed = false;
+            $hints[] = 'EmailAddress debe implementar el método getDomain(): string.';
+        }
+        if (!str_contains($code, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debes lanzar \InvalidArgumentException si el formato del correo es inválido.';
+        }
+        if (!str_contains($code, 'FILTER_VALIDATE_EMAIL') && !str_contains($code, 'filter_var')) {
+            $passed = false;
+            $hints[] = 'Pista: Utiliza filter_var($email, FILTER_VALIDATE_EMAIL) para validar el formato estándar.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateGitPlumbing(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class GitBlobHasher')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase GitBlobHasher.';
+        }
+        if (!str_contains($code, 'computeBlobSha(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método computeBlobSha(string $content): string.';
+        }
+        if (!str_contains($code, 'blob ') || (!str_contains($code, '\0') && !str_contains($code, 'chr(0)'))) {
+            $passed = false;
+            $hints[] = 'Git empaqueta los blobs con el encabezado "blob <longitud>\0".';
+        }
+    }
+
+    /**
+    /**
+     * @param list<string> $hints
+     */
+    private function validateGitBranchingStrategies(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class BranchMergeAnalyzer')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase BranchMergeAnalyzer.';
+        }
+        if (!str_contains($code, 'canFastForward(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método canFastForward(string $targetCommit, string $sourceCommit, array $commitGraph): bool.';
+        }
+        if (!str_contains($code, 'parents') && !str_contains($code, 'commitGraph')) {
+            $passed = false;
+            $hints[] = 'Debes explorar los padres de cada commit en el grafo para verificar si targetCommit es alcanzable.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateGitPrCodeReview(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class ConventionalCommitValidator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase ConventionalCommitValidator.';
+        }
+        if (!str_contains($code, 'function isValid(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método isValid(string $commitMessage): bool.';
+        }
+        if (!str_contains($code, 'feat') || !str_contains($code, 'fix')) {
+            $passed = false;
+            $hints[] = 'El validador debe contemplar tipos convencionales como feat, fix, etc.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateGitCollaboration(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class BranchProtectionPolicyValidator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase BranchProtectionPolicyValidator.';
+        }
+        if (!str_contains($code, 'function evaluate(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método evaluate(array $policy, array $prState): array.';
+        }
+        if (!str_contains($code, 'require_ci') || !str_contains($code, 'approvals')) {
+            $passed = false;
+            $hints[] = 'Debes evaluar las reglas de CI y el número mínimo de aprobaciones requeridas.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateTestingPhpUnitMastery(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class TieredPricingCalculator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase TieredPricingCalculator.';
+        }
+        if (!str_contains($code, 'calculateTotal(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar calculateTotal(int $units, float $unitPrice): float.';
+        }
+        if (!str_contains($code, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debes lanzar \InvalidArgumentException ante unidades <= 0 o precio negativo.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateArchPatternsComparison(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'interface StudentRepositoryPort')) {
+            $passed = false;
+            $hints[] = 'Debes definir la interfaz de puerto StudentRepositoryPort.';
+        }
+        if (!str_contains($code, 'class RegisterStudentUseCase')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el caso de uso RegisterStudentUseCase inyectando el puerto.';
+        }
+        if (!str_contains($code, 'existsByEmail') || !str_contains($code, 'save')) {
+            $passed = false;
+            $hints[] = 'El caso de uso debe invocar existsByEmail y save en el puerto.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateProfTeamCommunication(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class UserStoryInvestEvaluator')) {
+            $passed = false;
+            $hints[] = 'Debe definirse la clase UserStoryInvestEvaluator.';
+        }
+        if (!str_contains($clean, 'evaluateStory')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método evaluateStory(array $storyData): array.';
+        }
+        if (!str_contains($clean, 'throw new InvalidArgumentException') && !str_contains($clean, 'throw new \InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debe lanzarse InvalidArgumentException si faltan campos obligatorios o los puntos de historia son inválidos.';
+        }
+        if (!str_contains($clean, 'as_a') || !str_contains($clean, 'i_want') || !str_contains($clean, 'so_that')) {
+            $passed = false;
+            $hints[] = 'La historia debe evaluar los componentes canónicos de Connextra: as_a, i_want y so_that.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateProfAdrTechnicalDecisions(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class AdrQualityEvaluator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase AdrQualityEvaluator.';
+        }
+        if (!str_contains($code, 'isComplete(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método isComplete(array $adrData): bool.';
+        }
+        if (!str_contains($code, 'context') || !str_contains($code, 'decision') || !str_contains($code, 'consequences')) {
+            $passed = false;
+            $hints[] = 'El evaluador debe comprobar campos indispensables de ADR: context, decision, consequences.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateProfFailureEngineering(string $code, bool &$passed, array &$hints): void
+    {
+        if (!str_contains($code, 'class CircuitBreaker')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase CircuitBreaker.';
+        }
+        if (!str_contains($code, 'recordFailure(') || !str_contains($code, 'recordSuccess(')) {
+            $passed = false;
+            $hints[] = 'Debes implementar recordFailure() y recordSuccess().';
+        }
+        if (!str_contains($code, 'OPEN') || !str_contains($code, 'CLOSED')) {
+            $passed = false;
+            $hints[] = 'El Circuit Breaker debe transicionar entre estados CLOSED y OPEN.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateProfIncidentManagementLogs(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class BlamelessPostmortemAuditor')) {
+            $passed = false;
+            $hints[] = 'Debe definirse la clase BlamelessPostmortemAuditor.';
+        }
+        if (!str_contains($clean, 'auditPostmortem')) {
+            $passed = false;
+            $hints[] = 'Debe implementarse el método auditPostmortem(array $report): array.';
+        }
+        if (!str_contains($clean, 'throw new InvalidArgumentException') && !str_contains($clean, 'throw new \InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debe lanzarse InvalidArgumentException si el reporte no contiene incident_id o el tiempo de resolución es negativo.';
+        }
+        if (!str_contains($clean, 'culpable') && !str_contains($clean, 'blameless')) {
+            $passed = false;
+            $hints[] = 'Debe comprobarse la cultura sin culpas (blameless) rechazando atribuciones individuales de error.';
+        }
+    }
+
     private function stripComments(string $code): string
     {
         $clean = preg_replace('!/\*.*?\*/!s', '', $code) ?? $code;
@@ -1343,6 +1762,15 @@ class ExerciseEvaluatorService
 
     private function resolveModuleSlug(string $lessonSlug): string
     {
+        if (str_starts_with($lessonSlug, 'se-')) {
+            return 'software-engineering';
+        }
+        if (str_starts_with($lessonSlug, 'git-')) {
+            return 'git';
+        }
+        if (str_starts_with($lessonSlug, 'prof-')) {
+            return 'professional-developer';
+        }
         if (str_starts_with($lessonSlug, 'poo-')) {
             return 'poo';
         }

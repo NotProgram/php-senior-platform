@@ -5,26 +5,26 @@
 
 {% block body %}
 <!-- Page Header with Telemetry -->
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
     <div>
-        <h1 class="page-title">
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 10px; font-size: 22px; margin-bottom: 6px;">
             {{ icons.icon('layout-dashboard', 22) }}
-            <span>Dashboard del Desarrollador</span>
+            <span>Dashboard del Ingeniero de Software</span>
         </h1>
-        <p class="page-subtitle">
-            Telemetr&iacute;a de avance continuo, madurez arquitect&oacute;nica y competencias de nivel Senior.
+        <p class="page-subtitle" style="color: var(--text-muted); font-size: 13px; margin: 0;">
+            Telemetr&iacute;a de avance continuo, madurez en arquitectura, testing riguroso y flujo profesional Senior.
         </p>
     </div>
     
     <!-- Last Activity Pill -->
-    <div style="display: flex; align-items: center; gap: 8px; background: #252526; border: 1px solid var(--border-main); padding: 6px 12px; border-radius: 4px; font-size: 11.5px; color: var(--text-muted);">
+    <div style="display: flex; align-items: center; gap: 8px; background: #252526; border: 1px solid var(--border-main); padding: 6px 14px; border-radius: 4px; font-size: 11.5px; color: var(--text-muted);">
         {{ icons.icon('refresh-cw', 13) }}
         <span>{{ metrics.lastActivityText }} &bull; <strong style="color: var(--text-bright);">{{ metrics.lastActivityAgo }}</strong></span>
     </div>
 </div>
 
 <!-- Primary Metrics Grid (6 Minimalist Cards) -->
-<div class="dashboard-grid">
+<div class="dashboard-grid" style="margin-bottom: 24px;">
     
     <!-- 1. Progreso Total -->
     <div class="metric-card">
@@ -44,12 +44,12 @@
     <!-- 2. Nivel Actual -->
     <div class="metric-card">
         <div class="metric-header">
-            <span>Nivel Actual</span>
+            <span>Nivel de Carrera</span>
             {{ icons.icon('user', 15) }}
         </div>
         <div class="metric-value" style="color: #4fc1ff;">{{ metrics.currentLevel }}</div>
         <div class="metric-footer">
-            <span>Rumbo: Senior Software Engineer</span>
+            <span>Rumbo: Level 17 (Staff / Principal Architect)</span>
         </div>
     </div>
 
@@ -61,7 +61,7 @@
         </div>
         <div class="metric-value" style="color: #89d185;">{{ metrics.streakDays }} d&iacute;a(s)</div>
         <div class="metric-footer">
-            <span>H&aacute;bito de desarrollo consistente</span>
+            <span>H&aacute;bito diario de ingenier&iacute;a</span>
         </div>
     </div>
 
@@ -73,87 +73,327 @@
         </div>
         <div class="metric-value">{{ metrics.hoursEstimated }}h</div>
         <div class="metric-footer">
-            <span>Teor&iacute;a profunda, c&oacute;digo y laboratorios</span>
+            <span>Teor&iacute;a, c&oacute;digo, labs y simuladores</span>
         </div>
     </div>
 
     <!-- 5. Módulos Completados -->
     <div class="metric-card">
         <div class="metric-header">
-            <span>M&oacute;dulos Completados</span>
+            <span>M&oacute;dulos de Especialidad</span>
             {{ icons.icon('layers', 15) }}
         </div>
         <div class="metric-value">{{ metrics.completedModules }} / {{ metrics.totalModules }}</div>
         <div class="metric-footer">
-            <span>Especializaciones t&eacute;cnicas finalizadas</span>
+            <span>Dominios curriculares completos</span>
         </div>
     </div>
 
     <!-- 6. Proyectos Completados -->
     <div class="metric-card">
         <div class="metric-header">
-            <span>Proyectos Senior</span>
+            <span>Proyectos de Producci&oacute;n</span>
             {{ icons.icon('terminal', 15) }}
         </div>
         <div class="metric-value" style="color: #ce9178;">{{ metrics.completedProjects }} / {{ metrics.totalProjects }}</div>
         <div class="metric-footer">
-            <span>Sistemas reales implementados</span>
+            <span>Sistemas empresariales construidos</span>
         </div>
     </div>
 
 </div>
 
-<!-- Resume Target & Active Lesson Banner -->
-<div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px 22px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-    <div>
-        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-yellow); font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-            {{ icons.icon('play', 12) }}
-            <span>LECCI&Oacute;N EN CURSO &bull; {{ metrics.currentLessonModule }}</span>
-        </div>
-        <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px;">{{ metrics.currentLessonTitle }}</h2>
-        <div style="font-size: 12px; color: var(--text-muted);">Pr&oacute;ximo objetivo: {{ metrics.nextTarget }}</div>
+<!-- Multi-Category Progress Dashboard -->
+<div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px; margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 14px; font-weight: 700; margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;">
+            {{ icons.icon('activity', 15) }}
+            <span>Madurez por &Aacute;reas de Ingenier&iacute;a</span>
+        </h2>
+        <span style="font-size: 11px; color: var(--text-muted);">Progreso granular por competencias cr&iacute;ticas</span>
     </div>
-    <div>
-        <a href="{{ path('app_lesson', {lessonSlug: metrics.currentLessonSlug}) }}" class="btn-vs">
-            {{ icons.icon('play', 14) }}
-            <span>Continuar Lecci&oacute;n</span>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        <!-- Software Engineering -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #9cdcfe; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('book-open', 13) }} Ingenier&iacute;a &amp; SOLID
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.seProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.seProgress }}%; height: 100%; background: #4fc1ff;"></div>
+            </div>
+        </div>
+
+        <!-- Git & GitHub -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #ce9178; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('git', 13) }} Git &amp; Flujo Colaborativo
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.gitProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.gitProgress }}%; height: 100%; background: #f05032;"></div>
+            </div>
+        </div>
+
+        <!-- PHP Moderno -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #4F5D95; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('php', 13) }} PHP 8.4 Internals
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.phpProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.phpProgress }}%; height: 100%; background: #4F5D95;"></div>
+            </div>
+        </div>
+
+        <!-- Symfony Internals -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #ffffff; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('symfony', 13) }} Symfony 8.1 Core
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.symfonyProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.symfonyProgress }}%; height: 100%; background: #007acc;"></div>
+            </div>
+        </div>
+
+        <!-- Testing & Quality -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #89d185; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('test-tube', 13) }} Testing &amp; PHPUnit
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.testingProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.testingProgress }}%; height: 100%; background: #89d185;"></div>
+            </div>
+        </div>
+
+        <!-- Software Architecture -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #dcdcaa; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('layers', 13) }} Arquitectura &amp; DDD
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.archProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.archProgress }}%; height: 100%; background: #dcdcaa;"></div>
+            </div>
+        </div>
+
+        <!-- DevOps & CI/CD -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #1d63ed; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('docker', 13) }} DevOps &amp; CI/CD
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.devopsProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.devopsProgress }}%; height: 100%; background: #1d63ed;"></div>
+            </div>
+        </div>
+
+        <!-- Professional Developer -->
+        <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: #b5cea8; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('shield', 13) }} Liderazgo &amp; Decisi&oacute;n
+                </span>
+                <span style="font-family: Consolas, monospace; color: #d4d4d4;">{{ metrics.profProgress }}%</span>
+            </div>
+            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+                <div style="width: {{ metrics.profProgress }}%; height: 100%; background: #b5cea8;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Mission & Engineering Focus -->
+<div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px; margin-bottom: 28px;">
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
+        <!-- Left: Active Lesson & Target -->
+        <div style="border-right: 1px solid var(--border-light); padding-right: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-yellow); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                {{ icons.icon('play', 12) }}
+                <span>LECCI&Oacute;N EN CURSO &bull; {{ metrics.currentLessonModule }}</span>
+            </div>
+            <h2 style="font-size: 17px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">{{ metrics.currentLessonTitle }}</h2>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+                Pr&oacute;ximo objetivo curricular: <strong style="color: #d4d4d4;">{{ metrics.nextTarget }}</strong>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ path('app_lesson', {lessonSlug: metrics.currentLessonSlug}) }}" class="btn btn-primary" style="display: flex; align-items: center; gap: 8px; font-size: 12px; text-decoration: none;">
+                    {{ icons.icon('play', 14) }}
+                    <span>Continuar Lecci&oacute;n</span>
+                </a>
+                <a href="{{ path('app_lesson', {lessonSlug: metrics.recommendedNextLessonSlug}) }}" class="btn btn-secondary" style="display: flex; align-items: center; gap: 8px; font-size: 12px; text-decoration: none;">
+                    {{ icons.icon('chevron-right', 14) }}
+                    <span>Siguiente Hito: {{ metrics.recommendedNextLessonTitle }}</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Right: Current Project, Challenge & Git Skill -->
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700;">
+                Frentes Activos de Ingenier&iacute;a
+            </div>
+            
+            <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span style="font-size: 10.5px; color: #858585; text-transform: uppercase;">Proyecto Senior Activo</span>
+                    <div style="font-size: 12.5px; font-weight: 600; color: #ce9178;">{{ metrics.currentProject }}</div>
+                </div>
+                {{ icons.icon('terminal', 16) }}
+            </div>
+
+            <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span style="font-size: 10.5px; color: #858585; text-transform: uppercase;">Desaf&iacute;o de Dise&ntilde;o</span>
+                    <div style="font-size: 12.5px; font-weight: 600; color: #4fc1ff;">{{ metrics.currentChallenge }}</div>
+                </div>
+                {{ icons.icon('sliders', 16) }}
+            </div>
+
+            <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span style="font-size: 10.5px; color: #858585; text-transform: uppercase;">Competencia Git &amp; CI</span>
+                    <div style="font-size: 12.5px; font-weight: 600; color: #89d185;">{{ metrics.currentGitSkill }}</div>
+                </div>
+                {{ icons.icon('git', 16) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive DevLabs Quick Access Hub -->
+<div style="margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+            {{ icons.icon('terminal', 16) }}
+            <span>Laboratorios Interactivos de Ingenier&iacute;a (DevLabs)</span>
+        </h2>
+        <a href="{{ path('app_labs') }}" style="font-size: 12px; color: var(--accent-blue); text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>Ver todos los 8 laboratorios</span>
+            {{ icons.icon('chevron-right', 12) }}
+        </a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+        <a href="{{ path('app_lab_git') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #ce9178;">
+                {{ icons.icon('git', 16) }}
+                <strong style="font-size: 13px;">Git Simulator</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Staging, commits, rebase y resolución de merge conflicts.</p>
+        </a>
+
+        <a href="{{ path('app_lab_testing') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #89d185;">
+                {{ icons.icon('test-tube', 16) }}
+                <strong style="font-size: 13px;">PHPUnit Runner</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Ejecución de tests, asserters y cobertura de mutación.</p>
+        </a>
+
+        <a href="{{ path('app_lab_symfony_arch') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #4fc1ff;">
+                {{ icons.icon('symfony', 16) }}
+                <strong style="font-size: 13px;">HttpKernel Flow</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Ciclo de vida Request-Response y eventos del kernel.</p>
+        </a>
+
+        <a href="{{ path('app_lab_di') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #dcdcaa;">
+                {{ icons.icon('network', 16) }}
+                <strong style="font-size: 13px;">DI Graph Studio</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Grafo de dependencias, proxies lazy y compiler passes.</p>
+        </a>
+
+        <a href="{{ path('app_lab_doctrine') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #4F5D95;">
+                {{ icons.icon('mysql', 16) }}
+                <strong style="font-size: 13px;">Doctrine UoW Lab</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Unit of Work, Identity Map y registro SQL en tiempo real.</p>
+        </a>
+
+        <a href="{{ path('app_lab_code_review') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #f14c4c;">
+                {{ icons.icon('git-pull-request', 16) }}
+                <strong style="font-size: 13px;">Code Review Lab</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Detección de code smells, SOLID violations y PR review.</p>
+        </a>
+
+        <a href="{{ path('app_lab_adr') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #9cdcfe;">
+                {{ icons.icon('file-text', 16) }}
+                <strong style="font-size: 13px;">ADR Studio</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Redacción y evaluación de Architecture Decision Records.</p>
+        </a>
+
+        <a href="{{ path('app_system_design') }}" class="metric-card" style="text-decoration: none; color: inherit; transition: border-color 0.2s; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #b5cea8;">
+                {{ icons.icon('sliders', 16) }}
+                <strong style="font-size: 13px;">System Design Lab</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #858585; margin: 0; line-height: 1.4;">Escalabilidad horizontal, caching con Redis y Sharding.</p>
         </a>
     </div>
 </div>
 
-<!-- Unlocked Skills Matrix (Competencias Profesionales) -->
+<!-- Unlocked Skills Matrix (Competencias Profesionales con Niveles) -->
 <div style="margin-bottom: 32px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
         <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 8px;">
             {{ icons.icon('award', 16) }}
             <span>Habilidades T&eacute;cnicas &amp; Radar de Competencias Senior</span>
         </h2>
-        <span style="font-size: 11.5px; color: var(--text-muted);">Desbloqueo basado en dominio pr&aacute;ctico</span>
+        <span style="font-size: 11.5px; color: var(--text-muted);">Evaluaci&oacute;n por r&uacute;brica de nivel pr&aacute;ctico</span>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
         {% for skill in metrics.skills %}
-            <div style="background: #252526; border: 1px solid {{ skill.isUnlocked ? 'rgba(137, 209, 133, 0.3)' : 'var(--border-light)' }}; border-radius: 5px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="background: #252526; border: 1px solid {{ skill.isUnlocked ? 'rgba(137, 209, 133, 0.3)' : 'var(--border-light)' }}; border-radius: 5px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600;">{{ skill.category }}</span>
-                        {% if skill.isUnlocked %}
-                            <span style="font-size: 10.5px; color: var(--accent-success); display: flex; align-items: center; gap: 4px; font-weight: 600;">
-                                {{ icons.icon('check-circle', 12) }}
-                                <span>Desbloqueada</span>
-                            </span>
-                        {% else %}
-                            <span style="font-size: 10.5px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
-                                {{ icons.icon('circle', 11) }}
-                                <span>Bloqueada</span>
-                            </span>
-                        {% endif %}
+                        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600;">{{ skill.category }}</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 10px; font-family: Consolas, monospace; padding: 1px 6px; border-radius: 2px; background: #181818; color: #9cdcfe; border: 1px solid var(--border-light);">{{ skill.masteryLevel }}</span>
+                            {% if skill.isUnlocked %}
+                                <span style="font-size: 10px; color: var(--accent-success); display: flex; align-items: center; gap: 3px; font-weight: 600;">
+                                    {{ icons.icon('check-circle', 11) }}
+                                    <span>Dominado</span>
+                                </span>
+                            {% else %}
+                                <span style="font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 3px;">
+                                    {{ icons.icon('circle', 10) }}
+                                    <span>Pendiente</span>
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
                         {{ icons.icon(skill.icon, 16) }}
-                        <h3 style="font-size: 13px; font-weight: 600; color: {{ skill.isUnlocked ? '#ffffff' : '#858585' }};">{{ skill.name }}</h3>
+                        <h3 style="font-size: 13px; font-weight: 600; color: {{ skill.isUnlocked ? '#ffffff' : '#858585' }}; margin: 0;">{{ skill.name }}</h3>
                     </div>
-                    <p style="font-size: 11.5px; color: #a0a0a0; line-height: 1.5;">{{ skill.description }}</p>
+                    <p style="font-size: 11.5px; color: #a0a0a0; line-height: 1.5; margin: 0;">{{ skill.description }}</p>
                 </div>
             </div>
         {% endfor %}
@@ -161,18 +401,19 @@
 </div>
 
 <!-- Senior Philosophy Callout -->
-<div class="senior-thinking-callout">
-    <div class="senior-thinking-title">
-        {{ icons.icon('cpu', 18) }}
+<div class="senior-thinking-callout" style="background: #1e1e1e; border-left: 3px solid var(--accent-blue); padding: 16px 20px; border-radius: 0 4px 4px 0;">
+    <div class="senior-thinking-title" style="display: flex; align-items: center; gap: 8px; color: #9cdcfe; font-weight: 600; font-size: 13px; margin-bottom: 8px;">
+        {{ icons.icon('cpu', 16) }}
         <span>El Proceso Mental del Desarrollador Senior</span>
     </div>
-    <p style="color: #d4d4d4; font-size: 13px; line-height: 1.7; margin-bottom: 10px;">
-        Un desarrollador Junior se enfoca en que el c&oacute;digo funcione para el caso feliz (*Happy Path*). Un desarrollador Senior eval&uacute;a:
+    <p style="color: #d4d4d4; font-size: 12.5px; line-height: 1.6; margin-bottom: 10px;">
+        Un desarrollador Junior se enfoca &uacute;nicamente en que el c&oacute;digo funcione para el caso feliz (*Happy Path*). Un ingeniero Senior reflexiona y dise&ntilde;a anticipando fallos:
     </p>
-    <ul style="margin-left: 20px; color: #d4d4d4; font-size: 12.5px; line-height: 1.7;">
-        <li>&iquest;Qu&eacute; ocurre si la base de datos se satura o la conexi&oacute;n cae durante una transacci&oacute;n?</li>
-        <li>&iquest;Cu&aacute;l es el costo de mantenimiento cognitivo para otro desarrollador dentro de 6 meses?</li>
-        <li>&iquest;Estamos agregando una abstracci&oacute;n prematura que no resuelve ning&uacute;n problema de negocio real hoy?</li>
+    <ul style="margin-left: 20px; color: #a0a0a0; font-size: 12px; line-height: 1.7; margin-bottom: 0;">
+        <li>&iquest;Qu&eacute; ocurre si la conexi&oacute;n a base de datos cae en mitad de una transacci&oacute;n distribuida?</li>
+        <li>&iquest;Cu&aacute;l es el costo cognitivo y la deuda t&eacute;cnica que asumir&aacute; el equipo dentro de 6 meses?</li>
+        <li>&iquest;Estamos introduciendo acoplamientos innecesarios o abstracciones prematuras antes de validar el dominio?</li>
+        <li>&iquest;Es reversible la decisi&oacute;n arquitect&oacute;nica tomada hoy mediante este ADR?</li>
     </ul>
 </div>
 {% endblock %}

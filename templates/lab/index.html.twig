@@ -1,0 +1,255 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Laboratorios Interactivos | Senior DevLab{% endblock %}
+
+{% block body %}
+<!-- Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff;">
+                {{ icons.icon('sliders', 14) }}
+                <span>Simuladores de Ingeniería</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                8 Laboratorios Disponibles
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('sliders', 22) }}
+            <span>Laboratorios Interactivos de Ingeniería</span>
+        </h1>
+        <p class="page-subtitle">
+            Herramientas pedagógicas interactivas para experimentar visualmente con Git, Testing, HttpKernel, Inyección de Dependencias, Unit of Work y Arquitectura.
+        </p>
+    </div>
+
+    <!-- Educational Philosophy Banner -->
+    <div style="background: #252526; border: 1px solid var(--border-main); border-radius: 6px; padding: 10px 16px; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 10px;">
+        <span style="color: var(--accent-blue); font-weight: 700;">Flujo Metodológico:</span>
+        <span style="color: #9cdcfe;">LEARN</span>
+        <span>&rarr;</span>
+        <span style="color: #dcdcaa;">SIMULATE</span>
+        <span>&rarr;</span>
+        <span style="color: #4ec9b0;">IMPLEMENT</span>
+        <span>&rarr;</span>
+        <span style="color: #ce9178;">DEBUG</span>
+        <span>&rarr;</span>
+        <span style="color: #89d185; font-weight: 700;">MASTER</span>
+    </div>
+</div>
+
+<!-- Labs Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; margin-top: 16px;">
+    
+    <!-- 1. Git & Conflict Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #f05032;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(240, 80, 50, 0.15); border-color: rgba(240, 80, 50, 0.4); color: #f05032;">
+                    {{ icons.icon('git', 13) }}
+                    <span>Control de Versiones</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">Simulador Gráfico</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Git & Conflict Lab</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Visualiza el flujo Working Tree &rarr; Staging Area &rarr; Commit Graph &rarr; Remote. Crea ramas, haz rebase, fusiona cambios y resuelve conflictos de fusión en tiempo real.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">git add/commit</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Conflict Markers</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Merge vs Rebase</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_git') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('git-branch', 14) }}
+            <span>Abrir Simulador Git</span>
+        </a>
+    </div>
+
+    <!-- 2. Testing Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #3b82f6;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;">
+                    {{ icons.icon('phpunit', 13) }}
+                    <span>Calidad & TDD</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">Runner Interactivo</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">PHPUnit Testing Lab</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Encuentra y mitiga bugs en lógica de negocio empresarial. Escribe casos de prueba automatizados, ejecútalos en vivo y observa badges PASS, FAIL y reportes de cobertura sin emojis.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">PHPUnit 11</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Assertions & Doubles</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Edge Cases</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_testing') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('test-tube', 14) }}
+            <span>Abrir Testing Lab</span>
+        </a>
+    </div>
+
+    <!-- 3. Symfony Architecture Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #ffffff;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); color: #ffffff;">
+                    {{ icons.icon('symfony', 13) }}
+                    <span>Framework Core</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">Flow Visualizer</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Symfony HttpKernel Lifecycle</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Sigue cada microsegundo del ciclo de vida HTTP: Request &rarr; HttpKernel &rarr; EventDispatcher &rarr; ArgumentResolvers &rarr; Controller &rarr; Response &rarr; Terminate.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">kernel.request</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">ValueResolver</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Response Filter</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_symfony_arch') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('activity', 14) }}
+            <span>Abrir Lifecycle Lab</span>
+        </a>
+    </div>
+
+    <!-- 4. Dependency Injection Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #7fa92c;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(127, 169, 44, 0.15); border-color: rgba(127, 169, 44, 0.4); color: #a4d13e;">
+                    {{ icons.icon('layers', 13) }}
+                    <span>Arquitectura</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">Grafo de Inyección</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Dependency Injection Lab</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Explora el grafo de dependencias de Symfony. Intercambia pasarelas de pago (Stripe, PayPal, Mock), inspecciona el autowiring, aliases, servicios lazy y compiler passes.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Autowiring</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">CompilerPass</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Service Aliases</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_di') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('network', 14) }}
+            <span>Abrir DI Container Lab</span>
+        </a>
+    </div>
+
+    <!-- 5. Doctrine ORM Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #00758f;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(0, 117, 143, 0.15); border-color: rgba(0, 117, 143, 0.4); color: #38bdf8;">
+                    {{ icons.icon('database', 13) }}
+                    <span>Persistencia</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">UoW Inspector</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Doctrine Unit of Work Lab</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Aprende la diferencia fundamental entre persist() en memoria y flush() transaccional. Visualiza estados NEW, MANAGED, DETACHED, REMOVED y el Identity Map de Doctrine.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Identity Map</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">ChangeSet Calculation</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">ACID Flush</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_doctrine') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('database', 14) }}
+            <span>Abrir Doctrine Lab</span>
+        </a>
+    </div>
+
+    <!-- 6. Code Review Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #e5a085;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(229, 160, 133, 0.15); border-color: rgba(229, 160, 133, 0.4); color: #e5a085;">
+                    {{ icons.icon('award', 13) }}
+                    <span>Mentoría & Calidad</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">Pull Request Review</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Code Review & Smells Lab</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Audita un Pull Request de producción con errores reales: controladores obesos, inyecciones SQL, queries N+1, credenciales hardcodeadas y violación de invariantes.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">PR Diff Viewer</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Smell Detection</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Senior Refactoring</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_code_review') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('git-pull-request', 14) }}
+            <span>Abrir Code Review Lab</span>
+        </a>
+    </div>
+
+    <!-- 7. ADR Studio -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #89d185;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(137, 209, 133, 0.15); border-color: rgba(137, 209, 133, 0.4); color: #89d185;">
+                    {{ icons.icon('file-text', 13) }}
+                    <span>Decisiones Técnicas</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">ADR Studio</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">Architecture Decision Records (ADR)</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Aprende a justificar y documentar decisiones técnicas en equipos de ingeniería. Escribe, evalúa y exporta registros ADR para persistencia, microservicios y colas.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">MADR Format</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Trade-offs</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Impact Analysis</span>
+            </div>
+        </div>
+        <a href="{{ path('app_lab_adr') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('file-text', 14) }}
+            <span>Abrir ADR Studio</span>
+        </a>
+    </div>
+
+    <!-- 8. System Design Lab -->
+    <div class="metric-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid #007acc;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff;">
+                    {{ icons.icon('sliders', 13) }}
+                    <span>Sistemas Distribuidos</span>
+                </span>
+                <span style="font-size: 11px; color: var(--text-muted);">Canvas Interactivo</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">System Design Canvas</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                Diseña arquitecturas para 10,000 req/sec con Nginx, PHP-FPM, MySQL Read Replicas, Redis Caching y Symfony Messenger. El analizador inteligente detecta SPOF y cuellos de botella.
+            </p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">SPOF Detector</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Bottlenecks</span>
+                <span class="badge" style="background: #1e1e1e; border: 1px solid var(--border-main); color: #d4d4d4; font-size: 11px;">Scale to 10k req/s</span>
+            </div>
+        </div>
+        <a href="{{ path('app_system_design') }}" class="btn-vs" style="width: 100%; justify-content: center; text-decoration: none;">
+            {{ icons.icon('sliders', 14) }}
+            <span>Abrir System Design Canvas</span>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

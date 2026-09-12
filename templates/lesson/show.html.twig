@@ -45,21 +45,44 @@
 </div>
 
 <!-- Navigation Anchors for Quick Jump -->
-<div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+<div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; flex-wrap: wrap;">
     <a href="#teoria" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
         {{ icons.icon('help-circle', 13) }} <span>Concepto &amp; Internals</span>
     </a>
+    {% if details.mental_model is defined and details.mental_model %}
+        <a href="#mental-model" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+            {{ icons.icon('cpu', 13) }} <span>Modelo Mental CS50</span>
+        </a>
+    {% endif %}
+    {% if details.video is defined and details.video %}
+        <a href="#video-masterclass" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+            {{ icons.icon('video', 13) }} <span>Video Masterclass</span>
+        </a>
+    {% endif %}
+    {% if details.deep_dive is defined and details.deep_dive %}
+        <a href="#masterclass" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+            {{ icons.icon('book-open', 13) }} <span>Masterclass Teórica</span>
+        </a>
+    {% endif %}
+    <a href="#codigo-referencia" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+        {{ icons.icon('file-code', 13) }} <span>Código de Referencia</span>
+    </a>
     <a href="#senior-thinking" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
-        {{ icons.icon('award', 13) }} <span>Cómo lo pensaría un Senior</span>
+        {{ icons.icon('award', 13) }} <span>Pensamiento Senior</span>
     </a>
     <a href="#junior-vs-senior" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
-        {{ icons.icon('sliders', 13) }} <span>Junior vs Senior Thinking</span>
+        {{ icons.icon('sliders', 13) }} <span>Junior vs Senior</span>
     </a>
+    {% if (details.citations is defined and details.citations) or (details.external_references is defined and details.external_references) %}
+        <a href="#referencias-tecnicas" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
+            {{ icons.icon('external-link', 13) }} <span>Citas &amp; Referencias</span>
+        </a>
+    {% endif %}
     <a href="#exercise-section" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
-        {{ icons.icon('terminal', 13) }} <span>Reto de Código</span>
+        {{ icons.icon('terminal', 13) }} <span>Reto de Código &amp; Guía</span>
     </a>
     <a href="#quiz-section" class="menu-item" style="display: flex; align-items: center; gap: 5px;">
-        {{ icons.icon('award', 13) }} <span>Quiz de Evaluación</span>
+        {{ icons.icon('check-square', 13) }} <span>Quiz de Evaluación</span>
     </a>
 </div>
 
@@ -86,6 +109,36 @@
     </div>
 </div>
 
+<!-- Modelo Mental CS50 (Analogía Visual y Física) -->
+{% if details.mental_model is defined and details.mental_model %}
+<div id="mental-model" style="margin-bottom: 28px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('cpu', 16) }}
+        <span>Modelo Mental CS50: {{ details.mental_model.title }}</span>
+    </h2>
+    <div style="background: #191b22; border: 1px solid rgba(79, 193, 255, 0.3); border-left: 4px solid #4fc1ff; border-radius: 0 6px 6px 0; padding: 20px;">
+        <div style="font-size: 11px; font-weight: 700; color: #4fc1ff; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            {{ icons.icon('help-circle', 14) }}
+            <span>La Analogía del Mundo Real</span>
+        </div>
+        <p style="color: #e0e0e0; font-size: 13.5px; line-height: 1.7; margin: 0 0 14px 0;">
+            {{ details.mental_model.analogy|raw }}
+        </p>
+        {% if details.mental_model.ascii_diagram is defined and details.mental_model.ascii_diagram %}
+            <div style="background: #0f1117; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 4px; padding: 14px; margin-bottom: 14px; overflow-x: auto;">
+                <pre style="margin: 0; font-family: var(--font-mono); font-size: 12px; color: #89d185; line-height: 1.45;">{{ details.mental_model.ascii_diagram }}</pre>
+            </div>
+        {% endif %}
+        <div style="background: rgba(0, 0, 0, 0.3); border-radius: 4px; padding: 10px 14px; display: flex; align-items: flex-start; gap: 8px;">
+            <span style="color: #f59e0b; margin-top: 1px;">{{ icons.icon('check-circle', 14) }}</span>
+            <div style="font-size: 12.5px; color: #cccccc; line-height: 1.5;">
+                <strong style="color: #ffffff;">Conexión con la Arquitectura:</strong> {{ details.mental_model.key_concept }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- 2. Cómo funciona internamente (Internals) -->
 <div style="margin-bottom: 28px;">
     <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
@@ -110,8 +163,86 @@
     </div>
 </div>
 
+<!-- Masterclass en Video (Conferencia / Deep-Dive) -->
+{% if details.video is defined and details.video %}
+<div id="video-masterclass" style="margin-bottom: 28px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('video', 16) }}
+        <span>Video Masterclass: {{ details.video.title }}</span>
+    </h2>
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px;">
+        <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;">
+            <div>
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid #2d2d2d; background: #000000;">
+                    <iframe 
+                        src="https://www.youtube-nocookie.com/embed/{{ details.video.youtube_id }}" 
+                        title="{{ details.video.title }}"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                        loading="lazy"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;">
+                    </iframe>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 8px;">
+                    <span style="font-size: 11px; font-weight: 700; color: #4fc1ff; text-transform: uppercase;">{{ details.video.speaker|default('Conferencia Técnica') }}</span>
+                    <span style="font-size: 11px; color: #858585;">{{ details.video.duration }}</span>
+                </div>
+                <p style="font-size: 12.5px; color: #cccccc; line-height: 1.6; margin: 0;">
+                    {{ details.video.description }}
+                </p>
+                {% if details.video.chapters is defined and details.video.chapters %}
+                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #858585; text-transform: uppercase; margin-bottom: 6px;">Capítulos Clave:</div>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11.5px; color: #9cdcfe; line-height: 1.7;">
+                            {% for time, chapter in details.video.chapters %}
+                                <li><strong>{{ time }}</strong> &mdash; {{ chapter }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Masterclass: Teoría Profunda Paso a Paso -->
+{% if details.deep_dive is defined and details.deep_dive %}
+<div id="masterclass" style="margin-bottom: 28px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('book-open', 16) }}
+        <span>Fundamentos Teóricos &amp; Explicación Paso a Paso</span>
+    </h2>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        {% for section in details.deep_dive %}
+            <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid var(--accent-blue); border-radius: 0 6px 6px 0; padding: 18px 20px;">
+                <h3 style="font-size: 14px; font-weight: 700; color: #9cdcfe; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                    {{ icons.icon(section.icon|default('file-text'), 15) }}
+                    <span>{{ section.title }}</span>
+                </h3>
+                <div style="color: #cccccc; font-size: 13px; line-height: 1.7; margin-bottom: section.code is defined ? 12px : 0;">
+                    {{ section.content|raw }}
+                </div>
+                {% if section.code is defined and section.code %}
+                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 14px; font-family: var(--font-mono); font-size: 12px; color: #d4d4d4; overflow-x: auto; white-space: pre-wrap; line-height: 1.5; margin-top: 10px;">{{ section.code }}</div>
+                {% endif %}
+                {% if section.takeaways is defined and section.takeaways %}
+                    <div style="margin-top: 12px; background: rgba(0, 122, 204, 0.08); border: 1px solid rgba(0, 122, 204, 0.25); border-radius: 4px; padding: 10px 14px;">
+                        <span style="font-size: 11.5px; font-weight: 700; color: #4fc1ff; text-transform: uppercase; letter-spacing: 0.5px;">Conclusión Clave:</span>
+                        <p style="font-size: 12px; color: #d4d4d4; margin: 4px 0 0 0; line-height: 1.5;">{{ section.takeaways }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <!-- 3. Código Arquitectural de Referencia estilo VS Code -->
-<div class="editor-code-container" style="margin-bottom: 28px;">
+<div id="codigo-referencia" class="editor-code-container" style="margin-bottom: 28px;">
     <div class="editor-code-header">
         <div class="editor-code-title">
             {{ icons.icon('file-code', 14) }}
@@ -163,7 +294,7 @@
                 <div style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">Implementación:</div>
                 <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.junior.approach }}</p>
                 <div style="font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">Fallas Críticas &amp; Cuellos de Botella:</div>
-                {% for flaw in details.junior_vs_senior.junior.flaws %}
+                {% for flaw in details.junior_vs_senior.junior.flaws|default([]) %}
                     <div class="diff-point">{{ flaw }}</div>
                 {% endfor %}
             </div>
@@ -178,16 +309,72 @@
                 <div style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">Solución Arquitectónica:</div>
                 <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.senior.approach }}</p>
                 <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 6px;">Justificación de Valor:</div>
-                {% for rationale in details.junior_vs_senior.senior.rationale %}
+                {% for rationale in details.junior_vs_senior.senior.rationale|default([]) %}
                     <div class="diff-point">{{ rationale }}</div>
                 {% endfor %}
                 <div style="margin-top: 12px; font-size: 11.5px; color: #858585; border-top: 1px solid var(--border-light); padding-top: 8px;">
-                    <strong>Trade-offs:</strong> {{ details.junior_vs_senior.senior.trade_offs }}
+                    <strong>Trade-offs:</strong> {{ details.junior_vs_senior.senior.trade_offs|default('Balance óptimo entre costo de mantenimiento y resiliencia.') }}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Citas Técnicas, Enlaces Externos & Bibliografía Canónica -->
+{% if (details.citations is defined and details.citations) or (details.external_references is defined and details.external_references) %}
+<div id="referencias-tecnicas" style="margin-top: 32px; margin-bottom: 32px;">
+    <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('external-link', 16) }}
+        <span>Citas Técnicas, Enlaces Externos &amp; Bibliografía Canónica</span>
+    </h2>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        {% if details.citations is defined and details.citations %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
+                {% for citation in details.citations %}
+                    <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 16px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 11px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px;">{{ citation.topic }}</span>
+                            <span style="font-size: 11px; color: #858585;">{{ citation.source }}</span>
+                        </div>
+                        <blockquote style="margin: 0 0 10px 0; font-style: italic; color: #e5e5e5; font-size: 12.5px; line-height: 1.6; border-left: 2px solid #333333; padding-left: 10px;">
+                            &ldquo;{{ citation.quote }}&rdquo;
+                        </blockquote>
+                        <div style="font-size: 11.5px; color: #858585; text-align: right;">&mdash; <strong>{{ citation.author }}</strong></div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #cccccc; line-height: 1.5; background: #121212; padding: 8px 10px; border-radius: 4px;">
+                            <strong style="color: #9cdcfe;">Por qué importa entenderlo:</strong> {{ citation.explanation }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if details.external_references is defined and details.external_references %}
+            <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px;">
+                <div style="font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('book-open', 14) }}
+                    <span>Documentación Oficial &amp; Especificaciones Técnicas Recomendadas:</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+                    {% for ref in details.external_references %}
+                        <a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; text-decoration: none; transition: border-color 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-light)'">
+                            <div style="flex: 1; min-width: 0; padding-right: 8px;">
+                                <div style="font-size: 12.5px; font-weight: 600; color: #4fc1ff; display: flex; align-items: center; gap: 5px;">
+                                    <span>{{ ref.title }}</span>
+                                    {{ icons.icon('external-link', 11) }}
+                                </div>
+                                <div style="font-size: 11px; color: #858585; margin-top: 2px;">{{ ref.description }}</div>
+                            </div>
+                            <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10px; white-space: nowrap;">
+                                {{ ref.type|default('DOCS') }}
+                            </span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 
 <!-- 6. Laboratorio de Ejercicio & Reto de Código -->
 <div id="exercise-section" style="margin-top: 36px; margin-bottom: 36px;">
@@ -210,6 +397,73 @@
         <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
             {{ details.exercise.instructions }}
         </div>
+
+        <!-- Guía Didáctica y Explicación del Reto -->
+        {% if details.exercise.guide is defined and details.exercise.guide %}
+            <div style="background: #202020; border: 1px solid rgba(0, 122, 204, 0.35); border-left: 4px solid var(--accent-blue); border-radius: 0 4px 4px 0; padding: 16px 18px; margin-bottom: 18px;">
+                <div style="font-size: 13px; font-weight: 700; color: #9cdcfe; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('help-circle', 15) }}
+                    <span>Guía Didáctica para Resolver este Reto</span>
+                </div>
+                <div style="font-size: 12.5px; color: #d4d4d4; line-height: 1.6; margin: 0 0 12px 0;">
+                    {{ details.exercise.guide.explanation|raw }}
+                </div>
+
+                {% if details.exercise.guide.steps is defined and details.exercise.guide.steps %}
+                    <div style="font-size: 11.5px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        Paso a Paso del Algoritmo:
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                        {% for step in details.exercise.guide.steps %}
+                            <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: #cccccc; background: #161616; padding: 10px 12px; border-radius: 4px; border: 1px solid var(--border-light);">
+                                <span style="font-family: Consolas, monospace; color: #4fc1ff; font-weight: 700; min-width: 22px;">0{{ loop.index }}.</span>
+                                <div style="line-height: 1.5;">{{ step|raw }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if details.exercise.guide.useful_functions is defined and details.exercise.guide.useful_functions %}
+                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 14px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #89d185; text-transform: uppercase;">Funciones Nativas de PHP Clave:</span>
+                        <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
+                            {% for fn in details.exercise.guide.useful_functions %}
+                                <div style="font-size: 12px; font-family: Consolas, monospace; color: #dcdcaa;">
+                                    &bull; <strong style="color: #9cdcfe;">{{ fn.name }}</strong>: <span style="color: #cccccc;">{{ fn.desc }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Pistas Progresivas de Razonamiento (Scaffolded Hints) -->
+        {% if details.exercise.hints is defined and details.exercise.hints %}
+            <div style="background: #17181c; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px 16px; margin-bottom: 18px;">
+                <div style="font-size: 12px; font-weight: 700; color: #9cdcfe; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    {{ icons.icon('help-circle', 14) }}
+                    <span>¿Atascado en el reto? Pistas Progresivas de Razonamiento:</span>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+                    {% for hintIndex, hint in details.exercise.hints %}
+                        <button type="button" class="btn-vs btn-vs-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="toggleHint('hint-{{ hintIndex }}')">
+                            {{ icons.icon('help-circle', 11) }}
+                            <span>Pista {{ hintIndex + 1 }}: {{ hint.label }}</span>
+                        </button>
+                    {% endfor %}
+                </div>
+                {% for hintIndex, hint in details.exercise.hints %}
+                    <div id="hint-{{ hintIndex }}" style="display: none; margin-top: 8px; background: #111215; border-left: 3px solid #4fc1ff; border-radius: 0 4px 4px 0; padding: 10px 14px; font-size: 12px; color: #d4d4d4; line-height: 1.6;">
+                        <strong style="color: #4fc1ff;">Pista {{ hintIndex + 1 }} &mdash; {{ hint.label }}:</strong>
+                        <div style="margin-top: 4px;">{{ hint.text|raw }}</div>
+                        {% if hint.snippet is defined and hint.snippet %}
+                            <pre style="margin: 8px 0 0 0; background: #0c0d10; padding: 8px 10px; border-radius: 3px; font-family: var(--font-mono); font-size: 11.5px; color: #ce9178; overflow-x: auto;"><code>{{ hint.snippet }}</code></pre>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <!-- Code Editor Form with Monaco Editor -->
         <form id="exercise-form" action="{{ path('app_lesson_exercise', {lessonSlug: lesson.slug}) }}" method="POST">
@@ -478,6 +732,13 @@
     function formatCode() {
         if (editorInstance) {
             editorInstance.getAction('editor.action.formatDocument').run();
+        }
+    }
+
+    function toggleHint(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
         }
     }
 

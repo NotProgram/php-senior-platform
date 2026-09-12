@@ -1,0 +1,580 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Git & Conflict Simulator | Senior DevLab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .git-workspace {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 16px;
+        min-height: calc(100vh - 160px);
+    }
+    .git-main-column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .git-flow-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 12px;
+    }
+    .git-column {
+        background: #181818;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .git-column-header {
+        padding: 10px 14px;
+        background: #252526;
+        border-bottom: 1px solid var(--border-main);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .git-column-body {
+        padding: 12px;
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+    }
+    .git-file-card {
+        background: #202020;
+        border: 1px solid var(--border-main);
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+    }
+    .git-file-card:hover {
+        border-color: var(--accent-blue);
+    }
+    .git-file-status {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: 700;
+    }
+    .status-modified { background: rgba(204, 167, 0, 0.2); color: #ffe066; }
+    .status-staged { background: rgba(137, 209, 133, 0.2); color: #89d185; }
+    .status-untracked { background: rgba(0, 122, 204, 0.2); color: #4fc1ff; }
+    .status-conflict { background: rgba(241, 76, 76, 0.2); color: #f14c4c; }
+
+    .graph-panel {
+        background: #141414;
+        border: 1px solid var(--border-main);
+        border-radius: 6px;
+        padding: 16px;
+        position: relative;
+    }
+    .commit-node {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        background: #1e1e1e;
+        border: 1px solid var(--border-main);
+        border-radius: 4px;
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+    .commit-hash {
+        font-family: Consolas, monospace;
+        color: #ce9178;
+        font-weight: 700;
+    }
+    .branch-badge {
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 10.5px;
+        font-weight: 700;
+    }
+    .branch-main { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .branch-feature { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); }
+    .branch-head { background: rgba(137, 209, 133, 0.2); color: #89d185; border: 1px solid rgba(137, 209, 133, 0.4); }
+
+    .conflict-box {
+        background: #181818;
+        border: 1px solid var(--accent-red);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .conflict-header {
+        background: #2a1818;
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--accent-red);
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent-red);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .conflict-editor {
+        width: 100%;
+        background: #141414;
+        color: #d4d4d4;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        padding: 12px;
+        border: none;
+        outline: none;
+        resize: vertical;
+        min-height: 160px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(240, 80, 50, 0.15); border-color: rgba(240, 80, 50, 0.4); color: #f05032;">
+                {{ icons.icon('git', 14) }}
+                <span>Simulador de Ingeniería Git</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                Rama activa: <strong id="active-branch-label" style="color: #60a5fa; margin-left: 4px;">main</strong>
+            </span>
+        </div>
+        <h1 class="page-title">
+            {{ icons.icon('git-branch', 22) }}
+            <span>Laboratorio Interactivo de Git & Resolución de Conflictos</span>
+        </h1>
+        <p class="page-subtitle">
+            Experimenta el modelo mental de Git: transiciones entre Working Tree, Staging Area, Commits locales y Remote, más resolución guiada de conflictos reales.
+        </p>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <button type="button" class="btn-vs" onclick="resetGitLab()">
+            {{ icons.icon('refresh-cw', 13) }}
+            <span>Restablecer Estado</span>
+        </button>
+    </div>
+</div>
+
+<div class="git-workspace">
+    <!-- Main Simulation Column -->
+    <div class="git-main-column">
+        
+        <!-- 1. The 4 States of Git Flow -->
+        <div class="git-flow-grid">
+            <!-- 1.1 Working Tree -->
+            <div class="git-column">
+                <div class="git-column-header">
+                    <span style="color: #dcdcaa;">Working Tree</span>
+                    <span style="font-size: 10px; color: var(--text-muted);" id="count-working">2 archivos</span>
+                </div>
+                <div class="git-column-body" id="working-tree-list">
+                    <div class="git-file-card" id="file-payment">
+                        <div>
+                            <div style="font-weight: 600;">PaymentService.php</div>
+                            <span class="git-file-status status-modified">MODIFIED</span>
+                        </div>
+                        <button type="button" class="btn-vs" style="padding: 3px 8px; font-size: 11px;" onclick="stageFile('PaymentService.php')">
+                            {{ icons.icon('check-square', 11) }} Add
+                        </button>
+                    </div>
+                    <div class="git-file-card" id="file-order">
+                        <div>
+                            <div style="font-weight: 600;">OrderInvoice.php</div>
+                            <span class="git-file-status status-untracked">UNTRACKED</span>
+                        </div>
+                        <button type="button" class="btn-vs" style="padding: 3px 8px; font-size: 11px;" onclick="stageFile('OrderInvoice.php')">
+                            {{ icons.icon('check-square', 11) }} Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.2 Staging Area (Index) -->
+            <div class="git-column">
+                <div class="git-column-header">
+                    <span style="color: #89d185;">Staging Area</span>
+                    <span style="font-size: 10px; color: var(--text-muted);" id="count-staged">0 archivos</span>
+                </div>
+                <div class="git-column-body" id="staging-area-list">
+                    <div id="staging-empty" style="color: var(--text-muted); font-size: 11.5px; text-align: center; margin-top: 40px;">
+                        (Ejecuta 'git add' para pasar cambios al Index)
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.3 Local Repository (HEAD) -->
+            <div class="git-column">
+                <div class="git-column-header">
+                    <span style="color: #4fc1ff;">Local Commits</span>
+                    <span style="font-size: 10px; color: var(--text-muted);" id="count-commits">3 commits</span>
+                </div>
+                <div class="git-column-body" id="local-commits-preview">
+                    <div class="commit-node" style="margin-bottom: 4px;">
+                        <span class="commit-hash">c8f91a2</span>
+                        <div style="flex: 1; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            feat: add order state machine
+                        </div>
+                    </div>
+                    <div class="commit-node" style="margin-bottom: 4px;">
+                        <span class="commit-hash">a4d87b0</span>
+                        <div style="flex: 1; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            refactor: extract VO for Currency
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.4 Remote (origin/main) -->
+            <div class="git-column">
+                <div class="git-column-header">
+                    <span style="color: #ce9178;">Remote (origin)</span>
+                    <span style="font-size: 10px; color: var(--text-muted);">Sincronizado</span>
+                </div>
+                <div class="git-column-body">
+                    <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.6;">
+                        <div>upstream: <strong>github.com/org/app</strong></div>
+                        <div style="margin-top: 6px;">origin/main: <span class="commit-hash">a4d87b0</span></div>
+                        <div style="margin-top: 10px;">
+                            <button type="button" class="btn-vs" style="width: 100%; justify-content: center; font-size: 11px;" onclick="simulatePush()">
+                                {{ icons.icon('refresh-cw', 11) }} git push origin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Git Commit Graph Visualizer -->
+        <div class="graph-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 13px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                    {{ icons.icon('git-branch', 14) }}
+                    <span>Visualizador del Grafo de Ramas (Git Log --graph)</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted);">
+                    Ramas locales: <span class="branch-badge branch-main">main</span> <span class="branch-badge branch-feature">feature/payments</span>
+                </div>
+            </div>
+
+            <div id="git-graph-history">
+                <div class="commit-node">
+                    <span class="branch-badge branch-head">HEAD &rarr; main</span>
+                    <span class="commit-hash">c8f91a2</span>
+                    <span style="color: #ffffff; font-weight: 600;">feat(checkout): add order state machine</span>
+                    <span style="color: var(--text-muted); margin-left: auto;">hace 20 min por Dilan</span>
+                </div>
+                <div class="commit-node">
+                    <span class="branch-badge branch-feature">feature/payments</span>
+                    <span class="commit-hash">e31c509</span>
+                    <span style="color: #ffffff; font-weight: 600;">feat(payment): integrate stripe webhook handler</span>
+                    <span style="color: var(--text-muted); margin-left: auto;">hace 1 hora por Dilan</span>
+                </div>
+                <div class="commit-node">
+                    <span class="branch-badge branch-main">origin/main</span>
+                    <span class="commit-hash">a4d87b0</span>
+                    <span style="color: #ffffff; font-weight: 600;">refactor(domain): extract immutable Money VO</span>
+                    <span style="color: var(--text-muted); margin-left: auto;">hace 3 horas por Carlos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Real-World Conflict Resolution Simulator -->
+        <div class="conflict-box">
+            <div class="conflict-header">
+                {{ icons.icon('alert-triangle', 15) }}
+                <span>CONFLICT (content): Merge conflict in src/Service/PaymentService.php</span>
+            </div>
+            <div style="padding: 14px; background: #1a1a1a; font-size: 12.5px; border-bottom: 1px solid var(--border-main);">
+                <p style="color: #cccccc; margin-bottom: 8px;">
+                    Se intentó hacer <code style="background: #252526; padding: 2px 6px; border-radius: 3px;">git merge feature/payments</code> hacia <code style="background: #252526; padding: 2px 6px; border-radius: 3px;">main</code>. Ambas ramas modificaron el método <code style="color: #9cdcfe;">chargeOrder()</code>.
+                </p>
+                <p style="color: var(--text-muted); font-size: 12px;">
+                    <strong>Tu tarea como Senior:</strong> Edita el archivo inferior, elimina los marcadores de conflicto (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>) y unifica la lógica para soportar el procesador con fallback resiliente.
+                </p>
+            </div>
+            <textarea class="conflict-editor" id="conflict-textarea"><<<<<<< HEAD
+    public function chargeOrder(Order $order): bool
+    {
+        // En main: cobro síncrono directo con timeout estricto de 3s
+        return $this->stripeGateway->charge($order->getTotal(), timeout: 3.0);
+    }
+=======
+    public function chargeOrder(Order $order): bool
+    {
+        // En feature/payments: pasarela resiliente con fallback a PayPal
+        return $this->resilientGateway->chargeWithFallback($order->getId(), $order->getTotal());
+    }
+>>>>>>> feature/payments</textarea>
+            <div style="padding: 10px 14px; background: #252526; display: flex; justify-content: space-between; align-items: center;">
+                <span id="conflict-validation-status" style="font-size: 12px; color: var(--text-muted);">Estado: Conflicto sin resolver (3 marcadores presentes)</span>
+                <button type="button" class="btn-vs" onclick="validateConflictResolution()">
+                    {{ icons.icon('check-circle', 13) }}
+                    <span>Validar Resolución & Hacer Commit</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Interactive Terminal & Controls Panel -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        
+        <!-- Interactive Terminal Simulator -->
+        <div class="git-column" style="height: 100%;">
+            <div class="git-column-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    {{ icons.icon('terminal', 13) }}
+                    <span>Consola de Operaciones Git</span>
+                </div>
+                <span style="font-size: 10px; color: var(--text-muted);">zsh</span>
+            </div>
+            <div class="git-column-body" style="background: #121212; font-family: Consolas, monospace; font-size: 11.5px; color: #cccccc; overflow-y: auto;" id="terminal-output">
+                <div style="color: var(--text-muted);">Senior DevLab Git Terminal v2.4</div>
+                <div style="color: var(--text-muted);">Repositorio cargado: /var/www/symfony-senior-academy (main)</div>
+                <div style="color: #89d185; margin-top: 8px;">$ git status</div>
+                <div>On branch main</div>
+                <div>Your branch is ahead of 'origin/main' by 1 commit.</div>
+                <div>Changes not staged for commit:</div>
+                <div style="color: #f14c4c; margin-left: 12px;">modified: PaymentService.php</div>
+                <div>Untracked files:</div>
+                <div style="color: #f14c4c; margin-left: 12px;">OrderInvoice.php</div>
+            </div>
+
+            <!-- Command Quick Actions -->
+            <div style="padding: 12px; background: #1e1e1e; border-top: 1px solid var(--border-main); display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Acciones Rápidas de Terminal</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button type="button" class="btn-vs" style="justify-content: center; font-size: 11px;" onclick="runCommand('git add .')">
+                        git add .
+                    </button>
+                    <button type="button" class="btn-vs" style="justify-content: center; font-size: 11px;" onclick="runCommitPrompt()">
+                        git commit -m
+                    </button>
+                    <button type="button" class="btn-vs" style="justify-content: center; font-size: 11px;" onclick="runCommand('git switch -c feature/auth')">
+                        git switch -c
+                    </button>
+                    <button type="button" class="btn-vs" style="justify-content: center; font-size: 11px;" onclick="runCommand('git rebase main')">
+                        git rebase main
+                    </button>
+                    <button type="button" class="btn-vs" style="justify-content: center; font-size: 11px;" onclick="runCommand('git stash')">
+                        git stash
+                    </button>
+                    <button type="button" class="btn-vs" style="justify-content: center; font-size: 11px;" onclick="runCommand('git stash pop')">
+                        git stash pop
+                    </button>
+                </div>
+
+                <!-- Custom Command Input -->
+                <div style="display: flex; gap: 6px; margin-top: 6px;">
+                    <input type="text" id="custom-git-input" placeholder="Escribe un comando git..." style="flex: 1; background: #141414; border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 10px; font-size: 12px; color: #ffffff; font-family: Consolas, monospace;" onkeydown="if (event.key === 'Enter') executeCustomCommand()">
+                    <button type="button" class="btn-vs" onclick="executeCustomCommand()">
+                        {{ icons.icon('play', 11) }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Senior Best Practices Card -->
+        <div style="background: #1e1e1e; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px; font-size: 12px;">
+            <div style="font-weight: 700; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                {{ icons.icon('award', 13) }}
+                <span>Senior Git Rulebook</span>
+            </div>
+            <ul style="color: var(--text-muted); line-height: 1.6; padding-left: 16px; margin: 0;">
+                <li>Usa <strong>Trunk-Based Development</strong> para evitar ramas de larga duración (evita "Merge Hell").</li>
+                <li>Usa <code>git commit --amend</code> o <code>git rebase -i</code> para pulir historial local antes del PR.</li>
+                <li>Nunca hagas <code>git push --force</code> en ramas compartidas (<code>main</code>, <code>staging</code>).</li>
+                <li>Escribe mensajes conformes a <strong>Conventional Commits</strong> (<code>feat:</code>, <code>fix:</code>, <code>refactor:</code>).</li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    let stagedFiles = [];
+    let workingFiles = ['PaymentService.php', 'OrderInvoice.php'];
+    let activeBranch = 'main';
+
+    function logTerminal(cmd, output) {
+        const term = document.getElementById('terminal-output');
+        const cmdLine = document.createElement('div');
+        cmdLine.style.color = '#89d185';
+        cmdLine.style.marginTop = '6px';
+        cmdLine.textContent = '$ ' + cmd;
+        term.appendChild(cmdLine);
+
+        if (output) {
+            const outLine = document.createElement('div');
+            outLine.style.color = '#cccccc';
+            outLine.textContent = output;
+            term.appendChild(outLine);
+        }
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function stageFile(filename) {
+        if (!stagedFiles.includes(filename)) {
+            stagedFiles.push(filename);
+            workingFiles = workingFiles.filter(f => f !== filename);
+            updateFileViews();
+            logTerminal('git add ' + filename, 'Staged 1 file (' + filename + ')');
+        }
+    }
+
+    function updateFileViews() {
+        document.getElementById('count-working').textContent = workingFiles.length + ' archivos';
+        document.getElementById('count-staged').textContent = stagedFiles.length + ' archivos';
+
+        const stageList = document.getElementById('staging-area-list');
+        stageList.innerHTML = '';
+        if (stagedFiles.length === 0) {
+            stageList.innerHTML = '<div style="color: var(--text-muted); font-size: 11.5px; text-align: center; margin-top: 40px;">(Ejecuta \'git add\' para pasar cambios al Index)</div>';
+        } else {
+            stagedFiles.forEach(file => {
+                const card = document.createElement('div');
+                card.className = 'git-file-card';
+                card.innerHTML = '<div><div style="font-weight: 600;">' + file + '</div><span class="git-file-status status-staged">STAGED</span></div>' +
+                    '<button type="button" class="btn-vs" style="padding: 2px 6px; font-size: 10px;" onclick="unstageFile(\'' + file + '\')">Unstage</button>';
+                stageList.appendChild(card);
+            });
+        }
+
+        const workList = document.getElementById('working-tree-list');
+        workList.innerHTML = '';
+        if (workingFiles.length === 0) {
+            workList.innerHTML = '<div style="color: var(--accent-success); font-size: 11.5px; text-align: center; margin-top: 40px;">Working tree limpio. Nada pendiente.</div>';
+        } else {
+            workingFiles.forEach(file => {
+                const card = document.createElement('div');
+                card.className = 'git-file-card';
+                card.innerHTML = '<div><div style="font-weight: 600;">' + file + '</div><span class="git-file-status status-modified">MODIFIED</span></div>' +
+                    '<button type="button" class="btn-vs" style="padding: 3px 8px; font-size: 11px;" onclick="stageFile(\'' + file + '\')">Add</button>';
+                workList.appendChild(card);
+            });
+        }
+    }
+
+    function unstageFile(filename) {
+        stagedFiles = stagedFiles.filter(f => f !== filename);
+        workingFiles.push(filename);
+        updateFileViews();
+        logTerminal('git restore --staged ' + filename, 'Unstaged ' + filename);
+    }
+
+    function runCommand(cmd) {
+        if (cmd === 'git add .') {
+            stagedFiles = [...stagedFiles, ...workingFiles];
+            workingFiles = [];
+            updateFileViews();
+            logTerminal(cmd, 'All modified files staged in index.');
+        } else if (cmd === 'git stash') {
+            logTerminal(cmd, 'Saved working directory and index state WIP on main.');
+        } else if (cmd === 'git stash pop') {
+            logTerminal(cmd, 'Restored stashed changes into working tree.');
+        } else if (cmd.startsWith('git switch -c')) {
+            const branch = cmd.split(' ')[3] || 'feature/new';
+            activeBranch = branch;
+            document.getElementById('active-branch-label').textContent = branch;
+            logTerminal(cmd, 'Switched to a new branch \'' + branch + '\'');
+        } else if (cmd.startsWith('git rebase')) {
+            logTerminal(cmd, 'First, rewinding head to replay your work on top of it... Fast-forwarded.');
+        }
+    }
+
+    function runCommitPrompt() {
+        if (stagedFiles.length === 0) {
+            logTerminal('git commit', 'fatal: no changes added to commit (use "git add")');
+            return;
+        }
+        const msg = prompt('Mensaje de commit (formato Conventional Commits):', 'feat(payment): integrate resilient charge handler');
+        if (msg) {
+            const hash = Math.random().toString(16).substring(2, 9);
+            logTerminal('git commit -m "' + msg + '"', '[' + activeBranch + ' ' + hash + '] ' + msg + '\n ' + stagedFiles.length + ' files changed, 48 insertions(+)');
+            
+            // Add to graph
+            const graph = document.getElementById('git-graph-history');
+            const node = document.createElement('div');
+            node.className = 'commit-node';
+            node.innerHTML = '<span class="branch-badge branch-head">HEAD &rarr; ' + activeBranch + '</span>' +
+                '<span class="commit-hash">' + hash + '</span>' +
+                '<span style="color: #ffffff; font-weight: 600;">' + msg + '</span>' +
+                '<span style="color: var(--text-muted); margin-left: auto;">ahora mismo</span>';
+            graph.insertBefore(node, graph.firstChild);
+
+            stagedFiles = [];
+            updateFileViews();
+        }
+    }
+
+    function simulatePush() {
+        logTerminal('git push origin ' + activeBranch, 'Enumerating objects: 5, done.\nWriting objects: 100% (5/5), 1.2 KiB | done.\nTo github.com:company/symfony-senior-academy.git\n   a4d87b0..c8f91a2  ' + activeBranch + ' -> ' + activeBranch);
+    }
+
+    function executeCustomCommand() {
+        const input = document.getElementById('custom-git-input');
+        const cmd = input.value.trim();
+        if (!cmd) return;
+        input.value = '';
+
+        if (cmd === 'git status') {
+            logTerminal(cmd, 'On branch ' + activeBranch + '\nWorking tree status updated.');
+        } else if (cmd === 'git log' || cmd === 'git log --oneline') {
+            logTerminal(cmd, 'c8f91a2 (HEAD -> main) feat(checkout): add order state machine\na4d87b0 (origin/main) refactor(domain): extract immutable Money VO');
+        } else if (cmd.startsWith('git add')) {
+            runCommand('git add .');
+        } else if (cmd.startsWith('git commit')) {
+            runCommitPrompt();
+        } else {
+            logTerminal(cmd, 'Comando simulado ejecutado correctamente.');
+        }
+    }
+
+    function validateConflictResolution() {
+        const content = document.getElementById('conflict-textarea').value;
+        const statusEl = document.getElementById('conflict-validation-status');
+
+        const hasHead = content.includes('<<<<<<<');
+        const hasDiv = content.includes('=======');
+        const hasBranch = content.includes('>>>>>>>');
+
+        if (hasHead || hasDiv || hasBranch) {
+            statusEl.innerHTML = '<span style="color: var(--accent-red); font-weight: 700;">Error: Todavía existen marcadores de conflicto (&lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, &gt;&gt;&gt;&gt;&gt;&gt;&gt;) en el código.</span>';
+        } else if (!content.includes('chargeOrder') || !content.includes('function')) {
+            statusEl.innerHTML = '<span style="color: var(--accent-red); font-weight: 700;">Error: La firma de la función chargeOrder fue eliminada erróneamente.</span>';
+        } else {
+            statusEl.innerHTML = '<span style="color: var(--accent-success); font-weight: 700;">¡Conflicto resuelto con éxito! Se eliminaron los marcadores y se unificó la lógica. Generando merge commit...</span>';
+            logTerminal('git commit -m "Merge branch \'feature/payments\'"', '[main f9b20e1] Merge branch \'feature/payments\' into main\nResolved conflict in PaymentService.php.');
+        }
+    }
+
+    function resetGitLab() {
+        workingFiles = ['PaymentService.php', 'OrderInvoice.php'];
+        stagedFiles = [];
+        activeBranch = 'main';
+        document.getElementById('active-branch-label').textContent = 'main';
+        updateFileViews();
+        document.getElementById('conflict-textarea').value = `<<<<<<< HEAD\n    public function chargeOrder(Order $order): bool\n    {\n        // En main: cobro síncrono directo con timeout estricto de 3s\n        return $this->stripeGateway->charge($order->getTotal(), timeout: 3.0);\n    }\n=======\n    public function chargeOrder(Order $order): bool\n    {\n        // En feature/payments: pasarela resiliente con fallback a PayPal\n        return $this->resilientGateway->chargeWithFallback($order->getId(), $order->getTotal());\n    }\n>>>>>>> feature/payments`;
+        document.getElementById('conflict-validation-status').innerHTML = 'Estado: Conflicto reiniciado';
+        logTerminal('git reset --hard HEAD', 'HEAD is now at c8f91a2 feat(checkout): add order state machine');
+    }
+</script>
+{% endblock %}
