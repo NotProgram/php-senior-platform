@@ -102,6 +102,23 @@ final class LessonFlowTest extends FunctionalTestCase
         self::assertStringContainsString('Falta declarar tipado estricto', (string) $this->client->getResponse()->getContent());
     }
 
+    public function testSdlcRequirementsExercisePassesWithUserStorySpecification(): void
+    {
+        $crawler = $this->client->request('GET', '/lesson/se-sdlc-requirements');
+        self::assertResponseIsSuccessful();
+
+        $content = static::getContainer()->get(LessonContentService::class)
+            ->findLesson('se-sdlc-requirements')['exercise']['solution_code'];
+
+        $this->client->submit($crawler->selectButton('Ejecutar y Validar Reto')->form([
+            'submitted_code' => $content,
+        ]));
+
+        self::assertResponseRedirects();
+        $this->client->followRedirect();
+        self::assertStringContainsString('Reto de código superado', (string) $this->client->getResponse()->getContent());
+    }
+
     public function testCapstoneUnlocksAfterTheFirstGuidedProject(): void
     {
         $this->markLessonsCompleted('project-01-senior-crud', 'arch-pragmatic-ddd', 'devops-ci-cd-github-actions');

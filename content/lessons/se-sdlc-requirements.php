@@ -118,9 +118,9 @@ $p95Value = $latencies[max(0, min($p95Index, $count - 1))];
         ],
     ],
     'architecture_code' => [
-        'filename' => 'SlaViolationDetector.php',
-        'title' => 'Monitor de Acuerdos de Nivel de Servicio (SLA) en PHP 8.4',
-        'tag' => 'PHP 8.4 Performance Architecture',
+        'filename' => 'UserStorySpecification.php',
+        'title' => 'Especificación de User Stories y Criterios INVEST en PHP 8.4',
+        'tag' => 'Agile & Requirements Architecture',
         'code' => '<?php
 
 declare(strict_types=1);
@@ -128,47 +128,41 @@ declare(strict_types=1);
 namespace App\\Engineering;
 
 /**
- * Servicio de auditoría de Acuerdos de Nivel de Servicio (SLA).
- * Procesa colecciones de latencias recolectadas por middleware o APM
- * y determina si se violó el umbral P95 acordado con el negocio.
+ * Modelo inmutable de especificación técnica para Historias de Usuario.
+ * Garantiza que todo requerimiento cumpla los criterios INVEST
+ * y cuente con límites cuantitativos de rendimiento (SLA).
  */
-final readonly class SlaViolationDetector
+final readonly class UserStorySpecification
 {
+    /**
+     * @param list<string> $acceptanceCriteria Criterios de aceptación en formato Given-When-Then.
+     * @param int|null $maxLatencyMs Límite de latencia SLA acordado en milisegundos (NFR).
+     */
     public function __construct(
-        private float $maxAllowedP95Ms = 500.0
+        public string $role,
+        public string $goal,
+        public string $businessValue,
+        public array $acceptanceCriteria = [],
+        public ?int $maxLatencyMs = null
     ) {}
 
     /**
-     * Calcula la latencia en el percentil 95 (P95).
-     *
-     * @param list<float|int> $latencies Colección de tiempos de respuesta en milisegundos.
-     * @return float Latencia P95 calculada. Retorna 0.0 si el array está vacío.
+     * Valida que la historia cumpla con los principios INVEST (Valuable y Testable).
      */
-    public function calculateP95(array $latencies): float
+    public function isInvestCompliant(): bool
     {
-        if (empty($latencies)) {
-            return 0.0;
-        }
-
-        $sorted = $latencies;
-        sort($sorted, SORT_NUMERIC);
-
-        $count = count($sorted);
-        // El percentil 95 corresponde al índice del 95% de los elementos ordenados
-        $index = (int) ceil($count * 0.95) - 1;
-        $clampedIndex = max(0, min($index, $count - 1));
-
-        return (float) $sorted[$clampedIndex];
+        return trim($this->role) !== \'\'
+            && trim($this->goal) !== \'\'
+            && trim($this->businessValue) !== \'\'
+            && count($this->acceptanceCriteria) > 0;
     }
 
     /**
-     * Evalúa si las latencias observadas violan el SLA del sistema.
-     *
-     * @param list<float|int> $latencies
+     * Verifica si se definió un Requerimiento No Funcional (SLA de latencia).
      */
-    public function isSlaViolated(array $latencies): bool
+    public function hasNonFunctionalSla(): bool
     {
-        return $this->calculateP95($latencies) > $this->maxAllowedP95Ms;
+        return $this->maxLatencyMs !== null && $this->maxLatencyMs > 0;
     }
 }
 ',
@@ -229,59 +223,44 @@ final readonly class SlaViolationDetector
         ],
     ],
     'exercise' => [
-        'title' => 'Detector de Violaciones de SLA con Latencia P95',
-        'objective' => 'Implementar la clase SlaViolationDetector para calcular matemáticamente la latencia en el Percentil 95 (P95) de una serie de mediciones y evaluar si se viola el SLA del sistema.',
-        'instructions' => 'Crea la clase SlaViolationDetector dentro del namespace App\\Engineering. La clase debe recibir el umbral de latencia máxima (float $maxLatencyMs = 500.0) en su constructor, e implementar dos métodos públicos: calculateP95(array $latencies): float e isSlaViolated(array $latencies): bool.',
-        'filename' => 'SlaViolationDetector.php',
+        'title' => 'Validador de Especificación de User Stories & INVEST',
+        'objective' => 'Implementar la clase UserStorySpecification para modelar una historia de usuario ágil, validar que cumpla los criterios INVEST (Rol, Meta, Valor de negocio y Criterios de Aceptación) y verificar la existencia de un SLA de latencia cuantitativo.',
+        'instructions' => 'Crea la clase UserStorySpecification dentro del namespace App\\Engineering. En su constructor debe recibir: public string $role, public string $goal, public string $businessValue, public array $acceptanceCriteria = [], public ?int $maxLatencyMs = null. Implementa dos métodos públicos: isInvestCompliant(): bool (retorna true si rol, goal y businessValue no están vacíos tras trim, y acceptanceCriteria tiene al menos 1 elemento) y hasNonFunctionalSla(): bool (retorna true si maxLatencyMs no es null y es mayor a 0).',
+        'filename' => 'UserStorySpecification.php',
         'guide' => [
-            'explanation' => 'En este reto vas a construir un componente de observabilidad de ingeniería. En lugar de calcular un promedio engañoso, vas a ordenar un array de latencias numéricas de producción y extraer el valor que corresponde al percentil 95 (P95). Si ese P95 supera el límite de tu SLA, retornarás true indicando que el sistema está degradado.',
+            'explanation' => 'En ingeniería de software no empezamos tirando código sin rumbo. Este reto modela cómo un ingeniero formaliza un requerimiento: asegura que la historia tenga el formato estándar (Como [rol], Quiero [meta], Para [valor]), que sea comprobable (Testable en INVEST mediante criterios de aceptación) y que tenga una métrica de calidad no funcional (SLA).',
             'steps' => [
-                'Paso 1: Declara <code>class SlaViolationDetector</code> con su constructor que recibe <code>private readonly float $maxLatencyMs = 500.0</code>.',
-                'Paso 2: En <code>calculateP95(array $latencies): float</code>, verifica si el array está vacío; si lo está, retorna <code>0.0</code>.',
-                'Paso 3: Clona y ordena las latencias de menor a mayor usando <code>sort($sorted, SORT_NUMERIC);</code>.',
-                'Paso 4: Calcula el índice correspondiente al 95%: <code>(int) ceil($count * 0.95) - 1</code>.',
-                'Paso 5: Asegura que el índice esté dentro de los límites válidos usando <code>max(0, min($index, $count - 1))</code> y retorna el valor en esa posición como float.',
-                'Paso 6: En <code>isSlaViolated(array $latencies): bool</code>, retorna <code>true</code> si el P95 calculado es estrictamente mayor a <code>$this->maxLatencyMs</code>.',
+                'Paso 1: Define <code>class UserStorySpecification</code> en el namespace <code>App\\Engineering</code> con sus propiedades en el constructor.',
+                'Paso 2: En <code>isInvestCompliant(): bool</code>, usa <code>trim()</code> para verificar que <code>$this->role</code>, <code>$this->goal</code> y <code>$this->businessValue</code> contengan texto no vacío.',
+                'Paso 3: Verifica que <code>count($this->acceptanceCriteria) > 0</code> para asegurar que la historia sea Testeable (criterio INVEST).',
+                'Paso 4: En <code>hasNonFunctionalSla(): bool</code>, comprueba que <code>$this->maxLatencyMs !== null && $this->maxLatencyMs > 0</code>.',
             ],
             'useful_functions' => [
                 [
-                    'name' => 'sort(&$array, SORT_NUMERIC)',
-                    'desc' => 'Ordena los elementos de un array de menor a mayor respetando el orden numérico.',
-                ],
-                [
-                    'name' => 'ceil(float $num)',
-                    'desc' => 'Redondea una fracción hacia el entero superior más cercano (necesario para la posición del percentil).',
-                ],
-                [
-                    'name' => 'max(int $a, int $b)',
-                    'desc' => 'Garantiza que el índice no sea menor a 0 en arrays pequeños.',
+                    'name' => 'trim(string $str)',
+                    'desc' => 'Elimina espacios en blanco al inicio y final de una cadena de texto.',
                 ],
                 [
                     'name' => 'count(array $arr)',
-                    'desc' => 'Retorna la cantidad de elementos en el array.',
+                    'desc' => 'Retorna la cantidad de elementos en el array de criterios de aceptación.',
                 ],
             ],
         ],
         'hints' => [
             [
-                'label' => 'Concepto y Matemáticas',
-                'text' => 'El percentil 95 significa que el 95% de los datos están por debajo de ese número. Para encontrarlo, el primer paso obligatorio es ordenar el array de menor a mayor.',
-                'snippet' => '$sorted = $latencies;
-sort($sorted, SORT_NUMERIC);',
+                'label' => 'Validación de Campos de la Historia',
+                'text' => 'Una historia de usuario bien formada requiere que el rol, la meta y el valor de negocio tengan contenido real.',
+                'snippet' => 'trim($this->role) !== \'\' && trim($this->goal) !== \'\' && trim($this->businessValue) !== \'\'',
             ],
             [
-                'label' => 'Fórmula del Índice',
-                'text' => 'Si tienes 10 elementos, el 95% de 10 es 9.5. Al aplicar ceil(9.5) obtienes 10. Como los arrays en PHP empiezan en índice 0, el índice final es 10 - 1 = 9 (el último elemento).',
-                'snippet' => '$count = count($sorted);
-$index = (int) ceil($count * 0.95) - 1;',
+                'label' => 'Criterio Testable de INVEST',
+                'text' => 'Para que una historia pueda probarse, debe contar con al menos un criterio de aceptación.',
+                'snippet' => 'count($this->acceptanceCriteria) > 0',
             ],
             [
-                'label' => 'Solución del Método isSlaViolated',
-                'text' => 'Simplemente invoca el método que ya implementaste y compara con la propiedad inyectada en el constructor.',
-                'snippet' => 'public function isSlaViolated(array $latencies): bool
-{
-    return $this->calculateP95($latencies) > $this->maxLatencyMs;
-}',
+                'label' => 'Verificación del SLA (Requerimiento No Funcional)',
+                'text' => 'Un SLA cuantitativo debe estar definido y ser un número positivo de milisegundos.',
+                'snippet' => 'return $this->maxLatencyMs !== null && $this->maxLatencyMs > 0;',
             ],
         ],
         'starter_code' => '<?php
@@ -291,40 +270,43 @@ declare(strict_types=1);
 namespace App\\Engineering;
 
 /**
- * Detector de Violaciones de SLA en el Ciclo de Vida del Software (SDLC).
+ * Especificación Técnica de Historia de Usuario en el SDLC.
  *
- * Mide si un lote de latencias reales en milisegundos viola el umbral acordado
- * mediante el cálculo del Percentil 95 (P95).
+ * Valida la calidad de un requerimiento conforme a los criterios INVEST
+ * y comprueba la existencia de métricas cuantitativas no funcionales (SLA).
  */
-class SlaViolationDetector
+class UserStorySpecification
 {
+    /**
+     * @param list<string> $acceptanceCriteria Criterios de aceptación (Given-When-Then).
+     * @param int|null $maxLatencyMs Límite de latencia SLA en milisegundos.
+     */
     public function __construct(
-        private readonly float $maxLatencyMs = 500.0
+        public readonly string $role,
+        public readonly string $goal,
+        public readonly string $businessValue,
+        public readonly array $acceptanceCriteria = [],
+        public readonly ?int $maxLatencyMs = null
     ) {}
 
     /**
-     * Calcula la latencia del Percentil 95 (P95).
-     *
-     * @param list<float|int> $latencies Lista de latencias medidas en milisegundos.
-     * @return float Valor de latencia en el percentil 95. Si el array está vacío, retorna 0.0.
+     * Valida que la historia cumpla los criterios INVEST:
+     * Debe tener Rol, Objetivo y Valor de Negocio no vacíos,
+     * y al menos 1 Criterio de Aceptación verificable.
      */
-    public function calculateP95(array $latencies): float
+    public function isInvestCompliant(): bool
     {
-        // PASO 1: Si no hay latencias, retorna 0.0
-        // PASO 2: Clona y ordena las latencias numéricamente
-        // PASO 3: Calcula la posición del 95% con ceil($count * 0.95) - 1
-        // PASO 4: Retorna el valor en dicha posición como float
-        return 0.0;
+        // PASO 1: Verifica que role, goal y businessValue no estén vacíos (usando trim)
+        // PASO 2: Verifica que acceptanceCriteria tenga al menos 1 elemento (count > 0)
+        return false;
     }
 
     /**
-     * Determina si el SLA fue violado (si el P95 supera el umbral máximo).
-     *
-     * @param list<float|int> $latencies
+     * Comprueba si el requerimiento cuenta con un Acuerdo de Nivel de Servicio (SLA) definido.
      */
-    public function isSlaViolated(array $latencies): bool
+    public function hasNonFunctionalSla(): bool
     {
-        // PASO 5: Compara el cálculo P95 con $this->maxLatencyMs
+        // PASO 3: Verifica que maxLatencyMs no sea null y sea mayor a 0
         return false;
     }
 }
@@ -336,43 +318,36 @@ declare(strict_types=1);
 namespace App\\Engineering;
 
 /**
- * Implementación Senior de SlaViolationDetector.
+ * Implementación de UserStorySpecification.
  */
-class SlaViolationDetector
+final readonly class UserStorySpecification
 {
+    /**
+     * @param list<string> $acceptanceCriteria
+     */
     public function __construct(
-        private readonly float $maxLatencyMs = 500.0
+        public string $role,
+        public string $goal,
+        public string $businessValue,
+        public array $acceptanceCriteria = [],
+        public ?int $maxLatencyMs = null
     ) {}
 
-    /**
-     * @param list<float|int> $latencies
-     */
-    public function calculateP95(array $latencies): float
+    public function isInvestCompliant(): bool
     {
-        if (empty($latencies)) {
-            return 0.0;
-        }
-
-        $sorted = $latencies;
-        sort($sorted, SORT_NUMERIC);
-
-        $count = count($sorted);
-        $index = (int) ceil($count * 0.95) - 1;
-        $clampedIndex = max(0, min($index, $count - 1));
-
-        return (float) $sorted[$clampedIndex];
+        return trim($this->role) !== \'\'
+            && trim($this->goal) !== \'\'
+            && trim($this->businessValue) !== \'\'
+            && count($this->acceptanceCriteria) > 0;
     }
 
-    /**
-     * @param list<float|int> $latencies
-     */
-    public function isSlaViolated(array $latencies): bool
+    public function hasNonFunctionalSla(): bool
     {
-        return $this->calculateP95($latencies) > $this->maxLatencyMs;
+        return $this->maxLatencyMs !== null && $this->maxLatencyMs > 0;
     }
 }
 ',
-        'explanation' => 'La solución ordena el array de latencias y localiza con precisión matemática la posición del percentil 95 usando la fórmula canónica ceil(N * 0.95) - 1 con clamp de seguridad. Esto garantiza que un pico de latencia en el 5% de las peticiones sea detectado de inmediato sin ser camuflado por el promedio.',
+        'explanation' => 'La clase formaliza el contrato de un requerimiento técnico: vincula el valor de negocio (User Story INVEST) con los atributos de calidad operativa (SLA cuantitativo), evitando ambigüedades antes de iniciar la fase de construcción del software.',
     ],
     'quiz' => [
         'title' => 'Evaluación Técnica: SDLC, INVEST y Métricas de Rendimiento',

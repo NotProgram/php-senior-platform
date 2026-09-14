@@ -1466,18 +1466,43 @@ class ExerciseEvaluatorService
      */
     private function validateSeSdlcRequirements(string $code, bool &$passed, array &$hints): void
     {
-        if (!str_contains($code, 'class SlaViolationDetector')) {
-            $passed = false;
-            $hints[] = 'Debes declarar la clase SlaViolationDetector.';
+        $clean = $this->stripComments($code);
+
+        if (str_contains($clean, 'UserStorySpecification')) {
+            if (!str_contains($clean, 'class UserStorySpecification')) {
+                $passed = false;
+                $hints[] = 'Debes declarar la clase UserStorySpecification.';
+            }
+            if (!str_contains($clean, 'isInvestCompliant')) {
+                $passed = false;
+                $hints[] = 'La clase debe implementar el método isInvestCompliant(): bool.';
+            }
+            if (!str_contains($clean, 'hasNonFunctionalSla')) {
+                $passed = false;
+                $hints[] = 'La clase debe implementar el método hasNonFunctionalSla(): bool.';
+            }
+            if (!str_contains($clean, 'acceptanceCriteria')) {
+                $passed = false;
+                $hints[] = 'Debes incluir la propiedad $acceptanceCriteria para registrar los criterios de aceptación.';
+            }
+            return;
         }
-        if (!str_contains($code, 'function calculateP95(') || !str_contains($code, 'function isSlaViolated(')) {
-            $passed = false;
-            $hints[] = 'La clase debe implementar los métodos calculateP95(array $latencies): float e isSlaViolated(array $latencies): bool.';
+
+        // Backwards compatibility for legacy SlaViolationDetector submissions
+        if (str_contains($clean, 'SlaViolationDetector')) {
+            if (!str_contains($clean, 'class SlaViolationDetector')) {
+                $passed = false;
+                $hints[] = 'Debes declarar la clase SlaViolationDetector.';
+            }
+            if (!str_contains($clean, 'calculateP95') || !str_contains($clean, 'isSlaViolated')) {
+                $passed = false;
+                $hints[] = 'La clase debe implementar los métodos calculateP95(array $latencies): float e isSlaViolated(array $latencies): bool.';
+            }
+            return;
         }
-        if (!str_contains($code, '0.95') && !str_contains($code, '95')) {
-            $passed = false;
-            $hints[] = 'Debes calcular el percentil 95 indexando el array ordenado.';
-        }
+
+        $passed = false;
+        $hints[] = 'Debes implementar la clase UserStorySpecification con los métodos isInvestCompliant(): bool y hasNonFunctionalSla(): bool.';
     }
 
     /**
