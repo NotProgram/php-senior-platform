@@ -23,7 +23,7 @@ class UserRepository extends ServiceEntityRepository
         $user = $this->findOneBy(['email' => 'developer@senior-platform.local']);
 
         if ($user === null) {
-            $user = new User('developer@senior-platform.local', 'Dilan (Senior in Training)');
+            $user = new User('developer@senior-platform.local', 'Dilan');
             $user->setCurrentLevel('Junior')
                 ->setStreakDays(1)
                 ->addExperiencePoints(50);

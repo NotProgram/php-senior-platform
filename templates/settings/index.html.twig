@@ -93,9 +93,24 @@
             {{ icons.icon('user', 16) }}
             <span>Perfil del Desarrollador</span>
         </h2>
-        <div class="settings-grid settings-profile-grid" style="display: grid; grid-template-columns: 140px 1fr; gap: 10px; font-size: 13px; margin-bottom: 14px;">
+        <div class="settings-grid settings-profile-grid" style="display: grid; grid-template-columns: 140px 1fr; gap: 12px; font-size: 13px; margin-bottom: 14px; align-items: center;">
             <span style="color: #858585;">Nombre:</span>
-            <span style="color: #ffffff; font-weight: 500;">{{ current_user.displayName }}</span>
+            <div>
+                <form action="{{ path('app_settings_update_profile') }}" method="POST" style="display: flex; gap: 8px; align-items: center; max-width: 380px;">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('submit') }}">
+                    <input type="text" 
+                           name="display_name" 
+                           value="{{ current_user.displayName }}" 
+                           required 
+                           maxlength="100" 
+                           style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-bright); padding: 5px 10px; border-radius: var(--radius-sm); font-size: 13px; flex: 1; outline: none;" 
+                           placeholder="Tu nombre o alias">
+                    <button type="submit" class="btn-vs" style="background: var(--wash-primary); border: 1px solid rgba(108, 124, 255, 0.4); color: var(--accent-primary-hi); font-size: 11.5px; font-weight: 600; white-space: nowrap;">
+                        {{ icons.icon('check', 13) }}
+                        <span>Guardar</span>
+                    </button>
+                </form>
+            </div>
 
             <span style="color: #858585;">Email:</span>
             <span style="color: #ffffff;">{{ current_user.email }}</span>

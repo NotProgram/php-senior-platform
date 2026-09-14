@@ -32,6 +32,7 @@ final class ProgressBackupTest extends FunctionalTestCase
         self::assertSame(ProgressBackupService::CURRENT_SCHEMA_VERSION, $data['schema_version']);
         self::assertSame('Senior DevLab', $data['app']);
         self::assertSame(150, $data['user']['experience_points']);
+        self::assertSame('Dilan', $data['user']['display_name']);
         self::assertCount(1, $data['progress']);
         self::assertSame('php-request-lifecycle', $data['progress'][0]['lesson_slug']);
     }
@@ -130,6 +131,7 @@ final class ProgressBackupTest extends FunctionalTestCase
         self::assertSelectorExists('.flash--success');
 
         $user = $this->reloadDefaultUser();
+        self::assertSame('Dilan Garrido', $user->getDisplayName());
         self::assertSame(500, $user->getExperiencePoints());
         self::assertSame('Senior', $user->getCurrentLevel());
         self::assertSame(5, $user->getStreakDays());

@@ -119,6 +119,9 @@ class ProgressBackupService
             }
 
             // Restore user metadata and points
+            if (!empty($data['user']['display_name'])) {
+                $user->setDisplayName(trim((string) $data['user']['display_name']));
+            }
             if (isset($data['user']['experience_points'])) {
                 $user->setExperiencePoints((int) $data['user']['experience_points']);
             }

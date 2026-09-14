@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use App\Service\LearningProgressService;
 use App\Service\ProgressBackupService;
 use App\Service\RoadmapService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
@@ -128,6 +129,40 @@ class SettingsController extends AbstractController
         } catch (\Throwable $e) {
             $this->addFlash('error', 'No se pudo restaurar el autoguardado: ' . $e->getMessage());
         }
+
+        return $this->redirectToRoute('app_settings');
+    }
+
+    #[Route('/settings/profile', name: 'app_settings_update_profile', methods: ['POST'])]
+    public function updateProfile(
+        Request $request,
+        UserRepository $userRepo,
+        EntityManagerInterface $entityManager,
+        ProgressBackupService $progressBackup
+    ): Response {
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN_ID, $request->getPayload()->getString('_csrf_token'))) {
+            throw new AccessDeniedHttpException('Token CSRF inválido.');
+        }
+
+        $displayName = trim($request->getPayload()->getString('display_name'));
+        if ($displayName === '') {
+            $this->addFlash('error', 'El nombre no puede estar vacío.');
+            return $this->redirectToRoute('app_settings');
+        }
+
+        if (mb_strlen($displayName) > 100) {
+            $this->addFlash('error', 'El nombre no puede superar los 100 caracteres.');
+            return $this->redirectToRoute('app_settings');
+        }
+
+        $user = $userRepo->findOrCreateDefaultUser();
+        $user->setDisplayName($displayName);
+        $entityManager->flush();
+
+        // Update auto-backup with the new name
+        $progressBackup->autoSave($user);
+
+        $this->addFlash('success', sprintf('Nombre de perfil actualizado a "%s".', $displayName));
 
         return $this->redirectToRoute('app_settings');
     }
