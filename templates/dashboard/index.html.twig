@@ -105,7 +105,7 @@
 
 <!-- Multi-Category Progress Dashboard -->
 <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px; margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
         <h2 style="font-size: 14px; font-weight: 700; margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;">
             {{ icons.icon('activity', 15) }}
             <span>Madurez por &Aacute;reas de Ingenier&iacute;a</span>
@@ -233,7 +233,7 @@
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
                 Pr&oacute;ximo objetivo curricular: <strong style="color: #d4d4d4;">{{ metrics.nextTarget }}</strong>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <a href="{{ path('app_lesson', {lessonSlug: metrics.currentLessonSlug}) }}" class="btn btn-primary" style="display: flex; align-items: center; gap: 8px; font-size: 12px; text-decoration: none;">
                     {{ icons.icon('play', 14) }}
                     <span>Continuar Lecci&oacute;n</span>
@@ -280,7 +280,7 @@
 
 <!-- Interactive DevLabs Quick Access Hub -->
 <div style="margin-bottom: 32px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
         <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 8px;">
             {{ icons.icon('terminal', 16) }}
             <span>Laboratorios Interactivos de Ingenier&iacute;a (DevLabs)</span>
@@ -360,7 +360,7 @@
 
 <!-- Unlocked Skills Matrix (Competencias Profesionales con Niveles) -->
 <div style="margin-bottom: 32px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
         <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 8px;">
             {{ icons.icon('award', 16) }}
             <span>Habilidades T&eacute;cnicas &amp; Radar de Competencias Senior</span>

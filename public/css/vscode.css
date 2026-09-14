@@ -648,6 +648,10 @@ a { color: var(--text-link); }
 .content-viewport {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: var(--space-6) var(--space-8) var(--space-12);
     user-select: text;
     scroll-behavior: smooth;
@@ -655,7 +659,12 @@ a { color: var(--text-link); }
     background-repeat: no-repeat;
     background-size: 100% 420px;
 }
-.content-viewport > * { max-width: var(--content-max); }
+.content-viewport > * {
+    max-width: var(--content-max);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
 
 .page-header {
     margin-bottom: var(--space-6);

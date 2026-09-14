@@ -135,7 +135,7 @@
         {% if module.lessons is defined and module.lessons %}
             {% for lesson in module.lessons %}
                 {% set status = status_map[lesson.slug] ?? null %}
-                <div class="metric-card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px;">
+                <div class="metric-card module-lesson-card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px;">
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <span class="user-badge" style="background: rgba(0, 122, 204, 0.12); border-color: rgba(0, 122, 204, 0.35); color: #4fc1ff; font-size: 12px; font-weight: 700; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
                             {{ loop.index }}

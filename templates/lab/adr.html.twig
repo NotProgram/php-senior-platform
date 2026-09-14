@@ -132,8 +132,8 @@
 </style>
 {% endblock %}
 
-{% block content %}
-<div style="padding: 24px; max-width: 1500px; margin: 0 auto;">
+{% block body %}
+<div style="width: 100%; max-width: 1500px; margin: 0 auto;">
     <!-- Lab Header -->
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-main);">
         <div>
@@ -181,7 +181,7 @@
                 <span style="font-size: 11px; color: #858585;">Markdown Compatible</span>
             </div>
 
-            <div style="display: grid; grid-template-columns: 120px 1fr 140px; gap: 12px;">
+            <div class="adr-meta-grid" style="display: grid; grid-template-columns: 120px 1fr 140px; gap: 12px;">
                 <div class="form-group">
                     <label>ID</label>
                     <input type="text" id="adrId" class="adr-input" value="ADR-001" oninput="updateLivePreview()">
@@ -211,7 +211,7 @@
                 <textarea id="adrDecision" class="adr-textarea" rows="3" oninput="updateLivePreview()">We will store immutable domain events in PostgreSQL using a dedicated `domain_events` table with a native `JSONB` column for payload data and a GIN index on event metadata.</textarea>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="adr-consequences-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div class="form-group">
                     <label style="color: #89d185;">{{ icons.icon('check-circle', 12) }} Positive Consequences</label>
                     <textarea id="adrPositives" class="adr-textarea" rows="3" oninput="updateLivePreview()">- Zero additional infrastructure components or cloud dependencies.

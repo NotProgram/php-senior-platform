@@ -20,7 +20,7 @@
             {{ icons.icon('user', 16) }}
             <span>Perfil del Desarrollador</span>
         </h2>
-        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 10px; font-size: 13px; margin-bottom: 14px;">
+        <div class="settings-grid settings-profile-grid" style="display: grid; grid-template-columns: 140px 1fr; gap: 10px; font-size: 13px; margin-bottom: 14px;">
             <span style="color: #858585;">Nombre:</span>
             <span style="color: #ffffff; font-weight: 500;">{{ current_user.displayName }}</span>
 
@@ -52,7 +52,7 @@
             {{ icons.icon('cpu', 16) }}
             <span>Telemetría del Entorno Local</span>
         </h2>
-        <div style="display: grid; grid-template-columns: 180px 1fr; gap: 10px; font-size: 13px;">
+        <div class="settings-grid settings-telemetry-grid" style="display: grid; grid-template-columns: 180px 1fr; gap: 10px; font-size: 13px;">
             <span style="color: #858585;">PHP Runtime:</span>
             <span style="color: #ffffff;">PHP 8.4.7 (ZTS Visual C++ 2022 x64)</span>
 

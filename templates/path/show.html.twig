@@ -94,7 +94,7 @@
             <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
                 {% for l in phase.lessons %}
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #141414; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 14px; gap: 12px;">
-                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
                         {% if l.is_done %}
                             <span style="color: var(--accent-success);">{{ icons.icon('check-circle', 15) }}</span>
                         {% elseif l.status.value == 'IN_PROGRESS' %}
