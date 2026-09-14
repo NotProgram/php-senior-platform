@@ -125,7 +125,7 @@
             if (queued) { return; }
             queued = true;
             window.requestAnimationFrame(function () { sync(); queued = false; });
-        });
+        }, { passive: true });
         sync();
     }
 
@@ -146,7 +146,7 @@
             if (queued) { return; }
             queued = true;
             window.requestAnimationFrame(function () { sync(); queued = false; });
-        });
+        }, { passive: true });
         sync();
     }
 

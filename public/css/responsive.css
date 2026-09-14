@@ -431,12 +431,16 @@ html, body {
         width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box !important;
+        touch-action: pan-y;
     }
     .content-viewport > * {
         max-width: 100% !important;
         width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box !important;
+    }
+    iframe {
+        touch-action: pan-y;
     }
 
     /* All Lab 2-column workspaces switch to fluid stacked column */
