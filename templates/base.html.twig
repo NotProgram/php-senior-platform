@@ -45,7 +45,7 @@
         </div>
 
         <div class="titlebar-center-wrapper">
-            <div class="titlebar-search-box" id="titlebar-search-box">
+            <div class="titlebar-search-box" id="titlebar-search-box" role="button" tabindex="0" aria-label="Abrir buscador global">
                 {{ icons.icon('search', 13) }}
                 <input type="text" 
                        id="global-search-input" 
@@ -54,29 +54,6 @@
                        autocomplete="off" 
                        spellcheck="false">
                 <span class="search-shortcut-badge">Ctrl+K</span>
-            </div>
-
-            <!-- VS Code Style Quick Open / Command Palette Dropdown -->
-            <div class="search-palette-dropdown" id="search-palette" style="display: none;">
-                <div class="search-palette-header">
-                    <span id="search-palette-label">Sugerencias rápidas</span>
-                    <button type="button" class="search-palette-close-btn" id="btn-close-palette" aria-label="Cerrar búsqueda"><span>✕</span> <kbd>Esc</kbd></button>
-                </div>
-                <div class="search-palette-mobile-input-wrap">
-                    <input type="text" 
-                           id="mobile-search-input" 
-                           class="search-palette-mobile-input" 
-                           placeholder="Buscar lecciones, labs, módulos..." 
-                           autocomplete="off">
-                </div>
-                <div class="search-palette-results" id="search-palette-results">
-                    <!-- Results populated dynamically -->
-                </div>
-                <div class="search-palette-footer">
-                    <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
-                    <span><kbd>↵</kbd> abrir</span>
-                    <span><kbd>esc</kbd> cerrar</span>
-                </div>
             </div>
         </div>
 
@@ -295,6 +272,12 @@
         </div>
 
         <div class="mobile-drawer-body">
+            <button type="button" class="mobile-drawer-search-trigger" id="btn-drawer-search" aria-label="Abrir buscador">
+                <span class="drawer-search-icon">{{ icons.icon('search', 16) }}</span>
+                <span class="drawer-search-text">Buscar en la plataforma...</span>
+                <kbd class="drawer-search-kbd">Ctrl+K</kbd>
+            </button>
+
             <div class="mobile-drawer-section-label">Navegación Principal</div>
             <div class="mobile-nav-links">
                 <a href="{{ path('app_dashboard') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}">
@@ -374,6 +357,40 @@
 
     <!-- Sidebar backdrop for mobile/tablet when Explorer is open -->
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- Search Palette Backdrop -->
+    <div class="search-palette-backdrop" id="search-palette-backdrop"></div>
+
+    <!-- VS Code Style Quick Open / Command Palette Modal -->
+    <div class="search-palette-dropdown" id="search-palette" style="display: none;" role="dialog" aria-modal="true" aria-label="Búsqueda global">
+        <div class="search-palette-header">
+            <span id="search-palette-label">Sugerencias rápidas</span>
+            <button type="button" class="search-palette-close-btn" id="btn-close-palette" aria-label="Cerrar búsqueda">
+                {{ icons.icon('x', 14) }}
+                <span>Cerrar</span>
+            </button>
+        </div>
+        <div class="search-palette-mobile-input-wrap">
+            <div class="palette-input-inner">
+                <span class="palette-input-icon">{{ icons.icon('search', 14) }}</span>
+                <input type="search" 
+                       id="mobile-search-input" 
+                       class="search-palette-mobile-input" 
+                       placeholder="Buscar lecciones, labs, módulos..." 
+                       autocomplete="off"
+                       autocapitalize="off"
+                       spellcheck="false">
+            </div>
+        </div>
+        <div class="search-palette-results" id="search-palette-results">
+            <!-- Results populated dynamically -->
+        </div>
+        <div class="search-palette-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+            <span><kbd>↵</kbd> abrir</span>
+            <span><kbd>esc</kbd> cerrar</span>
+        </div>
+    </div>
 
     <script>
     (function() {
@@ -645,27 +662,93 @@
 
         const mobileSearchInput = document.getElementById('mobile-search-input');
         const btnClosePalette = document.getElementById('btn-close-palette');
+        const searchPaletteBackdrop = document.getElementById('search-palette-backdrop');
+        const btnDrawerSearch = document.getElementById('btn-drawer-search');
 
         function openPalette() {
             if (!searchPalette) return;
-            searchPalette.style.display = 'block';
+            searchPalette.style.display = 'flex';
+            if (searchPaletteBackdrop) searchPaletteBackdrop.classList.add('is-open');
             if (searchBox) searchBox.classList.add('focused');
-            const q = (window.innerWidth <= 992 && mobileSearchInput) ? mobileSearchInput.value : (searchInput ? searchInput.value : '');
+
+            const isMobile = window.innerWidth <= 992;
+            const activeInput = isMobile ? mobileSearchInput : searchInput;
+            const q = activeInput ? activeInput.value : '';
             renderResults(q);
-            if (window.innerWidth <= 992 && mobileSearchInput) {
-                setTimeout(function() { mobileSearchInput.focus(); }, 60);
+
+            if (isMobile && mobileSearchInput) {
+                setTimeout(function() {
+                    mobileSearchInput.focus();
+                    if (mobileSearchInput.value) {
+                        mobileSearchInput.select();
+                    }
+                }, 60);
+            } else if (searchInput && document.activeElement !== searchInput) {
+                searchInput.focus();
             }
         }
 
         function closePalette() {
             if (!searchPalette) return;
             searchPalette.style.display = 'none';
+            if (searchPaletteBackdrop) searchPaletteBackdrop.classList.remove('is-open');
             if (searchBox) searchBox.classList.remove('focused');
+            if (searchInput && document.activeElement === searchInput) {
+                searchInput.blur();
+            }
+            if (mobileSearchInput && document.activeElement === mobileSearchInput) {
+                mobileSearchInput.blur();
+            }
             selectedIndex = -1;
+        }
+
+        // Mobile Search Button in Titlebar
+        if (btnMobileSearch) {
+            btnMobileSearch.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openPalette();
+            });
+        }
+
+        // Mobile Search Button in Drawer
+        if (btnDrawerSearch) {
+            btnDrawerSearch.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileDrawer();
+                setTimeout(openPalette, 120);
+            });
+        }
+
+        // Close button in palette header
+        if (btnClosePalette) {
+            btnClosePalette.addEventListener('click', function(e) {
+                e.preventDefault();
+                closePalette();
+            });
+        }
+
+        // Backdrop click closes palette
+        if (searchPaletteBackdrop) {
+            searchPaletteBackdrop.addEventListener('click', function(e) {
+                e.preventDefault();
+                closePalette();
+            });
+        }
+
+        // Desktop search box click
+        if (searchBox) {
+            searchBox.addEventListener('click', function(e) {
+                if (searchInput) searchInput.focus();
+                openPalette();
+            });
         }
 
         if (mobileSearchInput) {
             mobileSearchInput.addEventListener('input', function() {
+                renderResults(this.value);
+            });
+            mobileSearchInput.addEventListener('search', function() {
                 renderResults(this.value);
             });
             mobileSearchInput.addEventListener('keydown', function(e) {
@@ -691,20 +774,15 @@
             });
         }
 
-        if (btnClosePalette) {
-            btnClosePalette.addEventListener('click', function(e) {
-                e.preventDefault();
-                closePalette();
-            });
-        }
-
         if (searchInput) {
             searchInput.addEventListener('focus', openPalette);
             searchInput.addEventListener('input', function() {
                 openPalette();
                 renderResults(this.value);
             });
-
+            searchInput.addEventListener('search', function() {
+                renderResults(this.value);
+            });
             searchInput.addEventListener('keydown', function(e) {
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
@@ -724,7 +802,6 @@
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
                     closePalette();
-                    searchInput.blur();
                 }
             });
         }
@@ -732,9 +809,12 @@
         // Close when clicking outside
         document.addEventListener('click', function(e) {
             const isMobileSearchBtn = e.target.closest('#btn-mobile-search');
-            if (isMobileSearchBtn) return;
-            if (searchBox && !searchBox.contains(e.target) && searchPalette && !searchPalette.contains(e.target)) {
-                closePalette();
+            const isDrawerSearchBtn = e.target.closest('#btn-drawer-search');
+            if (isMobileSearchBtn || isDrawerSearchBtn) return;
+            if (searchPalette && searchPalette.style.display !== 'none') {
+                if (!searchPalette.contains(e.target) && (!searchBox || !searchBox.contains(e.target))) {
+                    closePalette();
+                }
             }
         });
 
@@ -745,21 +825,13 @@
 
             if (isCtrl && (key === 'k' || key === 'p')) {
                 e.preventDefault();
-                if (searchInput) {
-                    searchInput.focus();
-                    searchInput.select();
-                    openPalette();
-                }
+                openPalette();
             } else if (isCtrl && key === 'b') {
                 e.preventDefault();
                 toggleSidebar();
             } else if (e.key === '/' && !['input', 'textarea'].includes((document.activeElement.tagName || '').toLowerCase())) {
                 e.preventDefault();
-                if (searchInput) {
-                    searchInput.focus();
-                    searchInput.select();
-                    openPalette();
-                }
+                openPalette();
             } else if (e.key === 'Escape' && searchPalette && searchPalette.style.display !== 'none') {
                 closePalette();
             }
