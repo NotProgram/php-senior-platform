@@ -114,4 +114,18 @@ class ControllerSmokeTest extends WebTestCase
 
         self::assertResponseRedirects('/roadmap');
     }
+
+    public function testResponsiveElementsAreRendered(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('link[href*="responsive.css"]');
+        self::assertSelectorExists('#btn-mobile-menu');
+        self::assertSelectorExists('#btn-mobile-search');
+        self::assertSelectorExists('#mobile-nav-drawer');
+        self::assertSelectorExists('#mobile-nav-backdrop');
+        self::assertSelectorExists('#sidebar-backdrop');
+    }
 }
