@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\ExerciseAttempt;
 use App\Entity\QuizAttempt;
+use App\Entity\ReviewCard;
 use App\Entity\User;
 use App\Entity\UserProgress;
 use App\Enum\ProgressStatus;
@@ -72,7 +73,7 @@ class LearningProgressService
     public function resetProgress(User $user): void
     {
         $this->entityManager->wrapInTransaction(static function (EntityManagerInterface $em) use ($user): void {
-            foreach ([UserProgress::class, QuizAttempt::class, ExerciseAttempt::class] as $entityClass) {
+            foreach ([UserProgress::class, QuizAttempt::class, ExerciseAttempt::class, ReviewCard::class] as $entityClass) {
                 $em->createQueryBuilder()
                     ->delete($entityClass, 'e')
                     ->where('e.user = :user')

@@ -1,0 +1,300 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Repaso Espaciado &bull; Flashcards | Senior DevLab{% endblock %}
+
+{% block body %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="user-badge" style="background: rgba(108, 124, 255, 0.15); border-color: rgba(108, 124, 255, 0.4); color: #8fa4ff;">
+                {{ icons.icon('refresh-cw', 13) }}
+                <span>Algoritmo SM-2</span>
+            </span>
+            <span class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-main); color: var(--text-muted);">
+                Memoria Activa a Largo Plazo
+            </span>
+        </div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 10px; font-size: 22px; margin-bottom: 6px;">
+            {{ icons.icon('layers', 22) }}
+            <span>Repaso Espaciado &amp; Recuperaci&oacute;n Activa</span>
+        </h1>
+        <p class="page-subtitle" style="color: var(--text-muted); font-size: 13px; margin: 0; max-width: 800px;">
+            Tarjetas de pr&aacute;ctica derivadas directamente de los conceptos clave, procesos internos y decisiones de arquitectura del temario estudiado.
+        </p>
+    </div>
+
+    <!-- Review Session Metrics -->
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <div class="review-meter">
+            <span>{{ icons.icon('alert-triangle', 13) }}</span>
+            <span>Pendientes: <strong style="color: #ff9d6e;">{{ session.due_total }}</strong></span>
+            <span style="color: var(--border-strong);">&bull;</span>
+            <span>Nuevas: <strong style="color: #56d4ff;">{{ session.fresh_total }}</strong></span>
+            <span style="color: var(--border-strong);">&bull;</span>
+            <span>Total Mazo: <strong>{{ session.deck_total }}</strong></span>
+        </div>
+    </div>
+</div>
+
+{% if session.cards|length == 0 %}
+    <!-- Empty State: All Caught Up -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-lg); padding: 48px 24px; text-align: center; max-width: 600px; margin: 40px auto;">
+        <div style="display: inline-flex; padding: 16px; background: rgba(110, 222, 138, 0.12); border-radius: 50%; color: var(--accent-success); margin-bottom: 16px;">
+            {{ icons.icon('check-circle', 36) }}
+        </div>
+        <h2 style="font-size: 18px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px;">
+            &iexcl;Mazo al d&iacute;a! No tienes repasos pendientes
+        </h2>
+        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0 0 24px 0;">
+            Has completado todas las tarjetas programadas para hoy seg&uacute;n el algoritmo de repetici&oacute;n espaciada. Estudia nuevas lecciones para ampliar tu mazo de conceptos.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <a href="{{ path('app_roadmap') }}" class="btn-vs">
+                {{ icons.icon('map', 14) }}
+                <span>Continuar Roadmap</span>
+            </a>
+            <a href="{{ path('app_paths') }}" class="btn-vs btn-vs-secondary">
+                {{ icons.icon('git-branch', 14) }}
+                <span>Ver Rutas de Aprendizaje</span>
+            </a>
+        </div>
+    </div>
+{% else %}
+    <!-- Active Flashcard Arena -->
+    <div id="deck-arena" style="max-width: 760px; margin: 0 auto;">
+        <!-- Top Session Progress Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 12px; color: var(--text-muted);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span>Progreso de la sesi&oacute;n:</span>
+                <span id="session-counter" style="font-weight: 700; color: var(--text-bright);">1 de {{ session.cards|length }}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-soft); font-family: var(--font-mono);">
+                Teclas: [Espacio] voltear &bull; [1-4] calificar
+            </div>
+        </div>
+
+        <div style="height: 4px; background: var(--bg-deep); border-radius: 2px; overflow: hidden; margin-bottom: 24px;">
+            <div id="session-progress-bar" style="width: 0%; height: 100%; background: var(--grad-accent); transition: width 0.3s ease;"></div>
+        </div>
+
+        <!-- Flashcard Viewport -->
+        <div id="flashcard-container">
+            {% for idx, card in session.cards %}
+            <div class="flashcard card-item" id="card-{{ idx }}" style="{{ idx > 0 ? 'display: none;' : '' }}" data-card-id="{{ card.id }}" data-index="{{ idx }}">
+                <!-- Card Meta Bar -->
+                <div class="flashcard-kind">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="user-badge" style="background: rgba(108, 124, 255, 0.15); border-color: rgba(108, 124, 255, 0.4); color: #8fa4ff; font-size: 10.5px;">
+                            {{ card.kind_label }}
+                        </span>
+                        <span style="font-size: 11.5px; color: var(--text-muted);">
+                            {{ card.module }} &bull; <strong>{{ card.lesson_title }}</strong>
+                        </span>
+                    </div>
+                    {% if card.is_new %}
+                        <span class="user-badge" style="background: rgba(86, 212, 255, 0.15); border-color: rgba(86, 212, 255, 0.4); color: #56d4ff; font-size: 10px;">
+                            NUEVA
+                        </span>
+                    {% else %}
+                        <span style="font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono);">
+                            Repeticiones: {{ card.repetitions }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Card Prompt (Front) -->
+                <div class="flashcard-prompt">
+                    {{ card.prompt }}
+                </div>
+
+                <!-- Optional Hint -->
+                {% if card.hint %}
+                <div id="hint-box-{{ idx }}" style="display: none;" class="flashcard-hint">
+                    {{ icons.icon('help-circle', 12) }}
+                    <span>Pista: {{ card.hint }}</span>
+                </div>
+                <button type="button" id="hint-btn-{{ idx }}" onclick="toggleCardHint({{ idx }})" class="btn-vs btn-vs-secondary" style="font-size: 11px; padding: 2px 8px; align-self: flex-start;">
+                    {{ icons.icon('help-circle', 11) }}
+                    <span>Ver pista</span>
+                </button>
+                {% endif %}
+
+                <!-- Action to Flip -->
+                <div id="flip-action-{{ idx }}" style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-light); text-align: center;">
+                    <button type="button" class="btn-vs" onclick="flipCard({{ idx }})" style="width: 100%; justify-content: center; font-size: 13px; padding: 10px;">
+                        {{ icons.icon('refresh-cw', 14) }}
+                        <span>Mostrar Respuesta [Espacio]</span>
+                    </button>
+                </div>
+
+                <!-- Answer & Grading Panel (Back) -->
+                <div id="answer-panel-{{ idx }}" style="display: none; margin-top: auto; display: flex; flex-direction: column; gap: 16px;">
+                    <div class="flashcard-answer">
+                        <div style="font-weight: 700; color: var(--accent-success); font-size: 12px; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">
+                            Respuesta Correcta:
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-bright); line-height: 1.6;">
+                            {{ card.answer }}
+                        </div>
+                        {% if card.detail %}
+                        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                            {{ card.detail }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- SM-2 Grade Buttons -->
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            &iquest;Qu&eacute; tan bien recordabas este concepto?
+                        </div>
+                        <div class="grade-row">
+                            <button type="button" class="grade-btn grade-again" onclick="submitGrade({{ idx }}, '{{ card.id }}', 0)">
+                                <strong>1. Otra vez</strong>
+                                <span>Revisar hoy (&lt;10m)</span>
+                            </button>
+                            <button type="button" class="grade-btn grade-hard" onclick="submitGrade({{ idx }}, '{{ card.id }}', 1)">
+                                <strong>2. Dif&iacute;cil</strong>
+                                <span>Dud&eacute; un poco (1 d)</span>
+                            </button>
+                            <button type="button" class="grade-btn grade-good" onclick="submitGrade({{ idx }}, '{{ card.id }}', 2)">
+                                <strong>3. Bien</strong>
+                                <span>Recordado (3 d)</span>
+                            </button>
+                            <button type="button" class="grade-btn grade-easy" onclick="submitGrade({{ idx }}, '{{ card.id }}', 3)">
+                                <strong>4. F&aacute;cil</strong>
+                                <span>Dominado (7 d)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Session Finished Message (Hidden initially) -->
+        <div id="session-completed-card" style="display: none; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-lg); padding: 48px 24px; text-align: center;">
+            <div style="display: inline-flex; padding: 16px; background: rgba(110, 222, 138, 0.12); border-radius: 50%; color: var(--accent-success); margin-bottom: 16px;">
+                {{ icons.icon('award', 36) }}
+            </div>
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px;">
+                &iexcl;Sesi&oacute;n de Repaso Finalizada!
+            </h2>
+            <p style="color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0 0 20px 0;">
+                Has repasado <span id="completed-count">0</span> tarjetas con &eacute;xito. El algoritmo SM-2 ha reprogramado las fechas de recuperaci&oacute;n para maximizar la retenci&oacute;n de memoria a largo plazo.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <a href="{{ path('app_review') }}" class="btn-vs">
+                    {{ icons.icon('refresh-cw', 13) }}
+                    <span>Iniciar Nueva Ronda</span>
+                </a>
+                <a href="{{ path('app_dashboard') }}" class="btn-vs btn-vs-secondary">
+                    {{ icons.icon('layout-dashboard', 13) }}
+                    <span>Volver al Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client-Side Deck Controller Script -->
+    <script>
+    (function() {
+        const totalCards = {{ session.cards|length }};
+        let currentIndex = 0;
+        let isCardFlipped = false;
+
+        function updateProgress() {
+            const counter = document.getElementById('session-counter');
+            const bar = document.getElementById('session-progress-bar');
+            if (counter) counter.textContent = (currentIndex + 1) + ' de ' + totalCards;
+            if (bar) bar.style.width = ((currentIndex / totalCards) * 100) + '%';
+        }
+
+        window.toggleCardHint = function(idx) {
+            const hintBox = document.getElementById('hint-box- its' + idx) || document.getElementById('hint-box-' + idx);
+            const hintBtn = document.getElementById('hint-btn-' + idx);
+            if (hintBox) {
+                const isHidden = hintBox.style.display === 'none';
+                hintBox.style.display = isHidden ? 'block' : 'none';
+                if (hintBtn) hintBtn.style.display = 'none';
+            }
+        };
+
+        window.flipCard = function(idx) {
+            const flipAction = document.getElementById('flip-action-' + idx);
+            const answerPanel = document.getElementById('answer-panel-' + idx);
+            if (flipAction) flipAction.style.display = 'none';
+            if (answerPanel) answerPanel.style.display = 'flex';
+            isCardFlipped = true;
+        };
+
+        window.submitGrade = function(idx, cardId, grade) {
+            // Send AJAX to server
+            fetch('{{ path('app_review_grade') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    card_id: cardId,
+                    grade: grade
+                })
+            }).catch(err => console.error('Error al calificar tarjeta:', err));
+
+            // Hide current card
+            const currentCard = document.getElementById('card-' + idx);
+            if (currentCard) currentCard.style.display = 'none';
+
+            currentIndex++;
+            isCardFlipped = false;
+
+            if (currentIndex < totalCards) {
+                const nextCard = document.getElementById('card-' + currentIndex);
+                if (nextCard) nextCard.style.display = 'flex';
+                updateProgress();
+            } else {
+                // All finished
+                const arena = document.getElementById('session-completed-card');
+                const counter = document.getElementById('session-counter');
+                const bar = document.getElementById('session-progress-bar');
+                if (bar) bar.style.width = '100%';
+                if (counter) counter.textContent = totalCards + ' de ' + totalCards;
+                document.getElementById('completed-count').textContent = totalCards;
+                if (arena) arena.style.display = 'block';
+            }
+        };
+
+        // Keyboard navigation
+        window.addEventListener('keydown', function(e) {
+            if (currentIndex >= totalCards) return;
+            if (['input', 'textarea'].includes((document.activeElement.tagName || '').toLowerCase())) return;
+
+            if (!isCardFlipped && (e.code === 'Space' || e.key === 'Enter')) {
+                e.preventDefault();
+                flipCard(currentIndex);
+            } else if (isCardFlipped) {
+                const currentCard = document.getElementById('card-' + currentIndex);
+                if (!currentCard) return;
+                const cardId = currentCard.getAttribute('data-card-id');
+
+                if (e.key === '1') {
+                    e.preventDefault();
+                    submitGrade(currentIndex, cardId, 0);
+                } else if (e.key === '2') {
+                    e.preventDefault();
+                    submitGrade(currentIndex, cardId, 1);
+                } else if (e.key === '3') {
+                    e.preventDefault();
+                    submitGrade(currentIndex, cardId, 2);
+                } else if (e.key === '4') {
+                    e.preventDefault();
+                    submitGrade(currentIndex, cardId, 3);
+                }
+            }
+        });
+    })();
+    </script>
+{% endif %}
+{% endblock %}

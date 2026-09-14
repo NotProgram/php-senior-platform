@@ -1,0 +1,902 @@
+/* ==========================================================================
+   Senior DevLab — Responsive Design Engine
+   Breakpoints: 1200px (Desktop split), 992px (Tablet landscape),
+   768px (Tablet portrait), 640px (Mobile), 480px (Compact phone)
+   ========================================================================== */
+
+/* ---------- Fluid viewport & Mobile resets ---------- */
+html, body {
+    height: 100vh;
+    height: 100dvh;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Touch targets */
+@media (pointer: coarse) {
+    .menu-item,
+    .btn,
+    .btn-vs,
+    .tab,
+    .tree-item,
+    .statusbar-item,
+    .mobile-nav-link {
+        min-height: 40px;
+    }
+}
+
+/* ---------- Mobile Titlebar Navigation Controls ---------- */
+.mobile-menu-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background var(--duration-fast) ease, border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.mobile-menu-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-main);
+    color: var(--text-bright);
+}
+
+.mobile-search-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-pill);
+    color: var(--text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.mobile-search-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-bright);
+}
+
+.user-badge-text-mobile {
+    display: none;
+}
+
+/* Search modal backdrop */
+.search-palette-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 35;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) ease;
+}
+.search-palette-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Palette mobile input (hidden by default on desktop) */
+.search-palette-mobile-input-wrap {
+    display: none;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.palette-input-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-main);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
+    transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+}
+.palette-input-inner:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: var(--ring-focus);
+}
+
+.palette-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.search-palette-mobile-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 9px 0;
+    font-size: 16px; /* 16px prevents iOS automatic zoom on input focus */
+    font-family: var(--font-ui);
+    color: var(--text-bright);
+}
+
+.search-palette-close-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-family: var(--font-ui);
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+}
+.search-palette-close-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-bright);
+    border-color: var(--border-strong);
+}
+
+/* Mobile drawer search trigger button */
+.mobile-drawer-search-trigger {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 9px 12px;
+    margin-bottom: var(--space-3);
+    background: var(--bg-deep);
+    border: 1px solid var(--border-main);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-family: var(--font-ui);
+    cursor: pointer;
+    text-align: left;
+    gap: var(--space-2);
+    transition: background var(--duration-fast) ease, border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.mobile-drawer-search-trigger:hover,
+.mobile-drawer-search-trigger:active {
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+    color: var(--text-bright);
+}
+.drawer-search-icon {
+    display: flex;
+    align-items: center;
+    color: var(--accent-primary-hi);
+    flex-shrink: 0;
+}
+.drawer-search-text {
+    flex: 1;
+}
+.drawer-search-kbd {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 1px 6px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+}
+
+/* ---------- Mobile Navigation Drawer ---------- */
+.mobile-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) ease;
+}
+.mobile-nav-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 310px;
+    max-width: 86vw;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-strong);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform var(--duration-normal) var(--ease-out-expo);
+    box-shadow: var(--shadow-xl);
+    user-select: none;
+}
+.mobile-nav-drawer.is-open {
+    transform: translateX(0);
+}
+
+.mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--border-light);
+    height: var(--h-titlebar);
+    flex-shrink: 0;
+}
+
+.mobile-drawer-close {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.mobile-drawer-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-bright);
+}
+
+.mobile-drawer-user {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--wash-primary);
+    border-bottom: 1px solid rgba(108, 124, 255, 0.28);
+    flex-shrink: 0;
+}
+.mobile-user-avatar {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-deep);
+    border: 1px solid rgba(108, 124, 255, 0.4);
+    color: var(--accent-primary-hi);
+    flex-shrink: 0;
+}
+.mobile-user-name {
+    font-size: var(--text-sm);
+    font-weight: 650;
+    color: var(--text-bright);
+    line-height: 1.2;
+}
+.mobile-user-level {
+    font-size: var(--text-xs);
+    color: var(--accent-cyan);
+    font-family: var(--font-mono);
+}
+
+.mobile-drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-3) var(--space-3) var(--space-8);
+    scrollbar-width: thin;
+}
+
+.mobile-drawer-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--text-muted);
+    padding: var(--space-3) var(--space-3) var(--space-1);
+    font-weight: 700;
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.mobile-nav-link:hover {
+    background: var(--bg-subtle);
+    color: var(--text-bright);
+}
+.mobile-nav-link.active {
+    background: var(--wash-primary);
+    color: var(--accent-primary-hi);
+    font-weight: 600;
+    border-left: 2px solid var(--accent-primary);
+}
+.mobile-nav-badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+    background: var(--wash-amber);
+    color: var(--accent-amber);
+    border: 1px solid rgba(246, 169, 59, 0.4);
+}
+
+/* ---------- Sidebar Backdrop (Explorer overlay on mobile) ---------- */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 35;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) ease;
+}
+.sidebar-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==========================================================================
+   Breakpoint: Desktop Split / Large Tablets (max-width: 1180px)
+   ========================================================================== */
+@media (max-width: 1180px) {
+    .titlebar-center-wrapper {
+        width: 280px;
+        max-width: 28%;
+    }
+    .menu-items {
+        max-width: 38vw;
+    }
+    .senior-diff-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Breakpoint: Tablets Landscape (max-width: 992px)
+   ========================================================================== */
+@media (max-width: 992px) {
+    .menu-items {
+        display: none !important;
+    }
+    .mobile-menu-btn {
+        display: inline-flex;
+    }
+    .mobile-search-btn {
+        display: inline-flex;
+    }
+    .titlebar-center-wrapper {
+        position: static !important;
+        width: 0 !important;
+        max-width: 0 !important;
+        flex-shrink: 1 !important;
+        overflow: visible !important;
+    }
+    .titlebar-search-box {
+        display: none !important;
+    }
+    .search-palette-backdrop {
+        z-index: 1050 !important;
+    }
+    .search-palette-dropdown {
+        position: fixed !important;
+        top: calc(var(--h-titlebar) + 8px) !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+        max-width: none !important;
+        transform: none !important;
+        z-index: 1060 !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+    }
+    .search-palette-mobile-input-wrap {
+        display: block !important;
+    }
+
+    /* Shell & viewport overflow safety */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+    }
+    .vscode-workspace,
+    .editor-main,
+    .content-viewport {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        touch-action: pan-y;
+    }
+    .content-viewport > * {
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+    iframe {
+        touch-action: pan-y;
+    }
+
+    /* All Lab 2-column workspaces switch to fluid stacked column */
+    .lab-container,
+    .git-workspace,
+    .flow-layout,
+    .di-layout,
+    .doctrine-layout,
+    .cr-layout,
+    .adr-workspace,
+    .testing-layout,
+    .arch-workspace,
+    .di-workspace,
+    .doctrine-workspace,
+    .code-review-workspace {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        min-height: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Lab child panels fluid constraints */
+    .canvas-panel,
+    .inspector-panel,
+    .git-main-column,
+    .git-column,
+    .stages-sidebar,
+    .graph-stage,
+    .di-controls-panel,
+    .entity-stage-panel,
+    .pr-container,
+    .adr-editor-panel,
+    .adr-preview-panel,
+    .test-pane {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* System design canvas adjustments */
+    .canvas-panel {
+        min-height: 440px;
+    }
+
+    /* Dashboard 2-column layout stack */
+    [style*="grid-template-columns: 1.4fr 1fr"],
+    [style*="grid-template-columns: 1fr 340px"],
+    [style*="grid-template-columns: 1fr 360px"],
+    [style*="grid-template-columns: 1fr 380px"],
+    [style*="grid-template-columns: 1fr 400px"],
+    [style*="grid-template-columns: 1fr 420px"],
+    [style*="grid-template-columns: 360px 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Completely hide desktop explorer, activity bar, and desktop toggle on mobile/tablet */
+    .activity-bar,
+    .sidebar,
+    #app-sidebar,
+    .sidebar-tab-toggle,
+    .sidebar-backdrop {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+}
+
+/* ==========================================================================
+   Breakpoint: Tablets Portrait & Phones (max-width: 900px)
+   ========================================================================== */
+@media (max-width: 900px) {
+    /* Viewport padding */
+    .content-viewport {
+        padding: var(--space-4) var(--space-4) var(--space-10) !important;
+    }
+
+    /* Statusbar items compaction */
+    .vscode-statusbar {
+        padding: 0 var(--space-2);
+    }
+    .statusbar-item:nth-child(2) {
+        display: none; /* Hide PHP/Symfony version text */
+    }
+    .statusbar-right .statusbar-item:nth-last-child(1),
+    .statusbar-right .statusbar-item:nth-last-child(2) {
+        display: none; /* Hide UTF-8 and LF */
+    }
+}
+
+/* ==========================================================================
+   Breakpoint: Standard Mobile Screens (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Search palette fullscreen dropdown */
+    .search-palette-dropdown {
+        position: fixed !important;
+        top: 8px !important;
+        left: 8px !important;
+        right: 8px !important;
+        width: auto !important;
+        max-width: none !important;
+        max-height: 88vh !important;
+        transform: none !important;
+        z-index: 1060 !important;
+        border-radius: var(--radius-md) !important;
+    }
+    .search-palette-results {
+        max-height: calc(88vh - 110px) !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Tabs Bar Touch Optimization */
+    .tabs-bar {
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab {
+        padding: 0 var(--space-2);
+        font-size: var(--text-xs);
+    }
+
+    /* Breadcrumbs compact */
+    .breadcrumbs-bar {
+        padding: 0 var(--space-3);
+        font-size: 11px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+    .breadcrumbs-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Page Titles & Headers */
+    .page-title {
+        font-size: var(--text-xl) !important;
+        flex-wrap: wrap;
+    }
+    .page-subtitle {
+        font-size: var(--text-sm) !important;
+    }
+
+    /* Inline 2-column grids converted to single column */
+    [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* 4-column flow grids in Git/Doctrine labs */
+    .git-flow-grid,
+    [style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Next action hero banner */
+    .next-hero {
+        grid-template-columns: 1fr !important;
+        padding: var(--space-4) !important;
+    }
+    .next-hero-side {
+        padding-left: 0 !important;
+        border-left: none !important;
+        border-top: 1px solid var(--border-light) !important;
+        padding-top: var(--space-3) !important;
+    }
+
+    /* Learning Paths cards grid */
+    .path-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .path-card {
+        padding: var(--space-4) !important;
+    }
+
+    /* Spaced Repetition Flashcards */
+    .review-stage {
+        padding: 0 !important;
+    }
+    .flashcard {
+        padding: var(--space-4) !important;
+        min-height: 250px !important;
+    }
+    .flashcard-prompt {
+        font-size: 1.15rem !important;
+    }
+    .flashcard-answer {
+        font-size: 14px !important;
+        padding: var(--space-3) !important;
+    }
+    .grade-row {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    .grade-btn {
+        padding: 8px 10px !important;
+    }
+    .grade-btn strong {
+        font-size: 13px !important;
+    }
+
+    /* Exam Simulator */
+    .score-hero {
+        flex-direction: column !important;
+        text-align: center !important;
+        padding: var(--space-4) !important;
+        gap: var(--space-3) !important;
+    }
+    .score-value {
+        font-size: 2.4rem !important;
+    }
+    .exam-question {
+        padding: var(--space-4) !important;
+    }
+    .option {
+        padding: 9px 11px !important;
+        font-size: 13.5px !important;
+    }
+
+    /* All wide minmax grids full single column on mobile */
+    [style*="minmax(340px"],
+    [style*="minmax(320px"],
+    [style*="minmax(300px"],
+    [style*="minmax(280px"],
+    .path-grid,
+    .grid-2 {
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Senior Diff Grid and code blocks */
+    .senior-diff-grid {
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .diff-column,
+    .senior-diff-grid > *,
+    .editor-code-container,
+    .conflict-box {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    pre,
+    code,
+    .diff-viewer,
+    .sql-terminal,
+    .editor-code-body,
+    .diff-column-body {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        box-sizing: border-box !important;
+    }
+    .editor-code-body {
+        font-size: 12.5px !important;
+        padding: var(--space-3) !important;
+    }
+    .diff-column-body {
+        font-size: 13px !important;
+        padding: var(--space-3) !important;
+    }
+
+    /* Git Lab elements on mobile */
+    .commit-node {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    .commit-node > span:last-child {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 2px !important;
+    }
+    .conflict-header {
+        word-break: break-all !important;
+    }
+
+    /* DI Lab elements on mobile */
+    .di-arrow {
+        text-align: center !important;
+        word-break: break-word !important;
+        flex-wrap: wrap !important;
+        font-size: 11px !important;
+    }
+
+    /* Code Review Lab elements on mobile */
+    .pr-header {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+
+    /* Lesson quick navigation rail */
+    .lesson-quick-nav {
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        flex-wrap: nowrap !important;
+        padding-bottom: 8px !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+    .lesson-quick-nav::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    /* Module lesson cards stack on mobile */
+    .module-lesson-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .module-lesson-card > div:last-child {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-top: 1px solid var(--border-light) !important;
+        padding-top: 10px !important;
+    }
+
+    /* Dashboard active mission left column border */
+    .content-viewport [style*="border-right: 1px solid var(--border-light)"] {
+        border-right: none !important;
+        padding-right: 0 !important;
+        border-bottom: 1px solid var(--border-light) !important;
+        padding-bottom: 16px !important;
+    }
+
+    /* Phase Timeline in Path Detail */
+    .phase {
+        padding-left: 36px !important;
+    }
+    .phase-marker {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 11px !important;
+    }
+    .phase-rail::before {
+        left: 12px !important;
+    }
+
+    /* ADR Lab grids stack on mobile */
+    .adr-meta-grid,
+    .adr-consequences-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    /* Lesson problem-solution and video grids stack on mobile */
+    .lesson-problem-solution-grid,
+    .lesson-video-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+}
+
+/* ==========================================================================
+   Breakpoint: Compact Phones (max-width: 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+    .user-badge-text {
+        display: none;
+    }
+    .user-badge-text-mobile {
+        display: inline;
+    }
+
+    .titlebar-left {
+        gap: var(--space-2);
+    }
+    .brand-badge span {
+        font-size: 12px;
+    }
+
+    .content-viewport {
+        padding: var(--space-3) var(--space-3) var(--space-8) !important;
+    }
+
+    /* Settings profile and telemetry grids stack on small phones */
+    .settings-grid,
+    .settings-profile-grid,
+    .settings-telemetry-grid,
+    [style*="grid-template-columns: 140px 1fr"],
+    [style*="grid-template-columns: 180px 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 4px 10px !important;
+    }
+
+    /* Doctrine entity fields on compact screens */
+    .doctrine-entity-fields {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+    }
+
+    /* Git / Doctrine flow grids full single column on small phones */
+    .git-flow-grid,
+    [style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* All wide minmax grids full single column on mobile */
+    [style*="minmax(340px"],
+    [style*="minmax(320px"],
+    [style*="minmax(300px"],
+    [style*="minmax(280px"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* System design canvas toolbar wrapping on mobile */
+    .canvas-toolbar {
+        height: auto !important;
+        padding: 8px 12px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    /* Lesson row on mobile */
+    .lesson-row {
+        grid-template-columns: 28px 1fr auto !important;
+        padding: 8px 10px !important;
+        gap: var(--space-2) !important;
+    }
+    .lesson-title {
+        font-size: 13.5px !important;
+    }
+    .lesson-meta {
+        font-size: 11px !important;
+    }
+
+    /* Statusbar minimal on small phones */
+    .statusbar-left .statusbar-item:nth-child(n+3),
+    .statusbar-right .statusbar-item:nth-child(n+2) {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   Breakpoint: Ultra Compact Phones (max-width: 420px)
+   ========================================================================== */
+@media (max-width: 420px) {
+    .brand-badge span {
+        display: none; /* Show only PHP icon */
+    }
+    .brand-badge {
+        padding: 4px;
+        border-radius: 50%;
+    }
+    .grade-row {
+        grid-template-columns: 1fr !important;
+    }
+    .git-quick-actions-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
+use App\Service\CurriculumGraph;
 use App\Service\LessonContentService;
 use App\Service\PrerequisiteEngine;
 use App\Service\RoadmapService;
@@ -147,6 +148,6 @@ final class CurriculumIntegrityTest extends KernelTestCase
      */
     private function prerequisiteMap(): array
     {
-        return (new \ReflectionClassConstant(PrerequisiteEngine::class, 'PREREQUISITE_MAP'))->getValue();
+        return self::getContainer()->get(CurriculumGraph::class)->prerequisites();
     }
 }

@@ -9,7 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
     <link rel="stylesheet" href="{{ asset('css/vscode.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/learning.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/motion.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
@@ -17,6 +22,9 @@
     <!-- VS Code Top Titlebar -->
     <header class="vscode-titlebar">
         <div class="titlebar-left">
+            <button type="button" class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Abrir menú de navegación" title="Menú">
+                {{ icons.icon('menu', 18) }}
+            </button>
             <div class="brand-badge">
                 {{ icons.icon('php', 18) }}
                 <span>Senior DevLab</span>
@@ -24,8 +32,11 @@
             <nav class="menu-items">
                 <a href="{{ path('app_dashboard') }}" class="menu-item">Dashboard</a>
                 <a href="{{ path('app_roadmap') }}" class="menu-item">Roadmap</a>
+                <a href="{{ path('app_paths') }}" class="menu-item">Rutas</a>
                 <a href="{{ path('app_labs') }}" class="menu-item">DevLabs</a>
                 <a href="{{ path('app_system_design') }}" class="menu-item">System Design</a>
+                <a href="{{ path('app_review') }}" class="menu-item">Repaso</a>
+                <a href="{{ path('app_exam') }}" class="menu-item">Examen</a>
                 <a href="{{ path('app_module', {moduleSlug: 'software-engineering'}) }}" class="menu-item">Ingeniería</a>
                 <a href="{{ path('app_module', {moduleSlug: 'git'}) }}" class="menu-item">Git</a>
                 <a href="{{ path('app_module', {moduleSlug: 'php-fundamentals'}) }}" class="menu-item">PHP 8.4</a>
@@ -36,15 +47,27 @@
             </nav>
         </div>
 
-        <div class="titlebar-center">
-            {{ icons.icon('search', 14) }}
-            <span>senior-platform &gt; roadmap &gt; {{ current_tab_title|default('dashboard.php') }}</span>
+        <div class="titlebar-center-wrapper">
+            <div class="titlebar-search-box" id="titlebar-search-box" role="button" tabindex="0" aria-label="Abrir buscador global">
+                {{ icons.icon('search', 13) }}
+                <input type="text" 
+                       id="global-search-input" 
+                       class="titlebar-search-input" 
+                       placeholder="Buscar lecciones, laboratorios, módulos... (Ctrl+K o /)" 
+                       autocomplete="off" 
+                       spellcheck="false">
+                <span class="search-shortcut-badge">Ctrl+K</span>
+            </div>
         </div>
 
         <div class="titlebar-right">
+            <button type="button" class="mobile-search-btn" id="btn-mobile-search" aria-label="Buscar en la plataforma" title="Buscar">
+                {{ icons.icon('search', 15) }}
+            </button>
             <div class="user-badge">
                 {{ icons.icon('user', 13) }}
-                <span>{{ current_user.displayName|default('Dilan') }} ({{ current_user.currentLevel|default('Junior') }})</span>
+                <span class="user-badge-text">{{ current_user.displayName|default('Dilan') }} ({{ current_user.currentLevel|default('Junior') }})</span>
+                <span class="user-badge-text-mobile">{{ current_user.currentLevel|default('Junior') }}</span>
             </div>
         </div>
     </header>
@@ -136,6 +159,9 @@
         <main class="editor-main">
             <!-- Tabs Bar -->
             <div class="tabs-bar">
+                <button type="button" class="sidebar-tab-toggle" id="btn-tab-toggle-sidebar" title="Alternar Explorer (Ctrl+B)">
+                    {{ icons.icon('panel-left', 14) }}
+                </button>
                 <a href="{{ path('app_dashboard') }}" class="tab {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}">
                     {{ icons.icon('layout-dashboard', 13) }}
                     <span>Dashboard.php</span>
@@ -184,44 +210,639 @@
         </main>
     </div>
 
-    <!-- Status Bar (Bottom) -->
+    <!-- VS Code Bottom Statusbar -->
+    {% set st = devlab_status() %}
     <footer class="vscode-statusbar">
         <div class="statusbar-left">
-            <div class="statusbar-item">
+            <span class="statusbar-item is-accent">
                 {{ icons.icon('git-branch', 12) }}
                 <span>main</span>
-            </div>
-            <div class="statusbar-item">
+            </span>
+            <span class="statusbar-item">
                 {{ icons.icon('refresh-cw', 11) }}
-                <span>Sync</span>
-            </div>
-            <div class="statusbar-item">
-                <span>0 errors, 0 warnings</span>
-            </div>
+                <span>PHP 8.4.7 &bull; Symfony 8.1</span>
+            </span>
+            <span class="statusbar-item">
+                {{ icons.icon('check-circle', 11) }}
+                <span>{{ st.completed }}/{{ st.total }} Lecciones ({{ st.percent }}%)</span>
+            </span>
+            {% if st.due > 0 %}
+                <a href="{{ path('app_review') }}" class="statusbar-item is-warn" title="Iniciar sesión de repaso espaciado">
+                    {{ icons.icon('alert-triangle', 11) }}
+                    <span>{{ st.due }} Repasos Pendientes</span>
+                </a>
+            {% endif %}
         </div>
-
         <div class="statusbar-right">
-            <div class="statusbar-item">
-                {{ icons.icon('php', 14) }}
-                <span>PHP {{ constant('PHP_MAJOR_VERSION') }}.{{ constant('PHP_MINOR_VERSION') }}</span>
-            </div>
-            <div class="statusbar-item">
-                {{ icons.icon('symfony', 13) }}
-                <span>Symfony 8.1</span>
-            </div>
-            <div class="statusbar-item">
-                {{ icons.icon('mysql', 13) }}
-                <span>MySQL 8.0:3306</span>
-            </div>
-            <div class="statusbar-item">
-                <span>UTF-8</span>
-            </div>
-            <div class="statusbar-item">
-                <span>Senior Path: Active</span>
-            </div>
+            <span class="statusbar-item">
+                {{ icons.icon('zap', 11) }}
+                <span>{{ st.xp }} XP</span>
+            </span>
+            <span class="statusbar-item">
+                {{ icons.icon('award', 11) }}
+                <span>{{ st.level }}</span>
+            </span>
+            <span class="statusbar-item">
+                {{ icons.icon('activity', 11) }}
+                <span>Racha: {{ st.streak }} d</span>
+            </span>
+            <span class="statusbar-item">UTF-8</span>
+            <span class="statusbar-item">LF</span>
         </div>
     </footer>
 
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
+    <aside class="mobile-nav-drawer" id="mobile-nav-drawer">
+        <div class="mobile-drawer-header">
+            <div class="brand-badge">
+                {{ icons.icon('php', 18) }}
+                <span>Senior DevLab</span>
+            </div>
+            <button type="button" class="mobile-drawer-close" id="btn-mobile-drawer-close" aria-label="Cerrar menú">
+                {{ icons.icon('x', 18) }}
+            </button>
+        </div>
+
+        <div class="mobile-drawer-user">
+            <div class="mobile-user-avatar">
+                {{ icons.icon('user', 18) }}
+            </div>
+            <div class="mobile-user-info">
+                <div class="mobile-user-name">{{ current_user.displayName|default('Dilan') }}</div>
+                <div class="mobile-user-level">{{ current_user.currentLevel|default('Junior in Training') }} &bull; {{ st.xp }} XP</div>
+            </div>
+        </div>
+
+        <div class="mobile-drawer-body">
+            <button type="button" class="mobile-drawer-search-trigger" id="btn-drawer-search" aria-label="Abrir buscador">
+                <span class="drawer-search-icon">{{ icons.icon('search', 16) }}</span>
+                <span class="drawer-search-text">Buscar en la plataforma...</span>
+                <kbd class="drawer-search-kbd">Ctrl+K</kbd>
+            </button>
+
+            <div class="mobile-drawer-section-label">Navegación Principal</div>
+            <div class="mobile-nav-links">
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}">
+                    {{ icons.icon('layout-dashboard', 18) }}
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ path('app_roadmap') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') == 'app_roadmap' ? 'active' : '' }}">
+                    {{ icons.icon('map', 18) }}
+                    <span>Roadmap Curricular</span>
+                </a>
+                <a href="{{ path('app_paths') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') starts with 'app_path' ? 'active' : '' }}">
+                    {{ icons.icon('book-open', 18) }}
+                    <span>Rutas de Aprendizaje</span>
+                </a>
+                <a href="{{ path('app_labs') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') starts with 'app_lab' ? 'active' : '' }}">
+                    {{ icons.icon('terminal', 18) }}
+                    <span>DevLabs Interactivos</span>
+                </a>
+                <a href="{{ path('app_system_design') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') == 'app_system_design' ? 'active' : '' }}">
+                    {{ icons.icon('sliders', 18) }}
+                    <span>System Design Lab</span>
+                </a>
+                <a href="{{ path('app_review') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') == 'app_review' ? 'active' : '' }}">
+                    {{ icons.icon('refresh-cw', 18) }}
+                    <span>Repaso Espaciado</span>
+                    {% if st.due > 0 %}
+                        <span class="mobile-nav-badge is-warn">{{ st.due }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ path('app_exam') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') starts with 'app_exam' ? 'active' : '' }}">
+                    {{ icons.icon('award', 18) }}
+                    <span>Examen de Certificación</span>
+                </a>
+            </div>
+
+            <div class="mobile-drawer-section-label">Módulos Técnicos</div>
+            <div class="mobile-nav-links">
+                <a href="{{ path('app_module', {moduleSlug: 'software-engineering'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('layers', 16) }}
+                    <span>Ingeniería de Software</span>
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'git'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('git', 16) }}
+                    <span>Git &amp; Colaboración</span>
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'php-fundamentals'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('php', 16) }}
+                    <span>PHP 8.4 Moderno</span>
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'symfony'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('symfony', 16) }}
+                    <span>Symfony Internals</span>
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'testing'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('test-tube', 16) }}
+                    <span>Testing &amp; Calidad</span>
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'architecture'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('shield', 16) }}
+                    <span>Arquitectura &amp; DDD</span>
+                </a>
+                <a href="{{ path('app_module', {moduleSlug: 'devops'}) }}" class="mobile-nav-link">
+                    {{ icons.icon('docker', 16) }}
+                    <span>DevOps &amp; Linux</span>
+                </a>
+            </div>
+
+            <div class="mobile-drawer-section-label">Ajustes</div>
+            <div class="mobile-nav-links">
+                <a href="{{ path('app_settings') }}" class="mobile-nav-link {{ app.request.attributes.get('_route') == 'app_settings' ? 'active' : '' }}">
+                    {{ icons.icon('settings', 16) }}
+                    <span>Configuración</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar backdrop for mobile/tablet when Explorer is open -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- Search Palette Backdrop -->
+    <div class="search-palette-backdrop" id="search-palette-backdrop"></div>
+
+    <!-- VS Code Style Quick Open / Command Palette Modal -->
+    <div class="search-palette-dropdown" id="search-palette" style="display: none;" role="dialog" aria-modal="true" aria-label="Búsqueda global">
+        <div class="search-palette-header">
+            <span id="search-palette-label">Sugerencias rápidas</span>
+            <button type="button" class="search-palette-close-btn" id="btn-close-palette" aria-label="Cerrar búsqueda">
+                {{ icons.icon('x', 14) }}
+                <span>Cerrar</span>
+            </button>
+        </div>
+        <div class="search-palette-mobile-input-wrap">
+            <div class="palette-input-inner">
+                <span class="palette-input-icon">{{ icons.icon('search', 14) }}</span>
+                <input type="search" 
+                       id="mobile-search-input" 
+                       class="search-palette-mobile-input" 
+                       placeholder="Buscar lecciones, labs, módulos..." 
+                       autocomplete="off"
+                       autocapitalize="off"
+                       spellcheck="false">
+            </div>
+        </div>
+        <div class="search-palette-results" id="search-palette-results">
+            <!-- Results populated dynamically -->
+        </div>
+        <div class="search-palette-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+            <span><kbd>↵</kbd> abrir</span>
+            <span><kbd>esc</kbd> cerrar</span>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        // --- Fluid Collapsible Sidebar Logic ---
+        const sidebar = document.getElementById('app-sidebar');
+        const btnToggleSidebar = document.getElementById('btn-tab-toggle-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+        function setSidebarCollapsed(collapsed) {
+            if (!sidebar) return;
+            if (collapsed) {
+                sidebar.classList.add('collapsed');
+                if (btnToggleSidebar) {
+                    btnToggleSidebar.classList.add('collapsed-mode');
+                    btnToggleSidebar.setAttribute('title', 'Abrir Explorer (Ctrl+B)');
+                }
+                if (sidebarBackdrop) {
+                    sidebarBackdrop.classList.remove('is-open');
+                }
+                localStorage.setItem('vscode_sidebar_collapsed', 'true');
+            } else {
+                sidebar.classList.remove('collapsed');
+                if (btnToggleSidebar) {
+                    btnToggleSidebar.classList.remove('collapsed-mode');
+                    btnToggleSidebar.setAttribute('title', 'Cerrar Explorer (Ctrl+B)');
+                }
+                if (sidebarBackdrop && window.innerWidth <= 900) {
+                    sidebarBackdrop.classList.add('is-open');
+                }
+                localStorage.setItem('vscode_sidebar_collapsed', 'false');
+            }
+        }
+
+        function toggleSidebar() {
+            if (!sidebar) return;
+            const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+            setSidebarCollapsed(!isCurrentlyCollapsed);
+        }
+
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', function() {
+                setSidebarCollapsed(true);
+            });
+        }
+
+        // On mobile, default sidebar to collapsed to not block the screen
+        if (window.innerWidth <= 992) {
+            setSidebarCollapsed(true);
+        } else if (localStorage.getItem('vscode_sidebar_collapsed') === 'true') {
+            setSidebarCollapsed(true);
+        }
+
+        if (btnToggleSidebar) {
+            btnToggleSidebar.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleSidebar();
+            });
+        }
+
+        // --- Mobile Navigation Drawer Logic ---
+        const mobileDrawer = document.getElementById('mobile-nav-drawer');
+        const mobileBackdrop = document.getElementById('mobile-nav-backdrop');
+        const btnMobileMenu = document.getElementById('btn-mobile-menu');
+        const btnMobileDrawerClose = document.getElementById('btn-mobile-drawer-close');
+        const btnMobileSearch = document.getElementById('btn-mobile-search');
+
+        function openMobileDrawer() {
+            if (mobileDrawer) mobileDrawer.classList.add('is-open');
+            if (mobileBackdrop) mobileBackdrop.classList.add('is-open');
+        }
+
+        function closeMobileDrawer() {
+            if (mobileDrawer) mobileDrawer.classList.remove('is-open');
+            if (mobileBackdrop) mobileBackdrop.classList.remove('is-open');
+        }
+
+        if (btnMobileMenu) {
+            btnMobileMenu.addEventListener('click', function(e) {
+                e.preventDefault();
+                openMobileDrawer();
+            });
+        }
+
+        if (btnMobileDrawerClose) {
+            btnMobileDrawerClose.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileDrawer();
+            });
+        }
+
+        if (mobileBackdrop) {
+            mobileBackdrop.addEventListener('click', closeMobileDrawer);
+        }
+
+        if (btnMobileSearch) {
+            btnMobileSearch.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (typeof openPalette === 'function') {
+                    openPalette();
+                }
+            });
+        }
+
+        // --- Fast Client-Side Search & Command Palette ---
+        {% set sections = roadmap_sections|default({}) %}
+        const searchCatalog = [
+            // Core Views
+            { title: 'Dashboard', category: 'General', type: 'view', badge: 'Vista', url: '{{ path('app_dashboard') }}', desc: 'Métricas de aprendizaje, progreso global y radar' },
+            { title: 'Roadmap Profesional', category: 'General', type: 'view', badge: 'Vista', url: '{{ path('app_roadmap') }}', desc: 'Mapa de progresión integral Junior a Senior' },
+            { title: 'Laboratorios Hub', category: 'DevLabs', type: 'lab', badge: 'Lab', url: '{{ path('app_labs') }}', desc: 'Centro de simuladores interactivos' },
+            { title: 'System Design Studio', category: 'General', type: 'view', badge: 'Vista', url: '{{ path('app_system_design') }}', desc: 'Diseño de arquitecturas y diagramas interactivos' },
+            { title: 'Configuración & Reset', category: 'General', type: 'view', badge: 'Vista', url: '{{ path('app_settings') }}', desc: 'Configuración del perfil y reinicio de progreso' },
+
+            // Interactive Labs
+            { title: 'Git & Conflict Simulator', category: 'DevLabs', type: 'lab', badge: 'Git Lab', url: '{{ path('app_lab_git') }}', desc: 'Simulador visual interactivo de grafo DAG, ramas y conflictos' },
+            { title: 'PHPUnit Interactive Lab', category: 'DevLabs', type: 'lab', badge: 'Testing Lab', url: '{{ path('app_lab_testing') }}', desc: 'Laboratorio de pruebas unitarias, mocking y TDD' },
+            { title: 'Symfony HttpKernel Lifecycle Lab', category: 'DevLabs', type: 'lab', badge: 'Symfony Lab', url: '{{ path('app_lab_symfony_arch') }}', desc: 'Explorador visual del ciclo de vida y eventos de HttpKernel' },
+            { title: 'Dependency Injection Container Lab', category: 'DevLabs', type: 'lab', badge: 'DI Lab', url: '{{ path('app_lab_di') }}', desc: 'Inspección de grafos de servicios, compilación y autowiring' },
+            { title: 'Doctrine Unit of Work Inspector', category: 'DevLabs', type: 'lab', badge: 'Doctrine Lab', url: '{{ path('app_lab_doctrine') }}', desc: 'Ciclo de vida de entidades, Identity Map y transacciones' },
+            { title: 'Code Review Studio', category: 'DevLabs', type: 'lab', badge: 'Review Lab', url: '{{ path('app_lab_code_review') }}', desc: 'Revisión técnica de pull requests con estándares Senior' },
+            { title: 'Architecture Decision Records (ADR) Lab', category: 'DevLabs', type: 'lab', badge: 'ADR Lab', url: '{{ path('app_lab_adr') }}', desc: 'Taller de redacción y evaluación de decisiones arquitectónicas' },
+
+            // Modules & Lessons from Roadmap
+            {% for key, section in sections %}
+                {% if section.route is defined and section.lessons is defined %}
+                    {
+                        title: {{ section.title|json_encode|raw }},
+                        category: {{ (section.category|default('Módulo'))|json_encode|raw }},
+                        type: 'module',
+                        badge: 'Módulo',
+                        url: {{ path(section.route, section.route_params|default({}))|json_encode|raw }},
+                        desc: {{ (section.description|default(''))|json_encode|raw }}
+                    },
+                    {% for lesson in section.lessons %}
+                        {
+                            title: {{ lesson.title|json_encode|raw }},
+                            category: {{ (section.category|default(section.title))|json_encode|raw }},
+                            type: 'lesson',
+                            badge: {{ (lesson.difficulty|default('Lección'))|json_encode|raw }},
+                            url: {{ path('app_lesson', {lessonSlug: lesson.slug})|json_encode|raw }},
+                            desc: 'Lección en {{ section.title }}'
+                        },
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        ];
+
+        const searchBox = document.getElementById('titlebar-search-box');
+        const searchInput = document.getElementById('global-search-input');
+        const searchPalette = document.getElementById('search-palette');
+        const searchResults = document.getElementById('search-palette-results');
+        const searchLabel = document.getElementById('search-palette-label');
+
+        let selectedIndex = -1;
+        let currentFilteredResults = [];
+
+        function normalizeText(str) {
+            return (str || '')
+                .toString()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function highlightMatch(text, query) {
+            if (!query.trim()) return escapeHtml(text);
+            const words = query.trim().split(/\s+/).filter(Boolean);
+            if (!words.length) return escapeHtml(text);
+
+            const pattern = new RegExp('(' + words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi');
+            return escapeHtml(text).replace(pattern, '<mark>$1</mark>');
+        }
+
+        function escapeHtml(str) {
+            return (str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function getIconSvg(type) {
+            if (type === 'lab') {
+                return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>';
+            }
+            if (type === 'module') {
+                return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>';
+            }
+            if (type === 'view') {
+                return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>';
+            }
+            return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m10 13-2 2 2 2"/><path d="m14 17 2-2-2-2"/></svg>';
+        }
+
+        function renderResults(query) {
+            const rawQuery = query || '';
+            const normalizedQuery = normalizeText(rawQuery);
+            const terms = normalizedQuery.split(/\s+/).filter(Boolean);
+
+            if (terms.length === 0) {
+                // Default quick links
+                currentFilteredResults = searchCatalog.slice(0, 10);
+                if (searchLabel) searchLabel.textContent = 'Sugerencias rápidas (Labs, Roadmap, Lecciones)';
+            } else {
+                currentFilteredResults = searchCatalog.filter(function(item) {
+                    const normTitle = normalizeText(item.title);
+                    const normCategory = normalizeText(item.category);
+                    const normDesc = normalizeText(item.desc);
+                    const normBadge = normalizeText(item.badge);
+
+                    return terms.every(function(term) {
+                        return normTitle.includes(term) ||
+                               normCategory.includes(term) ||
+                               normDesc.includes(term) ||
+                               normBadge.includes(term);
+                    });
+                }).slice(0, 15);
+
+                if (searchLabel) {
+                    searchLabel.textContent = currentFilteredResults.length + ' resultado(s) para "' + rawQuery + '"';
+                }
+            }
+
+            selectedIndex = currentFilteredResults.length > 0 ? 0 : -1;
+
+            if (currentFilteredResults.length === 0) {
+                searchResults.innerHTML = '<div class="search-palette-empty">No se encontraron lecciones, labs o temas que coincidan con <strong>"' + escapeHtml(rawQuery) + '"</strong></div>';
+                return;
+            }
+
+            let html = '';
+            currentFilteredResults.forEach(function(item, idx) {
+                const badgeClass = 'badge-' + (item.type || 'lesson');
+                const isSelected = idx === selectedIndex ? ' selected' : '';
+                html += '<a href="' + item.url + '" class="search-palette-item' + isSelected + '" data-index="' + idx + '">' +
+                    '<div class="search-item-icon">' + getIconSvg(item.type) + '</div>' +
+                    '<div class="search-item-content">' +
+                        '<div class="search-item-title">' + highlightMatch(item.title, rawQuery) + '</div>' +
+                        '<div class="search-item-subtitle">' + escapeHtml(item.category) + (item.desc ? ' &bull; ' + escapeHtml(item.desc.substring(0, 70)) + (item.desc.length > 70 ? '...' : '') : '') + '</div>' +
+                    '</div>' +
+                    '<span class="search-item-badge ' + badgeClass + '">' + escapeHtml(item.badge || item.type) + '</span>' +
+                '</a>';
+            });
+
+            searchResults.innerHTML = html;
+
+            // Click and hover handling on results
+            const items = searchResults.querySelectorAll('.search-palette-item');
+            items.forEach(function(el) {
+                el.addEventListener('mouseenter', function() {
+                    const idx = parseInt(this.getAttribute('data-index'), 10);
+                    updateSelectedIndex(idx);
+                });
+            });
+        }
+
+        function updateSelectedIndex(newIndex) {
+            selectedIndex = newIndex;
+            const items = searchResults.querySelectorAll('.search-palette-item');
+            items.forEach(function(el, idx) {
+                if (idx === selectedIndex) {
+                    el.classList.add('selected');
+                    el.scrollIntoView({ block: 'nearest' });
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+        }
+
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        const btnClosePalette = document.getElementById('btn-close-palette');
+        const searchPaletteBackdrop = document.getElementById('search-palette-backdrop');
+        const btnDrawerSearch = document.getElementById('btn-drawer-search');
+
+        function openPalette() {
+            if (!searchPalette) return;
+            searchPalette.style.display = 'flex';
+            if (searchPaletteBackdrop) searchPaletteBackdrop.classList.add('is-open');
+            if (searchBox) searchBox.classList.add('focused');
+
+            const isMobile = window.innerWidth <= 992;
+            const activeInput = isMobile ? mobileSearchInput : searchInput;
+            const q = activeInput ? activeInput.value : '';
+            renderResults(q);
+
+            if (isMobile && mobileSearchInput) {
+                setTimeout(function() {
+                    mobileSearchInput.focus();
+                    if (mobileSearchInput.value) {
+                        mobileSearchInput.select();
+                    }
+                }, 60);
+            } else if (searchInput && document.activeElement !== searchInput) {
+                searchInput.focus();
+            }
+        }
+
+        function closePalette() {
+            if (!searchPalette) return;
+            searchPalette.style.display = 'none';
+            if (searchPaletteBackdrop) searchPaletteBackdrop.classList.remove('is-open');
+            if (searchBox) searchBox.classList.remove('focused');
+            if (searchInput && document.activeElement === searchInput) {
+                searchInput.blur();
+            }
+            if (mobileSearchInput && document.activeElement === mobileSearchInput) {
+                mobileSearchInput.blur();
+            }
+            selectedIndex = -1;
+        }
+
+        // Mobile Search Button in Titlebar
+        if (btnMobileSearch) {
+            btnMobileSearch.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openPalette();
+            });
+        }
+
+        // Mobile Search Button in Drawer
+        if (btnDrawerSearch) {
+            btnDrawerSearch.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileDrawer();
+                setTimeout(openPalette, 120);
+            });
+        }
+
+        // Close button in palette header
+        if (btnClosePalette) {
+            btnClosePalette.addEventListener('click', function(e) {
+                e.preventDefault();
+                closePalette();
+            });
+        }
+
+        // Backdrop click closes palette
+        if (searchPaletteBackdrop) {
+            searchPaletteBackdrop.addEventListener('click', function(e) {
+                e.preventDefault();
+                closePalette();
+            });
+        }
+
+        // Desktop search box click
+        if (searchBox) {
+            searchBox.addEventListener('click', function(e) {
+                if (searchInput) searchInput.focus();
+                openPalette();
+            });
+        }
+
+        if (mobileSearchInput) {
+            mobileSearchInput.addEventListener('input', function() {
+                renderResults(this.value);
+            });
+            mobileSearchInput.addEventListener('search', function() {
+                renderResults(this.value);
+            });
+            mobileSearchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (!currentFilteredResults.length) return;
+                    const next = selectedIndex < currentFilteredResults.length - 1 ? selectedIndex + 1 : 0;
+                    updateSelectedIndex(next);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!currentFilteredResults.length) return;
+                    const prev = selectedIndex > 0 ? selectedIndex - 1 : currentFilteredResults.length - 1;
+                    updateSelectedIndex(prev);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (selectedIndex >= 0 && selectedIndex < currentFilteredResults.length) {
+                        window.location.href = currentFilteredResults[selectedIndex].url;
+                    }
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closePalette();
+                }
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('focus', openPalette);
+            searchInput.addEventListener('input', function() {
+                openPalette();
+                renderResults(this.value);
+            });
+            searchInput.addEventListener('search', function() {
+                renderResults(this.value);
+            });
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (!currentFilteredResults.length) return;
+                    const next = selectedIndex < currentFilteredResults.length - 1 ? selectedIndex + 1 : 0;
+                    updateSelectedIndex(next);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!currentFilteredResults.length) return;
+                    const prev = selectedIndex > 0 ? selectedIndex - 1 : currentFilteredResults.length - 1;
+                    updateSelectedIndex(prev);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (selectedIndex >= 0 && selectedIndex < currentFilteredResults.length) {
+                        window.location.href = currentFilteredResults[selectedIndex].url;
+                    }
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closePalette();
+                }
+            });
+        }
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            const isMobileSearchBtn = e.target.closest('#btn-mobile-search');
+            const isDrawerSearchBtn = e.target.closest('#btn-drawer-search');
+            if (isMobileSearchBtn || isDrawerSearchBtn) return;
+            if (searchPalette && searchPalette.style.display !== 'none') {
+                if (!searchPalette.contains(e.target) && (!searchBox || !searchBox.contains(e.target))) {
+                    closePalette();
+                }
+            }
+        });
+
+        // Global Shortcuts: Ctrl+K / Ctrl+P for search, Ctrl+B for sidebar, / for search
+        window.addEventListener('keydown', function(e) {
+            const isCtrl = e.ctrlKey || e.metaKey;
+            const key = e.key.toLowerCase();
+
+            if (isCtrl && (key === 'k' || key === 'p')) {
+                e.preventDefault();
+                openPalette();
+            } else if (isCtrl && key === 'b') {
+                e.preventDefault();
+                toggleSidebar();
+            } else if (e.key === '/' && !['input', 'textarea'].includes((document.activeElement.tagName || '').toLowerCase())) {
+                e.preventDefault();
+                openPalette();
+            } else if (e.key === 'Escape' && searchPalette && searchPalette.style.display !== 'none') {
+                closePalette();
+            }
+        });
+    })();
+    </script>
+
+    <script src="{{ asset('js/ui.js') }}" defer></script>
     {% block javascripts %}{% endblock %}
 </body>
 </html>

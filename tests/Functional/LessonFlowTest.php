@@ -104,7 +104,7 @@ final class LessonFlowTest extends FunctionalTestCase
 
     public function testCapstoneUnlocksAfterTheFirstGuidedProject(): void
     {
-        $this->markLessonsCompleted('project-01-senior-crud');
+        $this->markLessonsCompleted('project-01-senior-crud', 'arch-pragmatic-ddd', 'devops-ci-cd-github-actions');
 
         $this->client->request('GET', '/lesson/project-07-capstone-distributed');
 

@@ -1,0 +1,288 @@
+/* ==========================================================================
+   Senior DevLab — Design Tokens
+   Single source of truth for color, type, space, motion and elevation.
+   Themes are applied with [data-theme] on <html>: devlab (default),
+   midnight, contrast, daylight.
+   ========================================================================== */
+
+:root {
+    /* ---- Surfaces (dark IDE base) ---- */
+    --bg-window: #141417;
+    --bg-titlebar: #1b1b20;
+    --bg-activity: #17171b;
+    --bg-sidebar: #191920;
+    --bg-sidebar-header: #15151a;
+    --bg-editor: #1b1b21;
+    --bg-surface: #1f1f27;
+    --bg-card: #212129;
+    --bg-subtle: #25252e;
+    --bg-deep: #131317;
+    --bg-code: #121216;
+    --bg-tab-active: #1f1f27;
+    --bg-tab-inactive: #17171c;
+    --bg-tab-hover: #22222b;
+    --bg-hover: rgba(255, 255, 255, 0.06);
+    --bg-hover-solid: #26262f;
+    --bg-statusbar: #16161b;
+    --bg-overlay: rgba(10, 10, 13, 0.72);
+
+    /* ---- Borders ---- */
+    --border-main: #33333f;
+    --border-light: #26262f;
+    --border-strong: #454556;
+    --border-accent: var(--accent-primary);
+    --ring-focus: 0 0 0 2px rgba(124, 138, 255, 0.55);
+
+    /* ---- Text ---- */
+    --text-bright: #f4f4f8;
+    --text-primary: #c9c9d4;
+    --text-body: #b9b9c6;
+    --text-soft: #9494a4;
+    --text-muted: #7b7b8c;
+    --text-faint: #5c5c6b;
+    --text-link: #8fa4ff;
+
+    /* ---- Accents ---- */
+    --accent-primary: #6c7cff;
+    --accent-primary-hi: #8b97ff;
+    --accent-primary-lo: #4d5be0;
+    --accent-cyan: #56d4ff;
+    --accent-sky: #9cdcfe;
+    --accent-violet: #c084fc;
+    --accent-magenta: #f472b6;
+    --accent-success: #6ede8a;
+    --accent-green: #4ec9b0;
+    --accent-lime: #b5cea8;
+    --accent-yellow: #e8d489;
+    --accent-yellow-bright: #ffe066;
+    --accent-amber: #f6a93b;
+    --accent-orange: #ff9d6e;
+    --accent-orange-soft: #e5a085;
+    --accent-red: #ff6b6b;
+    --accent-blue: var(--accent-primary);
+    --accent-blue-hover: var(--accent-primary-hi);
+
+    /* ---- Accent washes (tinted glass fills) ---- */
+    --wash-primary: rgba(108, 124, 255, 0.14);
+    --wash-cyan: rgba(86, 212, 255, 0.13);
+    --wash-success: rgba(110, 222, 138, 0.13);
+    --wash-amber: rgba(246, 169, 59, 0.13);
+    --wash-red: rgba(255, 107, 107, 0.13);
+    --wash-violet: rgba(192, 132, 252, 0.13);
+
+    /* ---- Gradients ---- */
+    --grad-accent: linear-gradient(120deg, var(--accent-primary) 0%, var(--accent-cyan) 55%, var(--accent-violet) 100%);
+    --grad-accent-soft: linear-gradient(120deg, rgba(108, 124, 255, 0.22), rgba(86, 212, 255, 0.12) 60%, rgba(192, 132, 252, 0.2));
+    --grad-glow: radial-gradient(120% 140% at 12% 0%, rgba(108, 124, 255, 0.18) 0%, transparent 60%);
+    --grad-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 38%);
+
+    /* ---- Typography ---- */
+    --font-ui: "Inter var", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Consolas, "Courier New", monospace;
+    --font-display: var(--font-ui);
+
+    --text-2xs: 10px;
+    --text-xs: 11px;
+    --text-sm: 12px;
+    --text-base: 13px;
+    --text-md: 14px;
+    --text-lg: 16px;
+    --text-xl: 19px;
+    --text-2xl: clamp(20px, 1.1rem + 0.7vw, 26px);
+    --text-3xl: clamp(26px, 1.4rem + 1.4vw, 38px);
+    --text-metric: clamp(24px, 1.2rem + 1.1vw, 32px);
+
+    --tracking-label: 0.08em;
+    --tracking-tight: -0.011em;
+    --leading-tight: 1.28;
+    --leading-body: 1.62;
+
+    /* ---- Space scale ---- */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 56px;
+
+    /* ---- Radii ---- */
+    --radius-xs: 3px;
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 18px;
+    --radius-pill: 999px;
+
+    /* ---- Elevation ---- */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 18px -6px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 18px 44px -14px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 0 1px rgba(108, 124, 255, 0.35), 0 10px 34px -12px rgba(108, 124, 255, 0.5);
+    --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+
+    /* ---- Motion ---- */
+    --duration-instant: 90ms;
+    --duration-fast: 160ms;
+    --duration-normal: 260ms;
+    --duration-slow: 420ms;
+    --duration-slower: 700ms;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-spring: cubic-bezier(0.34, 1.42, 0.54, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+    /* ---- Layout ---- */
+    --h-titlebar: 38px;
+    --h-tabs: 36px;
+    --h-breadcrumbs: 28px;
+    --h-statusbar: 24px;
+    --w-activity: 50px;
+    --w-sidebar: 286px;
+    --content-max: 1180px;
+}
+
+/* -------------------------------------------------------------------------
+   Theme: Midnight — deeper blue-violet, higher chroma
+   ------------------------------------------------------------------------- */
+:root[data-theme="midnight"] {
+    --bg-window: #0d1020;
+    --bg-titlebar: #131834;
+    --bg-activity: #101428;
+    --bg-sidebar: #121732;
+    --bg-sidebar-header: #0f1329;
+    --bg-editor: #131832;
+    --bg-surface: #181e3d;
+    --bg-card: #1a2044;
+    --bg-subtle: #1f2650;
+    --bg-deep: #0c1024;
+    --bg-code: #0b0f22;
+    --bg-tab-active: #181e3d;
+    --bg-tab-inactive: #111634;
+    --bg-tab-hover: #1c2348;
+    --bg-hover-solid: #202856;
+    --bg-statusbar: #101430;
+    --border-main: #2b3468;
+    --border-light: #212a56;
+    --border-strong: #3d4a8c;
+    --accent-primary: #7c8cff;
+    --accent-primary-hi: #9aa6ff;
+    --accent-cyan: #5ee0ff;
+    --text-bright: #f2f4ff;
+    --text-primary: #c6cbf0;
+    --text-body: #b4bae4;
+    --text-muted: #7d85b5;
+}
+
+/* -------------------------------------------------------------------------
+   Theme: Contrast — maximum legibility, WCAG-friendly dark
+   ------------------------------------------------------------------------- */
+:root[data-theme="contrast"] {
+    --bg-window: #000000;
+    --bg-titlebar: #0a0a0a;
+    --bg-activity: #050505;
+    --bg-sidebar: #080808;
+    --bg-sidebar-header: #000000;
+    --bg-editor: #0a0a0a;
+    --bg-surface: #101010;
+    --bg-card: #121212;
+    --bg-subtle: #181818;
+    --bg-deep: #000000;
+    --bg-code: #000000;
+    --bg-tab-active: #101010;
+    --bg-tab-inactive: #060606;
+    --bg-tab-hover: #1a1a1a;
+    --bg-hover-solid: #1d1d1d;
+    --bg-statusbar: #000000;
+    --border-main: #5a5a5a;
+    --border-light: #3d3d3d;
+    --border-strong: #8a8a8a;
+    --text-bright: #ffffff;
+    --text-primary: #ececec;
+    --text-body: #e2e2e2;
+    --text-soft: #c4c4c4;
+    --text-muted: #a8a8a8;
+    --text-faint: #8a8a8a;
+    --accent-primary: #8aa0ff;
+    --accent-primary-hi: #aab8ff;
+    --accent-cyan: #6fe3ff;
+    --accent-success: #7cf29a;
+    --accent-yellow: #ffe38a;
+    --accent-red: #ff8a8a;
+    --shadow-lg: 0 18px 44px -14px rgba(0, 0, 0, 0.95);
+}
+
+/* -------------------------------------------------------------------------
+   Theme: Daylight — light IDE variant
+   ------------------------------------------------------------------------- */
+:root[data-theme="daylight"] {
+    --bg-window: #eceef3;
+    --bg-titlebar: #e2e5ec;
+    --bg-activity: #e6e9f0;
+    --bg-sidebar: #f1f2f6;
+    --bg-sidebar-header: #e6e8ef;
+    --bg-editor: #fafbfd;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-subtle: #f3f4f8;
+    --bg-deep: #eef0f5;
+    --bg-code: #f6f7fa;
+    --bg-tab-active: #fafbfd;
+    --bg-tab-inactive: #e9ebf1;
+    --bg-tab-hover: #f2f3f7;
+    --bg-hover: rgba(15, 20, 40, 0.05);
+    --bg-hover-solid: #e9ebf2;
+    --bg-statusbar: #e2e5ec;
+    --bg-overlay: rgba(30, 34, 48, 0.35);
+    --border-main: #cfd3de;
+    --border-light: #e0e3ea;
+    --border-strong: #b0b6c6;
+    --text-bright: #12141c;
+    --text-primary: #2f3342;
+    --text-body: #3b4052;
+    --text-soft: #565c70;
+    --text-muted: #6b7285;
+    --text-faint: #8b91a3;
+    --text-link: #3a4ed0;
+    --accent-primary: #4c5bd4;
+    --accent-primary-hi: #3949c4;
+    --accent-primary-lo: #2f3db0;
+    --accent-cyan: #0a8fbf;
+    --accent-sky: #2a7bb8;
+    --accent-violet: #8b5cf6;
+    --accent-success: #1f9d55;
+    --accent-green: #0f8f7a;
+    --accent-lime: #5f8f3f;
+    --accent-yellow: #9a7b1a;
+    --accent-yellow-bright: #8a6a10;
+    --accent-amber: #b9761a;
+    --accent-orange: #c15f28;
+    --accent-orange-soft: #b06a3c;
+    --accent-red: #d33a3a;
+    --wash-primary: rgba(76, 91, 212, 0.1);
+    --wash-cyan: rgba(10, 143, 191, 0.1);
+    --wash-success: rgba(31, 157, 85, 0.1);
+    --wash-amber: rgba(185, 118, 26, 0.12);
+    --wash-red: rgba(211, 58, 58, 0.1);
+    --wash-violet: rgba(139, 92, 246, 0.1);
+    --grad-glow: radial-gradient(120% 140% at 12% 0%, rgba(76, 91, 212, 0.1) 0%, transparent 60%);
+    --grad-surface: linear-gradient(180deg, rgba(15, 20, 40, 0.02) 0%, rgba(15, 20, 40, 0) 38%);
+    --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    --shadow-sm: 0 1px 2px rgba(20, 26, 45, 0.08);
+    --shadow-md: 0 6px 18px -6px rgba(20, 26, 45, 0.16);
+    --shadow-lg: 0 18px 44px -14px rgba(20, 26, 45, 0.24);
+    --ring-focus: 0 0 0 2px rgba(76, 91, 212, 0.4);
+}
+
+/* Motion opt-out honoured globally. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --duration-instant: 1ms;
+        --duration-fast: 1ms;
+        --duration-normal: 1ms;
+        --duration-slow: 1ms;
+        --duration-slower: 1ms;
+    }
+}
