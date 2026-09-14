@@ -11,8 +11,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 final class LessonFlowTest extends FunctionalTestCase
 {
-    private const ENTRY_LESSON = 'php-request-lifecycle';
-    private const NEXT_LESSON = 'php-types-memory';
+    private const ENTRY_LESSON = 'php-syntax-types-variables';
+    private const NEXT_LESSON = 'php-control-flow-functions';
 
     public function testUnknownLessonReturns404(): void
     {
@@ -126,6 +126,32 @@ final class LessonFlowTest extends FunctionalTestCase
         $this->client->request('GET', '/lesson/project-07-capstone-distributed');
 
         self::assertResponseIsSuccessful();
+    }
+
+    public function testFoundationalPhpExercisesPassWithSolutions(): void
+    {
+        $chain = [
+            'php-syntax-types-variables',
+            'php-control-flow-functions',
+            'php-arrays-data',
+            'php-oop-foundations',
+        ];
+
+        foreach ($chain as $slug) {
+            $crawler = $this->client->request('GET', '/lesson/' . $slug);
+            self::assertResponseIsSuccessful("Lesson $slug should be accessible");
+
+            $solution = static::getContainer()->get(LessonContentService::class)
+                ->findLesson($slug)['exercise']['solution_code'];
+
+            $this->client->submit($crawler->selectButton('Ejecutar y Validar Reto')->form([
+                'submitted_code' => $solution,
+            ]));
+
+            self::assertResponseRedirects();
+            $this->client->followRedirect();
+            self::assertStringContainsString('Reto de código superado', (string) $this->client->getResponse()->getContent(), "Solution for $slug should pass");
+        }
     }
 
     private function csrfToken(Crawler $crawler): string

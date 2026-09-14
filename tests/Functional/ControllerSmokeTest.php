@@ -88,14 +88,14 @@ class ControllerSmokeTest extends FunctionalTestCase
 
     public function testUnlockedLessonPageIsSuccessful(): void
     {
-        $this->client->request('GET', '/lesson/php-request-lifecycle');
+        $this->client->request('GET', '/lesson/php-syntax-types-variables');
 
         self::assertResponseIsSuccessful();
     }
 
     public function testLockedLessonRedirectsToRoadmap(): void
     {
-        $this->client->request('GET', '/lesson/php-types-memory');
+        $this->client->request('GET', '/lesson/php-control-flow-functions');
 
         self::assertResponseRedirects('/roadmap');
     }

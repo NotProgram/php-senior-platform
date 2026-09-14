@@ -24,7 +24,7 @@ final class CurriculumGraph
     private const ENTRY_POINTS = [
         'se-sdlc-requirements',
         'git-fundamentals-plumbing',
-        'php-request-lifecycle',
+        'php-syntax-types-variables',
         'sql-indexing-explain',
         'devops-linux-cli-internals',
         'resources-php-rfcs',
@@ -43,7 +43,7 @@ final class CurriculumGraph
         // --- Roots -----------------------------------------------------------
         'se-sdlc-requirements' => [],
         'git-fundamentals-plumbing' => [],
-        'php-request-lifecycle' => [],
+        'php-syntax-types-variables' => [],
         'sql-indexing-explain' => [],
         'devops-linux-cli-internals' => [],
         'resources-php-rfcs' => [],
@@ -58,7 +58,13 @@ final class CurriculumGraph
         'git-pr-code-review' => ['git-branching-strategies'],
         'git-github-collaboration' => ['git-pr-code-review'],
 
+        // --- PHP foundations -------------------------------------------------
+        'php-control-flow-functions' => ['php-syntax-types-variables'],
+        'php-arrays-data' => ['php-control-flow-functions'],
+        'php-oop-foundations' => ['php-arrays-data'],
+
         // --- PHP runtime -----------------------------------------------------
+        'php-request-lifecycle' => ['php-oop-foundations'],
         'php-types-memory' => ['php-request-lifecycle'],
         'php-namespaces-autoloading' => ['php-types-memory'],
         'php-opcache-jit' => ['php-types-memory'],

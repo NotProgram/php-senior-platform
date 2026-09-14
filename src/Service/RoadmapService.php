@@ -264,6 +264,10 @@ class RoadmapService
   ),
 ),
                 'lessons' => [
+                    ['slug' => 'php-syntax-types-variables', 'title' => 'Sintaxis, Tipos Primitivos & Tipado Estricto', 'minutes' => 35, 'difficulty' => 'Fundamentos'],
+                    ['slug' => 'php-control-flow-functions', 'title' => 'Control de Flujo, Expresiones Match & Funciones Tipadas', 'minutes' => 40, 'difficulty' => 'Fundamentos'],
+                    ['slug' => 'php-arrays-data', 'title' => 'Arrays Indexados, Asociativos & Transformación Funcional', 'minutes' => 40, 'difficulty' => 'Fundamentos'],
+                    ['slug' => 'php-oop-foundations', 'title' => 'Fundamentos de POO: Clases, Instancias & Encapsulación', 'minutes' => 45, 'difficulty' => 'Fundamentos'],
                     ['slug' => 'php-request-lifecycle', 'title' => 'Request Lifecycle & Web Servers', 'minutes' => 35, 'difficulty' => 'Fundamentos'],
                     ['slug' => 'php-types-memory', 'title' => 'Tipado Estricto & Gestión de Memoria', 'minutes' => 45, 'difficulty' => 'Intermedio'],
                     ['slug' => 'php-opcache-jit', 'title' => 'OpCache, Preloading & JIT Compiler', 'minutes' => 40, 'difficulty' => 'Avanzado'],

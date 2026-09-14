@@ -50,6 +50,11 @@ class ExerciseEvaluatorService
 
         // 3. Lesson-specific validation rules
         match ($lessonSlug) {
+            // Fundamentos de PHP
+            'php-syntax-types-variables' => $this->validatePhpSyntaxTypesVariables($code, $passed, $hints),
+            'php-control-flow-functions' => $this->validatePhpControlFlowFunctions($code, $passed, $hints),
+            'php-arrays-data' => $this->validatePhpArraysData($code, $passed, $hints),
+            'php-oop-foundations' => $this->validatePhpOopFoundations($code, $passed, $hints),
             'php-request-lifecycle' => $this->validateRequestLifecycle($code, $passed, $hints),
             'php-types-memory' => $this->validateTypesMemory($code, $passed, $hints),
             'php-opcache-jit' => $this->validateOpCacheJit($code, $passed, $hints),
@@ -1766,6 +1771,124 @@ class ExerciseEvaluatorService
         if (!str_contains($clean, 'culpable') && !str_contains($clean, 'blameless')) {
             $passed = false;
             $hints[] = 'Debe comprobarse la cultura sin culpas (blameless) rechazando atribuciones individuales de error.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validatePhpSyntaxTypesVariables(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class InvoiceCalculator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase InvoiceCalculator.';
+        }
+        if (!str_contains($clean, 'calculateTotal')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método calculateTotal(float $subtotal, float $taxRate): float.';
+        }
+        if (!str_contains($clean, 'formatCurrency')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método formatCurrency(float $amount, string $currency = \'USD\'): string.';
+        }
+        if (!str_contains($clean, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debes lanzar InvalidArgumentException cuando el subtotal sea negativo o la tasa de impuesto sea inválida.';
+        }
+        if (!str_contains($clean, 'round(')) {
+            $hints[] = 'Sugerencia: Utiliza round() para evitar imprecisiones de coma flotante en el total calculado.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validatePhpControlFlowFunctions(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class CustomerDiscountEvaluator')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase CustomerDiscountEvaluator.';
+        }
+        if (!str_contains($clean, 'getDiscountPercentage')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método getDiscountPercentage(string $customerTier): float.';
+        }
+        if (!str_contains($clean, 'applyDiscount')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método applyDiscount(float $amount, string $customerTier): float.';
+        }
+        if (!str_contains($clean, 'match')) {
+            $passed = false;
+            $hints[] = 'Debes utilizar la expresión match de PHP 8 para evaluar el tier del cliente.';
+        }
+        if (!str_contains($clean, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debes validar que el importe ($amount) no sea negativo lanzando InvalidArgumentException.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validatePhpArraysData(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class ProductCatalogProcessor')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase ProductCatalogProcessor.';
+        }
+        if (!str_contains($clean, 'filterActive')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método filterActive(array $products): array.';
+        }
+        if (!str_contains($clean, 'calculateInventoryValue')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método calculateInventoryValue(array $products): float.';
+        }
+        if (!str_contains($clean, 'array_filter') && !str_contains($clean, 'filterActive(')) {
+            $passed = false;
+            $hints[] = 'Debes filtrar la colección de productos evaluando la clave active.';
+        }
+        if (!str_contains($clean, 'array_values') && !str_contains($clean, 'array_column')) {
+            $hints[] = 'Sugerencia: Reindexa el array filtrado con array_values() y extrae columnas numéricas con array_column().';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validatePhpOopFoundations(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class StudentProfile')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase StudentProfile.';
+        }
+        if (!str_contains($clean, '__construct')) {
+            $passed = false;
+            $hints[] = 'Debes definir el constructor para inicializar name, email y grades.';
+        }
+        if (!str_contains($clean, 'addGrade')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método addGrade(float $grade): self.';
+        }
+        if (!str_contains($clean, 'getAverage')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método getAverage(): float.';
+        }
+        if (!str_contains($clean, 'isApproved')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método isApproved(): bool.';
+        }
+        if (!str_contains($clean, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debes validar que la calificación esté entre 0.0 y 100.0 lanzando InvalidArgumentException.';
         }
     }
 

@@ -31,7 +31,7 @@ final class PageSmokeTest extends FunctionalTestCase
         }
         yield 'system design' => ['/system-design'];
         yield 'settings' => ['/settings'];
-        yield 'entry lesson' => ['/lesson/php-request-lifecycle'];
+        yield 'entry lesson' => ['/lesson/php-syntax-types-variables'];
     }
 
     public function testScriptTagsInLessonContentAreShownAsTextNotExecuted(): void
