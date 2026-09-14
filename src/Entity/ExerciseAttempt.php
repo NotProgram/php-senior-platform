@@ -82,4 +82,10 @@ class ExerciseAttempt
     {
         return $this->executedAt;
     }
+
+    public function setExecutedAt(DateTimeImmutable $executedAt): self
+    {
+        $this->executedAt = $executedAt;
+        return $this;
+    }
 }

@@ -138,7 +138,7 @@
     --h-titlebar: 38px;
     --h-tabs: 36px;
     --h-breadcrumbs: 28px;
-    --h-statusbar: 24px;
+    --h-statusbar: 0px;
     --w-activity: 50px;
     --w-sidebar: 286px;
     --content-max: 1180px;

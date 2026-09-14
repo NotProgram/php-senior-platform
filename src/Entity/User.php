@@ -105,6 +105,12 @@ class User
         return $this;
     }
 
+    public function setExperiencePoints(int $experiencePoints): self
+    {
+        $this->experiencePoints = $experiencePoints;
+        return $this;
+    }
+
     public function getStreakDays(): int
     {
         return $this->streakDays;
@@ -124,6 +130,12 @@ class User
     public function getLastActiveAt(): DateTimeImmutable
     {
         return $this->lastActiveAt;
+    }
+
+    public function setLastActiveAt(DateTimeImmutable $lastActiveAt): self
+    {
+        $this->lastActiveAt = $lastActiveAt;
+        return $this;
     }
 
     public function touchLastActive(): self

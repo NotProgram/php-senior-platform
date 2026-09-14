@@ -25,6 +25,7 @@ class LearningProgressService
         private readonly UserProgressRepository $progressRepository,
         private readonly RoadmapService $roadmapService,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ?ProgressBackupService $progressBackupService = null,
     ) {}
 
     public function findOrCreateProgress(User $user, string $lessonSlug): UserProgress
@@ -66,6 +67,7 @@ class LearningProgressService
         }
 
         $this->entityManager->flush();
+        $this->progressBackupService?->autoSave($user);
 
         return $xpAwarded;
     }

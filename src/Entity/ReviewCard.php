@@ -149,4 +149,22 @@ class ReviewCard
 
         return $this;
     }
+
+    public function restoreState(
+        float $easeFactor,
+        int $intervalDays,
+        int $repetitions,
+        int $lapses,
+        DateTimeImmutable $dueAt,
+        ?DateTimeImmutable $lastReviewedAt,
+    ): self {
+        $this->easeFactor = max(self::EASE_MIN, min(self::EASE_MAX, $easeFactor));
+        $this->intervalDays = max(0, $intervalDays);
+        $this->repetitions = max(0, $repetitions);
+        $this->lapses = max(0, $lapses);
+        $this->dueAt = $dueAt;
+        $this->lastReviewedAt = $lastReviewedAt;
+
+        return $this;
+    }
 }

@@ -91,4 +91,10 @@ class QuizAttempt
     {
         return $this->attemptedAt;
     }
+
+    public function setAttemptedAt(DateTimeImmutable $attemptedAt): self
+    {
+        $this->attemptedAt = $attemptedAt;
+        return $this;
+    }
 }

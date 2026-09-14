@@ -64,6 +64,10 @@
             <button type="button" class="mobile-search-btn" id="btn-mobile-search" aria-label="Buscar en la plataforma" title="Buscar">
                 {{ icons.icon('search', 15) }}
             </button>
+            <a href="{{ path('app_export_progress') }}" class="btn-quick-export" title="Descargar copia de seguridad de mi progreso (JSON)">
+                {{ icons.icon('download', 13) }}
+                <span>Exportar</span>
+            </a>
             <div class="user-badge">
                 {{ icons.icon('user', 13) }}
                 <span class="user-badge-text">{{ current_user.displayName|default('Dilan') }} ({{ current_user.currentLevel|default('Junior') }})</span>
@@ -210,46 +214,7 @@
         </main>
     </div>
 
-    <!-- VS Code Bottom Statusbar -->
     {% set st = devlab_status() %}
-    <footer class="vscode-statusbar">
-        <div class="statusbar-left">
-            <span class="statusbar-item is-accent">
-                {{ icons.icon('git-branch', 12) }}
-                <span>main</span>
-            </span>
-            <span class="statusbar-item">
-                {{ icons.icon('refresh-cw', 11) }}
-                <span>PHP 8.4.7 &bull; Symfony 8.1</span>
-            </span>
-            <span class="statusbar-item">
-                {{ icons.icon('check-circle', 11) }}
-                <span>{{ st.completed }}/{{ st.total }} Lecciones ({{ st.percent }}%)</span>
-            </span>
-            {% if st.due > 0 %}
-                <a href="{{ path('app_review') }}" class="statusbar-item is-warn" title="Iniciar sesión de repaso espaciado">
-                    {{ icons.icon('alert-triangle', 11) }}
-                    <span>{{ st.due }} Repasos Pendientes</span>
-                </a>
-            {% endif %}
-        </div>
-        <div class="statusbar-right">
-            <span class="statusbar-item">
-                {{ icons.icon('zap', 11) }}
-                <span>{{ st.xp }} XP</span>
-            </span>
-            <span class="statusbar-item">
-                {{ icons.icon('award', 11) }}
-                <span>{{ st.level }}</span>
-            </span>
-            <span class="statusbar-item">
-                {{ icons.icon('activity', 11) }}
-                <span>Racha: {{ st.streak }} d</span>
-            </span>
-            <span class="statusbar-item">UTF-8</span>
-            <span class="statusbar-item">LF</span>
-        </div>
-    </footer>
 
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
