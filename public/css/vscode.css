@@ -903,8 +903,12 @@ a { color: var(--text-link); }
     .menu-items { max-width: 34vw; }
 }
 
-@media (max-width: 900px) {
-    .sidebar { position: absolute; top: 0; bottom: 0; left: 0; z-index: 25; box-shadow: var(--shadow-lg); }
+@media (max-width: 992px) {
+    .sidebar,
+    .activity-bar,
+    .sidebar-tab-toggle {
+        display: none !important;
+    }
     .content-viewport { padding: var(--space-5) var(--space-4) var(--space-10); }
     .titlebar-center-wrapper { display: none; }
     .menu-items { display: none; }

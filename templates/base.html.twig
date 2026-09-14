@@ -420,7 +420,7 @@
         }
 
         // On mobile, default sidebar to collapsed to not block the screen
-        if (window.innerWidth <= 900) {
+        if (window.innerWidth <= 992) {
             setSidebarCollapsed(true);
         } else if (localStorage.getItem('vscode_sidebar_collapsed') === 'true') {
             setSidebarCollapsed(true);
