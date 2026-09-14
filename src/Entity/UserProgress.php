@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\ProgressStatus;
 use App\Repository\UserProgressRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -95,6 +96,24 @@ class UserProgress
             }
         }
         return $this;
+    }
+
+    /**
+     * Moves the lesson forward to $target and never backwards, so e.g. passing a quiz with 80%
+     * cannot demote a lesson that was already MASTERED.
+     *
+     * @return bool whether the status actually advanced
+     */
+    public function advanceTo(ProgressStatus $target): bool
+    {
+        $current = ProgressStatus::tryFrom($this->status) ?? ProgressStatus::Available;
+        if ($target->rank() <= $current->rank()) {
+            return false;
+        }
+
+        $this->setStatus($target->value);
+
+        return true;
     }
 
     public function getScore(): int

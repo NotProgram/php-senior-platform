@@ -6,20 +6,18 @@ namespace App\Service;
 
 use App\Entity\ExerciseAttempt;
 use App\Entity\User;
-use App\Entity\UserProgress;
 use App\Enum\ProgressStatus;
-use App\Repository\UserProgressRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ExerciseEvaluatorService
 {
     public function __construct(
-        private readonly UserProgressRepository $progressRepository,
+        private readonly LearningProgressService $learningProgress,
         private readonly EntityManagerInterface $entityManager
     ) {}
 
     /**
-     * @return array{passed: bool, feedback: string, hints: list<string>}
+     * @return array{passed: bool, feedback: string, hints: list<string>, xp_awarded: int}
      */
     public function evaluateCode(User $user, string $lessonSlug, string $submittedCode): array
     {
@@ -31,6 +29,7 @@ class ExerciseEvaluatorService
                 'passed' => false,
                 'feedback' => 'El código enviado está vacío.',
                 'hints' => ['Escribe la solución en el editor antes de enviar.'],
+                'xp_awarded' => 0,
             ];
         }
 
@@ -123,8 +122,6 @@ class ExerciseEvaluatorService
             'git-branching-strategies' => $this->validateGitBranchingStrategies($code, $passed, $hints),
             'git-pr-code-review' => $this->validateGitPrCodeReview($code, $passed, $hints),
             'git-github-collaboration' => $this->validateGitCollaboration($code, $passed, $hints),
-            'testing-phpunit-mastery' => $this->validateTestingPhpUnitMastery($code, $passed, $hints),
-            'arch-patterns-comparison' => $this->validateArchPatternsComparison($code, $passed, $hints),
             'prof-team-communication' => $this->validateProfTeamCommunication($code, $passed, $hints),
             'prof-adr-technical-decisions' => $this->validateProfAdrTechnicalDecisions($code, $passed, $hints),
             'prof-failure-engineering' => $this->validateProfFailureEngineering($code, $passed, $hints),
@@ -141,21 +138,14 @@ class ExerciseEvaluatorService
         $attempt = new ExerciseAttempt($user, $lessonSlug, $code, $passed, $feedback);
         $this->entityManager->persist($attempt);
 
-        // Update UserProgress
-        $progress = $this->progressRepository->findProgress($user, $lessonSlug);
-        if ($progress === null) {
-            $progress = new UserProgress($user, $this->resolveModuleSlug($lessonSlug), $lessonSlug);
-            $this->entityManager->persist($progress);
-        }
-
+        // Passing once completes the lesson; passing again after completion masters it
+        $xpAwarded = 0;
         if ($passed) {
-            $user->addExperiencePoints(50);
-            $user->touchLastActive();
-            if ($progress->getStatus() === ProgressStatus::Completed->value) {
-                $progress->setStatus(ProgressStatus::Mastered->value);
-            } else {
-                $progress->setStatus(ProgressStatus::Completed->value);
-            }
+            $progress = $this->learningProgress->findOrCreateProgress($user, $lessonSlug);
+            $target = $progress->getStatus() === ProgressStatus::Completed->value
+                ? ProgressStatus::Mastered
+                : ProgressStatus::Completed;
+            $xpAwarded = $this->learningProgress->advance($user, $progress, $target);
         }
 
         $this->entityManager->flush();
@@ -164,6 +154,7 @@ class ExerciseEvaluatorService
             'passed' => $passed,
             'feedback' => $feedback,
             'hints' => $hints,
+            'xp_awarded' => $xpAwarded,
         ];
     }
 
@@ -1758,68 +1749,5 @@ class ExerciseEvaluatorService
         $clean = preg_replace('!/\*.*?\*/!s', '', $code) ?? $code;
         $clean = preg_replace('!//.*?$!m', '', $clean) ?? $clean;
         return preg_replace('!#.*?$!m', '', $clean) ?? $clean;
-    }
-
-    private function resolveModuleSlug(string $lessonSlug): string
-    {
-        if (str_starts_with($lessonSlug, 'se-')) {
-            return 'software-engineering';
-        }
-        if (str_starts_with($lessonSlug, 'git-')) {
-            return 'git';
-        }
-        if (str_starts_with($lessonSlug, 'prof-')) {
-            return 'professional-developer';
-        }
-        if (str_starts_with($lessonSlug, 'poo-')) {
-            return 'poo';
-        }
-        if (str_starts_with($lessonSlug, 'symfony-')) {
-            return 'symfony';
-        }
-        if (str_starts_with($lessonSlug, 'twig-')) {
-            return 'twig';
-        }
-        if (str_starts_with($lessonSlug, 'sql-')) {
-            return 'databases';
-        }
-        if (str_starts_with($lessonSlug, 'doctrine-')) {
-            return 'doctrine';
-        }
-        if (str_starts_with($lessonSlug, 'apis-')) {
-            return 'apis';
-        }
-        if (str_starts_with($lessonSlug, 'testing-')) {
-            return 'testing';
-        }
-        if (str_starts_with($lessonSlug, 'patterns-')) {
-            return 'design-patterns';
-        }
-        if (str_starts_with($lessonSlug, 'arch-')) {
-            return 'architecture';
-        }
-        if (str_starts_with($lessonSlug, 'system-design-')) {
-            return 'system-design';
-        }
-        if (str_starts_with($lessonSlug, 'security-')) {
-            return 'security';
-        }
-        if (str_starts_with($lessonSlug, 'perf-')) {
-            return 'performance';
-        }
-        if (str_starts_with($lessonSlug, 'devops-')) {
-            return 'devops';
-        }
-        if (str_starts_with($lessonSlug, 'project-')) {
-            return 'projects';
-        }
-        if (str_starts_with($lessonSlug, 'eval-')) {
-            return 'evaluations';
-        }
-        if (str_starts_with($lessonSlug, 'resources-')) {
-            return 'resources';
-        }
-
-        return 'php-fundamentals';
     }
 }

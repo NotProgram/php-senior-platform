@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Senior PHP & Symfony Platform{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><ellipse cx='16' cy='16' rx='14' ry='9' fill='%234F5D95'/><text x='16' y='19.5' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='8.5' fill='%23FFF'>php</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="{{ asset('css/vscode.css') }}">
     {% block stylesheets %}{% endblock %}
 </head>
@@ -170,7 +173,7 @@
             <div class="content-viewport">
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
-                        <div style="padding: 10px 16px; margin-bottom: 16px; border-radius: 4px; font-size: 12.5px; display: flex; align-items: center; gap: 8px; {{ label == 'warning' ? 'background: rgba(204, 167, 0, 0.15); border: 1px solid rgba(204, 167, 0, 0.5); color: #ffe066;' : (label == 'success' ? 'background: rgba(137, 209, 133, 0.15); border: 1px solid rgba(137, 209, 133, 0.5); color: #89d185;' : 'background: rgba(241, 76, 76, 0.15); border: 1px solid rgba(241, 76, 76, 0.5); color: #f14c4c;') }}">
+                        <div class="flash flash--{{ label in ['success', 'warning'] ? label : 'error' }}" role="{{ label == 'success' ? 'status' : 'alert' }}">
                             {{ icons.icon(label == 'warning' ? 'shield' : (label == 'success' ? 'check-circle' : 'help-circle'), 16) }}
                             <span>{{ message }}</span>
                         </div>
@@ -200,7 +203,7 @@
         <div class="statusbar-right">
             <div class="statusbar-item">
                 {{ icons.icon('php', 14) }}
-                <span>PHP 8.4.7</span>
+                <span>PHP {{ constant('PHP_MAJOR_VERSION') }}.{{ constant('PHP_MINOR_VERSION') }}</span>
             </div>
             <div class="statusbar-item">
                 {{ icons.icon('symfony', 13) }}

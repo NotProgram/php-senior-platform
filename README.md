@@ -124,28 +124,41 @@ Cada lección incluye:
 
 ## Ejecución Local
 
-### Prerrequisitos
-- PHP 8.4+ con extensiones `pdo_mysql`, `curl`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `iconv`.
-- Composer 2.x
-- Servidor MySQL 8.0 (local o contenedor Docker)
+### Con DDEV (recomendado)
+El repositorio incluye `.ddev/config.yaml` (PHP 8.4, nginx-fpm, MySQL 8.0):
 
-### Pasos de Inicio
 ```bash
-# 1. Instalar dependencias
-composer install
-
-# 2. Configurar variables de entorno en .env.local
-DATABASE_URL="mysql://root:root@127.0.0.1:3306/php_senior_platform?serverVersion=8.0.32&charset=utf8mb4"
-
-# 3. Crear base de datos y correr migraciones
-php bin/console doctrine:database:create --if-not-exists
-php bin/console doctrine:migrations:migrate -n
-
-# 4. Iniciar servidor web de desarrollo
-php -S 127.0.0.1:8000 -t public
+ddev start
+ddev composer install
+ddev exec bin/console doctrine:migrations:migrate -n
+ddev launch
 ```
 
-Acceder en el navegador a: `http://127.0.0.1:8000`
+### Sin DDEV
+- PHP 8.4+ con extensiones `pdo_mysql`, `pdo_sqlite` (tests), `mbstring`, `tokenizer`, `xml`, `ctype`, `iconv`.
+- Composer 2.x y MySQL 8.0.
+
+```bash
+composer install
+
+# Configurar la base de datos en .env.local
+DATABASE_URL="mysql://root:root@127.0.0.1:3306/php_senior_platform?serverVersion=8.0.32&charset=utf8mb4"
+
+php bin/console doctrine:database:create --if-not-exists
+php bin/console doctrine:migrations:migrate -n
+symfony serve -d   # o bien: php -S 127.0.0.1:8000 -t public
+```
+
+### Tests
+La suite usa una base SQLite desechable (definida en `.env.test`), así que no necesita MySQL:
+
+```bash
+ddev exec bin/phpunit   # o bien: php bin/phpunit
+```
+
+- `tests/Unit`: servicios y entidades, sin kernel.
+- `tests/Integration/CurriculumIntegrityTest.php`: comprueba que roadmap, archivos de contenido, quizzes y grafo de prerrequisitos sean coherentes (toda lección tiene contenido y es desbloqueable, toda respuesta correcta está entre las opciones).
+- `tests/Functional`: flujo HTTP real (todas las páginas y lecciones, completar lección, quiz, reto de código, CSRF, reinicio de progreso, API de lint).
 
 ---
 
@@ -201,6 +214,7 @@ php-senior-platform/
 ├── api/
 │   └── index.php                 # Bridge para Serverless de Vercel
 ├── config/                       # Configuración de bundles y servicios Symfony
+├── content/lessons/              # Una lección por archivo: <slug>.php devuelve su array de contenido
 ├── migrations/                   # Migraciones de base de datos Doctrine
 ├── public/                       # Raíz pública web (FastCGI Front Controller y assets)
 │   ├── css/vscode.css            # Hoja de estilos VS Code Dark+
@@ -213,6 +227,7 @@ php-senior-platform/
 │   ├── Repository/               # Repositorios Doctrine de consulta
 │   └── Service/                  # Servicios de negocio (LessonContentService, Evaluators, etc.)
 ├── templates/                    # Plantillas Twig (base, dashboard, lesson, roadmap, icons)
+├── tests/                        # Unit, Integration (integridad del currículo) y Functional (HTTP)
 ├── vercel.json                   # Configuración de funciones y rutas para Vercel
 └── README.md                     # Documentación general de la plataforma
 ```

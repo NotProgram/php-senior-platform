@@ -39,6 +39,7 @@
 
         <div style="border-top: 1px solid var(--border-light); padding-top: 14px;">
             <form action="{{ path('app_settings_reset_progress') }}" method="POST" onsubmit="return confirm('¿Seguro que deseas reiniciar tu progreso a cero? Se borrarán todos los intentos de ejercicios y quizzes.');">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('submit') }}">
                 <button type="submit" class="btn-vs" style="background: rgba(241, 76, 76, 0.2); border: 1px solid rgba(241, 76, 76, 0.5); color: #f14c4c; font-size: 11.5px;">
                     {{ icons.icon('refresh-cw', 12) }}
                     <span>Reiniciar mi progreso a cero</span>
@@ -54,10 +55,10 @@
         </h2>
         <div style="display: grid; grid-template-columns: 180px 1fr; gap: 10px; font-size: 13px;">
             <span style="color: #858585;">PHP Runtime:</span>
-            <span style="color: #ffffff;">PHP 8.4.7 (ZTS Visual C++ 2022 x64)</span>
+            <span style="color: #ffffff;">PHP {{ constant('PHP_VERSION') }} ({{ constant('PHP_OS_FAMILY') }})</span>
 
             <span style="color: #858585;">Framework:</span>
-            <span style="color: #ffffff;">Symfony 8.1 / 7.x Kernel</span>
+            <span style="color: #ffffff;">Symfony {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</span>
 
             <span style="color: #858585;">Motor de Base de Datos:</span>
             <span style="color: #ffffff;">MySQL 8.0 Community Server (127.0.0.1:3306)</span>

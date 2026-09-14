@@ -106,10 +106,7 @@ class PrerequisiteEngine
 
         // Guided Projects
         'project-01-senior-crud' => ['prof-team-communication'],
-        'project-02-symfony-testing' => ['project-01-senior-crud'],
-        'project-03-rest-api-jwt' => ['project-02-symfony-testing'],
-        'project-04-ecommerce-queues' => ['project-03-rest-api-jwt'],
-        'project-07-capstone-distributed' => ['project-04-ecommerce-queues'],
+        'project-07-capstone-distributed' => ['project-01-senior-crud'],
 
         // Evaluations
         'eval-senior-code-review' => ['project-07-capstone-distributed'],
@@ -120,7 +117,8 @@ class PrerequisiteEngine
 
     public function __construct(
         private readonly UserProgressRepository $progressRepository,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly RoadmapService $roadmapService,
     ) {}
 
     /**
@@ -193,7 +191,7 @@ class PrerequisiteEngine
         // If the lesson is available and the user accesses it, transition to IN_PROGRESS
         $record = $this->progressRepository->findProgress($user, $lessonSlug);
         if ($record === null) {
-            $record = new UserProgress($user, $this->resolveModuleSlug($lessonSlug), $lessonSlug, ProgressStatus::InProgress->value);
+            $record = new UserProgress($user, $this->roadmapService->getModuleSlugForLesson($lessonSlug), $lessonSlug, ProgressStatus::InProgress->value);
             $this->entityManager->persist($record);
             $this->entityManager->flush();
         } elseif ($record->getStatus() === ProgressStatus::Available->value) {
@@ -225,68 +223,5 @@ class PrerequisiteEngine
         }
 
         return $statusMap;
-    }
-
-    private function resolveModuleSlug(string $lessonSlug): string
-    {
-        if (str_starts_with($lessonSlug, 'se-')) {
-            return 'software-engineering';
-        }
-        if (str_starts_with($lessonSlug, 'git-')) {
-            return 'git';
-        }
-        if (str_starts_with($lessonSlug, 'poo-')) {
-            return 'poo';
-        }
-        if (str_starts_with($lessonSlug, 'symfony-')) {
-            return 'symfony';
-        }
-        if (str_starts_with($lessonSlug, 'twig-')) {
-            return 'twig';
-        }
-        if (str_starts_with($lessonSlug, 'sql-')) {
-            return 'databases';
-        }
-        if (str_starts_with($lessonSlug, 'doctrine-')) {
-            return 'doctrine';
-        }
-        if (str_starts_with($lessonSlug, 'apis-')) {
-            return 'apis';
-        }
-        if (str_starts_with($lessonSlug, 'testing-')) {
-            return 'testing';
-        }
-        if (str_starts_with($lessonSlug, 'patterns-')) {
-            return 'design-patterns';
-        }
-        if (str_starts_with($lessonSlug, 'arch-')) {
-            return 'architecture';
-        }
-        if (str_starts_with($lessonSlug, 'system-design-')) {
-            return 'system-design';
-        }
-        if (str_starts_with($lessonSlug, 'security-')) {
-            return 'security';
-        }
-        if (str_starts_with($lessonSlug, 'perf-')) {
-            return 'performance';
-        }
-        if (str_starts_with($lessonSlug, 'devops-')) {
-            return 'devops';
-        }
-        if (str_starts_with($lessonSlug, 'prof-')) {
-            return 'professional-developer';
-        }
-        if (str_starts_with($lessonSlug, 'project-')) {
-            return 'projects';
-        }
-        if (str_starts_with($lessonSlug, 'eval-')) {
-            return 'evaluations';
-        }
-        if (str_starts_with($lessonSlug, 'resources-')) {
-            return 'resources';
-        }
-
-        return 'php-fundamentals';
     }
 }

@@ -33,7 +33,21 @@
     --accent-success: #89d185;
 
     --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-mono: "Consolas", "Courier New", "Cascadia Code", "Fira Code", monospace;
+    /* JetBrains Mono is loaded in base.html.twig; Consolas only exists on Windows, so macOS/Linux used to fall back to Courier New */
+    --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, "SFMono-Regular", Menlo, monospace;
+
+    /* Elevation */
+    --shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 28px -16px rgba(0, 0, 0, 0.8);
+    --shadow-glow: 0 0 0 1px rgba(0, 122, 204, 0.55), 0 10px 32px -12px rgba(0, 122, 204, 0.45);
+    --focus-color: #4fc1ff;
+
+    /* Motion */
+    --duration-fast: 120ms;
+    --duration-normal: 220ms;
+    --duration-slow: 520ms;
+    --duration-fill: 900ms;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --stagger: 45ms;
 }
 
 * {
@@ -573,6 +587,20 @@ body {
     color: var(--text-muted);
 }
 
+.diff-code {
+    margin: 0 0 12px 0;
+    padding: 10px 12px;
+    background: #121212;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    white-space: pre;
+    overflow-x: auto;
+}
+
 /* Pedagogical Sections */
 .senior-thinking-callout {
     background: rgba(0, 122, 204, 0.08);
@@ -655,4 +683,313 @@ body {
 
 .statusbar-item:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================================================
+   Interaction & motion layer
+   Only transform and opacity are animated (plus cheap paint-only colors);
+   everything collapses to instant under prefers-reduced-motion.
+   ========================================================================== */
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translate3d(0, 10px, 0); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes drop-in {
+    from { opacity: 0; transform: translate3d(0, -8px, 0); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes grow-x {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+@keyframes grow-y {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+}
+
+/* Cross-document page transitions (progressive enhancement: Chromium only, ignored elsewhere) */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 180ms;
+}
+
+::selection {
+    background: rgba(0, 122, 204, 0.45);
+    color: var(--text-bright);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+/* Keyboard focus: visible only when navigating with the keyboard */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+.tree-item:focus-visible,
+.tab:focus-visible,
+.activity-btn:focus-visible,
+.menu-item:focus-visible {
+    outline-offset: -2px;
+}
+
+/* Workspace atmosphere: a faint accent glow behind the editor instead of a flat fill */
+.editor-main {
+    background:
+        radial-gradient(1100px 380px at 85% -12%, rgba(0, 122, 204, 0.08), transparent 60%),
+        var(--bg-editor);
+}
+
+.content-viewport {
+    scroll-behavior: smooth;
+    scroll-padding-top: 16px;
+}
+
+/* Page entrance: top-level blocks rise in, staggered and capped so long pages never wait */
+.content-viewport > * {
+    animation: rise-in var(--duration-slow) var(--ease-out-expo) backwards;
+}
+.content-viewport > :nth-child(2) { animation-delay: calc(var(--stagger) * 1); }
+.content-viewport > :nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+.content-viewport > :nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+.content-viewport > :nth-child(5) { animation-delay: calc(var(--stagger) * 4); }
+.content-viewport > :nth-child(6) { animation-delay: calc(var(--stagger) * 5); }
+.content-viewport > :nth-child(n + 7) { animation-delay: calc(var(--stagger) * 6); }
+
+.dashboard-grid > * {
+    animation: rise-in var(--duration-slow) var(--ease-out-expo) backwards;
+}
+.dashboard-grid > :nth-child(1) { animation-delay: calc(var(--stagger) * 2); }
+.dashboard-grid > :nth-child(2) { animation-delay: calc(var(--stagger) * 3); }
+.dashboard-grid > :nth-child(3) { animation-delay: calc(var(--stagger) * 4); }
+.dashboard-grid > :nth-child(4) { animation-delay: calc(var(--stagger) * 5); }
+.dashboard-grid > :nth-child(n + 5) { animation-delay: calc(var(--stagger) * 6); }
+
+/* Page header: an accent segment draws over the divider to anchor the hierarchy */
+.page-header {
+    position: relative;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 72px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--focus-color));
+    transform-origin: left center;
+    animation: grow-x 700ms var(--ease-out-expo) 150ms backwards;
+}
+
+.page-title {
+    letter-spacing: -0.01em;
+}
+
+/* Flash messages */
+.flash {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 10px 14px 10px 17px;
+    border: 1px solid;
+    border-radius: 6px;
+    font-size: 12.5px;
+    overflow: hidden;
+    box-shadow: var(--shadow-raised);
+    animation: drop-in var(--duration-normal) var(--ease-out-expo) backwards;
+}
+.flash + .flash { animation-delay: var(--stagger); }
+
+.flash::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: currentColor;
+}
+
+.flash--success { background: rgba(137, 209, 133, 0.12); border-color: rgba(137, 209, 133, 0.45); color: var(--accent-success); }
+.flash--warning { background: rgba(204, 167, 0, 0.12); border-color: rgba(204, 167, 0, 0.45); color: #ffe066; }
+.flash--error { background: rgba(241, 76, 76, 0.12); border-color: rgba(241, 76, 76, 0.45); color: var(--accent-red); }
+
+/* Chrome: titlebar, activity bar, explorer, tabs */
+.menu-item,
+.breadcrumb-item,
+.explorer-section-title,
+.statusbar-item {
+    transition: color var(--duration-fast) ease, background-color var(--duration-fast) ease;
+}
+
+.titlebar-center {
+    transition: border-color var(--duration-normal) ease, color var(--duration-normal) ease;
+}
+.titlebar-center:hover {
+    border-color: rgba(0, 122, 204, 0.6);
+    color: var(--text-primary);
+}
+
+.activity-btn svg {
+    transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+.activity-btn:hover svg { transform: scale(1.1); }
+.activity-btn:active svg { transform: scale(0.92); }
+
+.activity-btn.active {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 80%);
+}
+
+.activity-btn.active::before {
+    background-color: var(--focus-color);
+    transform-origin: center;
+    animation: grow-y var(--duration-normal) var(--ease-out-expo) backwards;
+}
+
+.tree-item {
+    transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.tree-item svg {
+    flex-shrink: 0;
+    transition: transform var(--duration-normal) var(--ease-out-expo), color var(--duration-fast) ease;
+}
+.tree-item:hover svg {
+    transform: translateX(2px);
+    color: var(--focus-color);
+}
+
+/* Active tab: inset bar instead of border-top, so the label no longer shifts down by 2px */
+.tab {
+    transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+.tab.active {
+    border-top: 0;
+    box-shadow: inset 0 2px 0 var(--accent-blue);
+}
+
+/* Buttons */
+.btn-vs {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(0, 0, 0, 0.45);
+    transition: background-color var(--duration-fast) ease, transform var(--duration-fast) ease;
+}
+.btn-vs:active {
+    transform: translateY(1px) scale(0.98);
+}
+.btn-vs svg {
+    transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+.btn-vs:hover svg {
+    transform: scale(1.12);
+}
+
+/* Cards: lift plus an accent glow that fades in on a pseudo-element (opacity only, no box-shadow repaint loop) */
+.metric-card,
+.skill-card,
+.lesson-link,
+.ref-link {
+    position: relative;
+    transition: transform var(--duration-normal) var(--ease-out-expo), border-color var(--duration-normal) ease, background-color var(--duration-normal) ease;
+}
+
+.metric-card::after,
+.skill-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    box-shadow: var(--shadow-glow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) ease;
+}
+
+.metric-card:hover { transform: translateY(-3px); border-color: rgba(0, 122, 204, 0.7); }
+.metric-card:hover::after,
+.skill-card:hover::after { opacity: 1; }
+.skill-card:hover { transform: translateY(-2px); border-color: rgba(0, 122, 204, 0.5); }
+
+.lesson-link:hover,
+.ref-link:hover {
+    transform: translateX(3px);
+    border-color: var(--accent-blue) !important;
+    background-color: #222222 !important;
+}
+
+/* Progress bars fill from the left on load */
+.progress-fill {
+    transform-origin: left center;
+    animation: grow-x var(--duration-fill) var(--ease-out-expo) 250ms backwards;
+}
+
+/* Depth for editor-like surfaces */
+.editor-code-container,
+.diff-column,
+.senior-thinking-callout {
+    box-shadow: var(--shadow-raised);
+}
+
+/* ==========================================================================
+   Responsive: collapse the IDE chrome progressively on narrow screens
+   ========================================================================== */
+.menu-item,
+.brand-badge,
+.user-badge {
+    white-space: nowrap;
+}
+
+/* Menu + search + badge need ~1680px; the search only mirrors the breadcrumbs, so it goes first */
+@media (min-width: 1281px) and (max-width: 1680px) {
+    .titlebar-center { display: none; }
+}
+
+/* Below that the activity bar already carries the same destinations */
+@media (max-width: 1280px) {
+    .menu-items { display: none; }
+}
+
+@media (max-width: 900px) {
+    .sidebar { display: none; }
+    .senior-diff-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .titlebar-center { display: none; }
+    .activity-bar { width: 44px; }
+    .activity-btn { width: 44px; height: 44px; }
+    .content-viewport { padding: 16px 16px 48px; }
+    .page-title { font-size: 18px; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .statusbar-right .statusbar-item:not(:first-child) { display: none; }
+}
+
+/* ==========================================================================
+   Reduced motion: keep every state change, drop the movement
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    @view-transition {
+        navigation: none;
+    }
 }

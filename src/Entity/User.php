@@ -132,6 +132,14 @@ class User
         return $this;
     }
 
+    public function resetProgress(): self
+    {
+        $this->experiencePoints = 0;
+        $this->currentLevel = 'Junior';
+        $this->streakDays = 1;
+        return $this->touchLastActive();
+    }
+
     /**
      * @return Collection<int, UserProgress>
      */

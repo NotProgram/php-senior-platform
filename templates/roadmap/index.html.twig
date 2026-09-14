@@ -99,10 +99,8 @@
                             </div>
                         {% else %}
                             <!-- Accessible Card (Available, InProgress, Completed, Mastered) -->
-                            <a href="{{ path('app_lesson', {lessonSlug: lesson.slug}) }}" 
-                               style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #1a1a1a; border: 1px solid var(--border-light); border-radius: 4px; text-decoration: none; color: var(--text-primary); transition: all 0.15s ease;"
-                               onmouseover="this.style.background='#222222'; this.style.borderColor='var(--accent-blue)';" 
-                               onmouseout="this.style.background='#1a1a1a'; this.style.borderColor='var(--border-light)';">
+                            <a href="{{ path('app_lesson', {lessonSlug: lesson.slug}) }}" class="lesson-link"
+                               style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #1a1a1a; border: 1px solid var(--border-light); border-radius: 4px; text-decoration: none; color: var(--text-primary);">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     {{ icons.icon(st ? st.icon : 'file-code', 15) }}
                                     <div>
@@ -135,7 +133,7 @@
             <div style="background: #1e1e1e; border: 1px solid var(--border-light); border-left: 4px solid var(--accent-blue); border-radius: 4px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 11px; font-family: Consolas, monospace; color: var(--accent-blue); font-weight: 700; text-transform: uppercase;">
+                        <span style="font-size: 11px; font-family: var(--font-mono); color: var(--accent-blue); font-weight: 700; text-transform: uppercase;">
                             Level {{ level.level }}
                         </span>
                         <span style="font-size: 10px; padding: 1px 6px; border-radius: 3px; background: #252526; color: #858585; border: 1px solid var(--border-light);">
@@ -156,7 +154,7 @@
                     </div>
                     <div style="display: flex; flex-wrap: wrap; gap: 4px;">
                         {% for mod in level.modules %}
-                            <span style="font-size: 10px; font-family: Consolas, monospace; background: #141414; border: 1px solid var(--border-light); padding: 2px 6px; border-radius: 2px; color: #9cdcfe;">
+                            <span style="font-size: 10px; font-family: var(--font-mono); background: #141414; border: 1px solid var(--border-light); padding: 2px 6px; border-radius: 2px; color: #9cdcfe;">
                                 {{ mod }}
                             </span>
                         {% endfor %}

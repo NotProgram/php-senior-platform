@@ -49,4 +49,23 @@ enum ProgressStatus: string
     {
         return $this !== self::Locked;
     }
+
+    public function isFinished(): bool
+    {
+        return $this === self::Completed || $this === self::Mastered;
+    }
+
+    /**
+     * Position in the learning path, used to guarantee progress only ever moves forward.
+     */
+    public function rank(): int
+    {
+        return match ($this) {
+            self::Locked => 0,
+            self::Available => 1,
+            self::InProgress => 2,
+            self::Completed => 3,
+            self::Mastered => 4,
+        };
+    }
 }

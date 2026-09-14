@@ -10,3 +10,11 @@
 /scratch/
 .php-custom/
 ###< symfony/framework-bundle ###
+
+/node_modules/
+/.playwright-mcp/
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

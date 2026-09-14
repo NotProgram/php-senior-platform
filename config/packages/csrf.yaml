@@ -1,0 +1,7 @@
+# Stateless CSRF protection: tokens listed here are validated through the Sec-Fetch-Site / Origin / Referer
+# headers instead of a server-side session, so forms keep working on serverless hosts (Vercel) where
+# consecutive requests may land on different instances.
+framework:
+    csrf_protection:
+        stateless_token_ids:
+            - submit

@@ -1,0 +1,16 @@
+# Lesson content is authored HTML printed by templates/lesson/show.html.twig. Only the formatting tags the
+# lessons actually use survive, so a stray <script> in a lesson file can never execute in the browser.
+framework:
+    html_sanitizer:
+        sanitizers:
+            app.lesson_content:
+                allow_elements:
+                    code: []
+                    span: [class, style]
+                    p: []
+                    b: []
+                    em: []
+                    strong: []
+                    br: []
+                # Default is 20k characters; longer lessons would be silently truncated
+                max_input_length: 200000

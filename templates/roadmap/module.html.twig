@@ -107,7 +107,7 @@
     </h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
         {% for resource in module.resources %}
-            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px; text-decoration: none; transition: border-color 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-main)'">
+            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px; text-decoration: none;" class="ref-link">
                 <div style="flex: 1; min-width: 0; padding-right: 10px;">
                     <div style="font-size: 13px; font-weight: 600; color: #4fc1ff; display: flex; align-items: center; gap: 6px;">
                         <span>{{ resource.title }}</span>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\LessonLocation;
 use App\Entity\User;
 use App\Entity\UserProgress;
 use App\Repository\UserProgressRepository;
@@ -1303,6 +1304,28 @@ class RoadmapService
             }
         }
         return $count;
+    }
+
+    public function findLessonLocation(string $lessonSlug): ?LessonLocation
+    {
+        foreach ($this->getSections() as $moduleSlug => $module) {
+            foreach ($module['lessons'] ?? [] as $lesson) {
+                if ($lesson['slug'] === $lessonSlug) {
+                    return new LessonLocation($moduleSlug, $module, $lesson);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The roadmap is the single source of truth for which module owns a lesson.
+     */
+    public function getModuleSlugForLesson(string $lessonSlug): string
+    {
+        return $this->findLessonLocation($lessonSlug)?->moduleSlug
+            ?? throw new \InvalidArgumentException(sprintf('Lesson "%s" is not part of the roadmap.', $lessonSlug));
     }
 
     /**

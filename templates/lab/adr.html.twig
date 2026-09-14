@@ -52,7 +52,7 @@
         border-radius: 4px;
         padding: 8px 12px;
         color: #cccccc;
-        font-family: Consolas, 'Courier New', monospace;
+        font-family: var(--font-mono);
         font-size: 12.5px;
         width: 100%;
         box-sizing: border-box;
@@ -84,7 +84,7 @@
         border-bottom: none;
     }
     .metric-score {
-        font-family: Consolas, monospace;
+        font-family: var(--font-mono);
         font-weight: 700;
         color: var(--accent-blue);
     }
@@ -93,7 +93,7 @@
         border: 1px solid var(--border-main);
         border-radius: 6px;
         padding: 18px;
-        font-family: Consolas, 'Courier New', monospace;
+        font-family: var(--font-mono);
         font-size: 12px;
         color: #d4d4d4;
         line-height: 1.6;
@@ -140,7 +140,7 @@
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                 <span style="color: var(--accent-blue);">{{ icons.icon('file-text', 24) }}</span>
                 <h1 style="font-size: 20px; font-weight: 700; margin: 0; color: #fff;">Architecture Decision Record (ADR) Studio</h1>
-                <span style="font-size: 11px; font-family: Consolas, monospace; background: #252526; padding: 2px 8px; border-radius: 3px; color: #858585;">MADR 3.0 / Nygard Standard</span>
+                <span style="font-size: 11px; font-family: var(--font-mono); background: #252526; padding: 2px 8px; border-radius: 3px; color: #858585;">MADR 3.0 / Nygard Standard</span>
             </div>
             <p style="font-size: 13px; color: #858585; margin: 0; max-width: 850px;">
                 Draft, evaluate and document immutable architectural choices. Every non-trivial architectural trade-off requires documenting the problem context, considered alternatives, rationale, and operational consequences.
@@ -262,7 +262,7 @@
                 <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #858585;">
                     Live Markdown Document
                 </span>
-                <span style="font-size: 11px; color: #6e7681; font-family: Consolas, monospace;" id="docCharCount">
+                <span style="font-size: 11px; color: #6e7681; font-family: var(--font-mono);" id="docCharCount">
                     0 chars
                 </span>
             </div>

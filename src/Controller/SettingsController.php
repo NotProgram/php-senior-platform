@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Service\LearningProgressService;
 use App\Service\RoadmapService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 class SettingsController extends AbstractController
 {
+    private const CSRF_TOKEN_ID = 'submit';
+
     #[Route('/settings', name: 'app_settings')]
     public function index(UserRepository $userRepo, RoadmapService $roadmapService): Response
     {
@@ -33,18 +36,13 @@ class SettingsController extends AbstractController
     public function resetProgress(
         Request $request,
         UserRepository $userRepo,
-        EntityManagerInterface $em
+        LearningProgressService $learningProgress
     ): Response {
-        $user = $userRepo->findOrCreateDefaultUser();
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN_ID, $request->getPayload()->getString('_csrf_token'))) {
+            throw new AccessDeniedHttpException('Token CSRF inválido.');
+        }
 
-        $conn = $em->getConnection();
-        $conn->executeStatement('DELETE FROM user_progress WHERE user_id = ?', [$user->getId()]);
-        $conn->executeStatement('DELETE FROM quiz_attempts WHERE user_id = ?', [$user->getId()]);
-        $conn->executeStatement('DELETE FROM exercise_attempts WHERE user_id = ?', [$user->getId()]);
-
-        $user->setCurrentLevel('Junior')
-            ->setStreakDays(1);
-        $conn->executeStatement('UPDATE users SET experience_points = 0 WHERE id = ?', [$user->getId()]);
+        $learningProgress->resetProgress($userRepo->findOrCreateDefaultUser());
 
         $this->addFlash('success', 'Progreso de aprendizaje reiniciado a cero exitosamente. Puedes comenzar desde el inicio.');
 
