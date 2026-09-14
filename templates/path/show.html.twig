@@ -1,0 +1,173 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}{{ path.title }} | Rutas de Aprendizaje{% endblock %}
+
+{% block body %}
+<!-- Path Header -->
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <a href="{{ path('app_paths') }}" class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-light); color: var(--text-muted); text-decoration: none;">
+                {{ icons.icon('arrow-left', 11) }}
+                <span>Todas las Rutas</span>
+            </a>
+            <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff;">
+                {{ path.level }}
+            </span>
+        </div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 10px; font-size: 22px; margin-bottom: 6px;">
+            {{ icons.icon('compass', 22) }}
+            <span>{{ path.title }}</span>
+        </h1>
+        <p class="page-subtitle" style="color: #9cdcfe; font-size: 13.5px; margin: 0 0 6px 0;">
+            {{ path.subtitle }}
+        </p>
+        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0; max-width: 850px;">
+            {{ path.goal }}
+        </p>
+    </div>
+
+    <!-- Progreso Global del Path -->
+    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px 18px; min-width: 220px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Progreso de la Ruta</span>
+            <span style="font-weight: 700; font-size: 14px; color: {{ path.percent == 100 ? 'var(--accent-success)' : '#4fc1ff' }};">{{ path.percent }}%</span>
+        </div>
+        <div style="height: 6px; background: #252526; border-radius: 3px; overflow: hidden; margin-bottom: 10px;">
+            <div style="width: {{ path.percent }}%; height: 100%; background: {{ path.accent|default('var(--accent-blue)') }};"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
+            <span>{{ path.completed }} de {{ path.total }} lecciones</span>
+            <span>~{{ path.hours_left }} h restantes</span>
+        </div>
+    </div>
+</div>
+
+<!-- Audience & Outcome Callouts -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 28px;">
+    <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid #f59e0b; border-radius: 0 4px 4px 0; padding: 14px 16px;">
+        <div style="font-size: 11.5px; font-weight: 700; color: #f59e0b; text-transform: uppercase; margin-bottom: 4px;">¿Para quién es esta ruta?</div>
+        <p style="font-size: 12.5px; color: #d4d4d4; line-height: 1.5; margin: 0;">{{ path.audience }}</p>
+    </div>
+    <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid var(--accent-success); border-radius: 0 4px 4px 0; padding: 14px 16px;">
+        <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-success); text-transform: uppercase; margin-bottom: 4px;">Resultado al Completarla</div>
+        <p style="font-size: 12.5px; color: #d4d4d4; line-height: 1.5; margin: 0;">{{ path.outcome }}</p>
+    </div>
+</div>
+
+<!-- Fases de la Ruta -->
+<div style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 32px;">
+    {% for phase in path.phases %}
+    <div style="background: #181818; border: 1px solid {{ phase.is_active ? 'var(--accent-blue)' : (phase.is_complete ? 'rgba(137, 209, 133, 0.4)' : 'var(--border-main)') }}; border-radius: 6px; overflow: hidden;">
+        <!-- Phase Header -->
+        <div style="background: #202020; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-light);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: {{ phase.is_complete ? 'var(--accent-success)' : (phase.is_active ? '#4fc1ff' : 'var(--text-muted)') }};">
+                    FASE 0{{ phase.number }}
+                </span>
+                <h2 style="font-size: 15px; font-weight: 700; color: #ffffff; margin: 0;">{{ phase.title }}</h2>
+                {% if phase.is_complete %}
+                    <span class="user-badge" style="background: rgba(137, 209, 133, 0.15); border-color: rgba(137, 209, 133, 0.4); color: var(--accent-success); font-size: 10.5px;">
+                        {{ icons.icon('check-circle', 11) }}
+                        <span>Fase Superada</span>
+                    </span>
+                {% elseif phase.is_active %}
+                    <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10.5px;">
+                        {{ icons.icon('play', 11) }}
+                        <span>En Curso</span>
+                    </span>
+                {% endif %}
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--text-muted);">
+                <span>{{ phase.done }} / {{ phase.count }} completadas</span>
+                <span style="font-weight: 700; color: #ffffff;">{{ phase.percent }}%</span>
+            </div>
+        </div>
+
+        <div style="padding: 18px 20px;">
+            <p style="font-size: 12.5px; color: #cccccc; line-height: 1.5; margin: 0 0 16px 0;">
+                <strong style="color: #9cdcfe;">Objetivo de la fase:</strong> {{ phase.goal }}
+            </p>
+
+            <!-- Lessons Grid -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                {% for l in phase.lessons %}
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #141414; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 14px; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        {% if l.is_done %}
+                            <span style="color: var(--accent-success);">{{ icons.icon('check-circle', 15) }}</span>
+                        {% elseif l.status.value == 'IN_PROGRESS' %}
+                            <span style="color: #dcdcaa;">{{ icons.icon('play', 15) }}</span>
+                        {% elseif l.status.value == 'LOCKED' %}
+                            <span style="color: #6e6e6e;">{{ icons.icon('shield', 15) }}</span>
+                        {% else %}
+                            <span style="color: #4fc1ff;">{{ icons.icon('circle', 15) }}</span>
+                        {% endif %}
+
+                        <div>
+                            {% if l.status.value == 'LOCKED' %}
+                                <span style="font-size: 13px; font-weight: 600; color: #777777;">{{ l.title }}</span>
+                            {% else %}
+                                <a href="{{ path('app_lesson', {lessonSlug: l.slug}) }}" style="font-size: 13px; font-weight: 600; color: #ffffff; text-decoration: none;" onmouseenter="this.style.color='#4fc1ff'" onmouseleave="this.style.color='#ffffff'">
+                                    {{ l.title }}
+                                </a>
+                            {% endif %}
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                                {{ l.module }} &bull; {{ l.minutes }} min &bull; {{ l.difficulty }}
+                                {% if l.missing|length > 0 %}
+                                    &bull; <span style="color: #f59e0b;">Requiere: {{ l.missing|join(', ') }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if l.status.value == 'LOCKED' %}
+                            <span class="user-badge" style="background: rgba(255, 255, 255, 0.03); border-color: var(--border-light); color: #777777; font-size: 11px;">
+                                Bloqueada
+                            </span>
+                        {% else %}
+                            <a href="{{ path('app_lesson', {lessonSlug: l.slug}) }}" class="btn-vs {{ l.is_done ? 'btn-vs-secondary' : '' }}" style="font-size: 11px; padding: 4px 10px;">
+                                <span>{{ l.is_done ? 'Repasar' : 'Estudiar' }}</span>
+                                {{ icons.icon('arrow-right', 11) }}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Checkpoint de la Fase -->
+            {% if phase.checkpoint %}
+            <div style="background: #121212; border-left: 3px solid #89d185; border-radius: 0 4px 4px 0; padding: 10px 14px; font-size: 12px; color: #cccccc; display: flex; align-items: center; gap: 8px;">
+                <strong style="color: var(--accent-success); flex-shrink: 0;">Checkpoint de Cierre:</strong>
+                <span>{{ phase.checkpoint }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Criterio de Salida Final (Exit Criteria) -->
+{% if path.exit_criteria is defined and path.exit_criteria %}
+<div style="background: #141414; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px 24px;">
+    <h2 style="font-size: 15px; font-weight: 700; color: #ffffff; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('award', 16) }}
+        <span>Criterio de Acreditación / Exit Criteria</span>
+    </h2>
+    {% if path.exit_criteria is iterable %}
+        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #d4d4d4; line-height: 1.7;">
+            {% for criterion in path.exit_criteria %}
+                <li>{{ criterion }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="font-size: 13px; color: #d4d4d4; line-height: 1.6; margin: 0;">
+            {{ path.exit_criteria }}
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

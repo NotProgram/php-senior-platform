@@ -10,3 +10,10 @@
 /scratch/
 .php-custom/
 ###< symfony/framework-bundle ###
+
+.vercel
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

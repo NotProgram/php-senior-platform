@@ -263,15 +263,23 @@
         {{ icons.icon('award', 18) }}
         <span>Cómo lo pensaría un Senior: Proceso Mental y Preguntas Críticas</span>
     </div>
-    <p style="color: #d4d4d4; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px;">
-        {{ details.senior_mindset.thought_process }}
-    </p>
-    <div style="font-weight: 600; color: #ffffff; font-size: 12.5px; margin-bottom: 8px;">Preguntas que deberías hacerte antes de implementar esto:</div>
-    <ul style="margin-left: 20px; color: #d4d4d4; font-size: 12.5px; line-height: 1.7;">
-        {% for q in details.senior_mindset.critical_questions %}
-            <li>{{ q }}</li>
-        {% endfor %}
-    </ul>
+    {% if details.senior_mindset is iterable %}
+        <p style="color: #d4d4d4; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px;">
+            {{ details.senior_mindset.thought_process|default('') }}
+        </p>
+        {% if details.senior_mindset.critical_questions is defined and details.senior_mindset.critical_questions|length > 0 %}
+            <div style="font-weight: 600; color: #ffffff; font-size: 12.5px; margin-bottom: 8px;">Preguntas que deberías hacerte antes de implementar esto:</div>
+            <ul style="margin-left: 20px; color: #d4d4d4; font-size: 12.5px; line-height: 1.7;">
+                {% for q in details.senior_mindset.critical_questions %}
+                    <li>{{ q }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% else %}
+        <p style="color: #d4d4d4; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px;">
+            {{ details.senior_mindset }}
+        </p>
+    {% endif %}
 </div>
 
 <!-- 5. Comparador Junior vs Senior Thinking -->
@@ -281,7 +289,7 @@
         <span>Junior vs Senior Thinking: Análisis de Caso Real</span>
     </h2>
     <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
-        <strong>Escenario:</strong> {{ details.junior_vs_senior.problem_statement }}
+        <strong>Escenario:</strong> {{ details.junior_vs_senior.problem_statement|default('Escenario de arquitectura y desarrollo en producción.') }}
     </div>
 
     <div class="senior-diff-grid">
@@ -292,11 +300,18 @@
             </div>
             <div class="diff-column-body">
                 <div style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">Implementación:</div>
-                <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.junior.approach }}</p>
-                <div style="font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">Fallas Críticas &amp; Cuellos de Botella:</div>
-                {% for flaw in details.junior_vs_senior.junior.flaws|default([]) %}
-                    <div class="diff-point">{{ flaw }}</div>
-                {% endfor %}
+                {% if details.junior_vs_senior.junior is iterable %}
+                    <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.junior.approach|default(details.junior_vs_senior.junior.title|default('')) }}</p>
+                    {% if details.junior_vs_senior.junior.code is defined and details.junior_vs_senior.junior.code %}
+                        <pre style="background: #181818; border: 1px solid var(--border-main); padding: 10px; border-radius: 4px; font-size: 11.5px; color: #d4d4d4; overflow-x: auto; margin-bottom: 12px;"><code>{{ details.junior_vs_senior.junior.code }}</code></pre>
+                    {% endif %}
+                    <div style="font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">Fallas Críticas &amp; Cuellos de Botella:</div>
+                    {% for flaw in details.junior_vs_senior.junior.flaws|default(details.junior_vs_senior.junior.consequences|default([])) %}
+                        <div class="diff-point">{{ flaw }}</div>
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.junior }}</p>
+                {% endif %}
             </div>
         </div>
 
@@ -307,14 +322,33 @@
             </div>
             <div class="diff-column-body">
                 <div style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">Solución Arquitectónica:</div>
-                <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.senior.approach }}</p>
-                <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 6px;">Justificación de Valor:</div>
-                {% for rationale in details.junior_vs_senior.senior.rationale|default([]) %}
-                    <div class="diff-point">{{ rationale }}</div>
-                {% endfor %}
-                <div style="margin-top: 12px; font-size: 11.5px; color: #858585; border-top: 1px solid var(--border-light); padding-top: 8px;">
-                    <strong>Trade-offs:</strong> {{ details.junior_vs_senior.senior.trade_offs|default('Balance óptimo entre costo de mantenimiento y resiliencia.') }}
-                </div>
+                {% if details.junior_vs_senior.senior is iterable %}
+                    <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.senior.approach|default(details.junior_vs_senior.senior.title|default('')) }}</p>
+                    {% if details.junior_vs_senior.senior.code is defined and details.junior_vs_senior.senior.code %}
+                        <pre style="background: #181818; border: 1px solid var(--border-main); padding: 10px; border-radius: 4px; font-size: 11.5px; color: #d4d4d4; overflow-x: auto; margin-bottom: 12px;"><code>{{ details.junior_vs_senior.senior.code }}</code></pre>
+                    {% endif %}
+                    <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 6px;">Justificación de Valor:</div>
+                    {% for rationale in details.junior_vs_senior.senior.rationale|default(details.junior_vs_senior.senior.benefits|default([])) %}
+                        <div class="diff-point">{{ rationale }}</div>
+                    {% endfor %}
+                    {% set tradeOffs = details.junior_vs_senior.senior.trade_offs|default(details.junior_vs_senior.trade_offs|default(null)) %}
+                    {% if tradeOffs %}
+                        <div style="margin-top: 12px; font-size: 11.5px; color: #858585; border-top: 1px solid var(--border-light); padding-top: 8px;">
+                            <strong>Trade-offs:</strong>
+                            {% if tradeOffs is iterable %}
+                                <ul style="margin: 4px 0 0 16px; padding: 0;">
+                                    {% for to in tradeOffs %}
+                                        <li>{{ to }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ tradeOffs }}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p style="font-size: 12px; color: #cccccc; margin-bottom: 12px;">{{ details.junior_vs_senior.senior }}</p>
+                {% endif %}
             </div>
         </div>
     </div>

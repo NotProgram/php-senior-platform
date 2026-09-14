@@ -41,6 +41,7 @@ class SettingsController extends AbstractController
         $conn->executeStatement('DELETE FROM user_progress WHERE user_id = ?', [$user->getId()]);
         $conn->executeStatement('DELETE FROM quiz_attempts WHERE user_id = ?', [$user->getId()]);
         $conn->executeStatement('DELETE FROM exercise_attempts WHERE user_id = ?', [$user->getId()]);
+        $conn->executeStatement('DELETE FROM review_cards WHERE user_id = ?', [$user->getId()]);
 
         $user->setCurrentLevel('Junior')
             ->setStreakDays(1);

@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+{% import 'components/icons.html.twig' as icons %}
+
+{% block title %}Resultado del Examen de Certificación | Senior DevLab{% endblock %}
+
+{% block body %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <a href="{{ path('app_exam') }}" class="user-badge" style="background: rgba(255, 255, 255, 0.05); border-color: var(--border-light); color: var(--text-muted); text-decoration: none;">
+                {{ icons.icon('arrow-left', 11) }}
+                <span>Nuevo Examen</span>
+            </a>
+            <span class="user-badge" style="background: {{ result.passed ? 'rgba(110, 222, 138, 0.15)' : 'rgba(255, 107, 107, 0.15)' }}; border-color: {{ result.passed ? 'rgba(110, 222, 138, 0.4)' : 'rgba(255, 107, 107, 0.4)' }}; color: {{ result.passed ? 'var(--accent-success)' : 'var(--accent-red)' }};">
+                {{ result.passed ? 'APROBADO (>= 75%)' : 'NO SUPERADO (< 75%)' }}
+            </span>
+        </div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 10px; font-size: 22px; margin-bottom: 6px;">
+            {{ icons.icon(result.passed ? 'award' : 'alert-triangle', 22) }}
+            <span>Diagn&oacute;stico de Certificaci&oacute;n T&eacute;cnica</span>
+        </h1>
+        <p class="page-subtitle" style="color: var(--text-muted); font-size: 13px; margin: 0;">
+            Desglose de rendimiento profesional por competencias y lecciones prioritarias a reforzar.
+        </p>
+    </div>
+
+    <div>
+        <a href="{{ path('app_exam') }}" class="btn-vs">
+            {{ icons.icon('refresh-cw', 13) }}
+            <span>Reintentar con Preguntas Nuevas</span>
+        </a>
+    </div>
+</div>
+
+<!-- Score Hero Banner -->
+<div class="score-hero" style="margin-bottom: 28px; display: flex; align-items: center; gap: 24px; padding: 24px; background: var(--bg-surface); border: 1px solid var(--border-main); border-left: 4px solid {{ result.passed ? 'var(--accent-success)' : 'var(--accent-red)' }}; border-radius: var(--radius-lg);">
+    <div class="score-value" style="font-size: 48px; font-weight: 800; color: {{ result.passed ? 'var(--accent-success)' : 'var(--accent-red)' }};">
+        {{ result.score }}%
+    </div>
+    <div style="flex: 1;">
+        <h2 style="font-size: 17px; font-weight: 700; color: var(--text-bright); margin: 0 0 6px 0;">
+            {{ result.passed ? '¡Criterio Técnico Aprobado!' : 'Competencia en Desarrollo' }}
+        </h2>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0 0 10px 0;">
+            Has acertado <strong>{{ result.correct }}</strong> de <strong>{{ result.total }}</strong> preguntas formuladas de manera intercalada entre tus temas estudiados.
+        </p>
+        <div style="height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden; max-width: 400px;">
+            <div style="width: {{ result.score }}%; height: 100%; background: {{ result.passed ? 'var(--accent-success)' : 'var(--accent-red)' }};"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Per-Module Mastery Breakdown Grid -->
+<div style="margin-bottom: 32px;">
+    <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('layers', 15) }}
+        <span>Dominio por Área de Competencia</span>
+    </h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px;">
+        {% for mod in result.per_module %}
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-md); padding: 14px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-bright);">{{ mod.module }}</span>
+                <span class="user-badge" style="font-size: 10.5px; background: {{ mod.percent >= 75 ? 'rgba(110, 222, 138, 0.12)' : 'rgba(255, 107, 107, 0.12)' }}; color: {{ mod.percent >= 75 ? 'var(--accent-success)' : 'var(--accent-red)' }};">
+                    {{ mod.percent }}%
+                </span>
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 8px;">
+                {{ mod.correct }} de {{ mod.total }} aciertos
+            </div>
+            <div style="height: 4px; background: var(--bg-deep); border-radius: 2px; overflow: hidden;">
+                <div style="width: {{ mod.percent }}%; height: 100%; background: {{ mod.percent >= 75 ? 'var(--accent-success)' : 'var(--accent-red)' }};"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Weakest Lessons Recommendations -->
+{% if result.weakest|length > 0 %}
+<div style="background: var(--bg-deep); border: 1px solid var(--border-main); border-left: 3px solid #f6a93b; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 18px 20px; margin-bottom: 32px;">
+    <h3 style="font-size: 14px; font-weight: 700; color: #f6a93b; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('refresh-cw', 14) }}
+        <span>Lecciones Recomendadas para Repasar Primero</span>
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        {% for weak in result.weakest %}
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+            <div>
+                <span style="font-size: 10.5px; color: #f6a93b; text-transform: uppercase; font-family: var(--font-mono); font-weight: 700;">{{ weak.misses }} fallo(s) de {{ weak.total }} pregunta(s)</span>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-bright);">{{ weak.title }}</div>
+            </div>
+            <a href="{{ path('app_lesson', {lessonSlug: weak.slug}) }}" class="btn-vs btn-vs-secondary" style="font-size: 11px; padding: 4px 10px;">
+                <span>Repasar</span>
+                {{ icons.icon('arrow-right', 11) }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Full Question-by-Question Review -->
+<div>
+    <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+        {{ icons.icon('check-square', 15) }}
+        <span>Revisi&oacute;n Detallada Pregunta por Pregunta</span>
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        {% for item in result.review %}
+        <div style="background: var(--bg-surface); border: 1px solid {{ item.is_correct ? 'rgba(110, 222, 138, 0.4)' : 'rgba(255, 107, 107, 0.4)' }}; border-radius: var(--radius-lg); padding: 18px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: {{ item.is_correct ? 'var(--accent-success)' : 'var(--accent-red)' }}; text-transform: uppercase;">
+                    Pregunta 0{{ loop.index }} &bull; {{ item.is_correct ? 'Acierto' : 'Fallo' }}
+                </span>
+                <span style="font-size: 11.5px; color: var(--text-muted);">
+                    {{ item.module }} &bull; <a href="{{ path('app_lesson', {lessonSlug: item.lesson_slug}) }}" style="color: inherit;">{{ item.lesson_title }}</a>
+                </span>
+            </div>
+
+            <div style="font-size: 13.5px; font-weight: 600; color: var(--text-bright); line-height: 1.5; margin-bottom: 14px;">
+                {{ item.question }}
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
+                {% for key, text in item.options %}
+                {% set isSelected = (item.chosen == key) %}
+                {% set isAnswer = (item.correct == key) %}
+                <div style="display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 12.5px; border: 1px solid {{ isAnswer ? 'var(--accent-success)' : (isSelected ? 'var(--accent-red)' : 'var(--border-light)') }}; background: {{ isAnswer ? 'rgba(110, 222, 138, 0.1)' : (isSelected ? 'rgba(255, 107, 107, 0.1)' : 'var(--bg-card)') }};">
+                    <span style="font-family: var(--font-mono); font-size: 10.5px; padding: 1px 4px; border-radius: 2px; border: 1px solid var(--border-main); color: var(--text-muted);">
+                        {{ key|upper }}
+                    </span>
+                    <span style="flex: 1; color: {{ isAnswer ? 'var(--accent-success)' : (isSelected ? 'var(--accent-red)' : 'var(--text-body)') }};">
+                        {{ text }}
+                    </span>
+                    {% if isAnswer %}
+                        <span style="font-size: 11px; font-weight: 700; color: var(--accent-success);">&check; Correcta</span>
+                    {% elseif isSelected %}
+                        <span style="font-size: 11px; font-weight: 700; color: var(--accent-red);">&cross; Tu respuesta</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if item.explanation %}
+            <div style="background: var(--bg-deep); border-left: 3px solid var(--accent-cyan); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 14px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                <strong style="color: var(--accent-cyan);">Por qu&eacute; es correcta:</strong> {{ item.explanation }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
