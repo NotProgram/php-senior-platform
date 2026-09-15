@@ -119,6 +119,20 @@ final class LessonFlowTest extends FunctionalTestCase
         self::assertStringContainsString('Reto de código superado', (string) $this->client->getResponse()->getContent());
     }
 
+    public function testSdlcRequirementsExerciseFailsWithIncompleteSpecification(): void
+    {
+        $crawler = $this->client->request('GET', '/lesson/se-sdlc-requirements');
+        self::assertResponseIsSuccessful();
+
+        $this->client->submit($crawler->selectButton('Ejecutar y Validar Reto')->form([
+            'submitted_code' => "# Especificación Incompleta\nComo usuario quiero algo pero sin BDD ni SLA",
+        ]));
+
+        self::assertResponseRedirects();
+        $this->client->followRedirect();
+        self::assertStringContainsString('Los criterios de aceptación deben incluir precondiciones BDD', (string) $this->client->getResponse()->getContent());
+    }
+
     public function testCapstoneUnlocksAfterTheFirstGuidedProject(): void
     {
         $this->markLessonsCompleted('project-01-senior-crud', 'arch-pragmatic-ddd', 'devops-ci-cd-github-actions');

@@ -521,18 +521,29 @@
             <div style="border: 1px solid var(--border-main); border-radius: 4px; overflow: hidden; margin-bottom: 12px; background: #1e1e1e;">
                 <div style="background: #252526; padding: 6px 14px; font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-main);">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        {{ icons.icon('php', 14) }}
+                        {% if details.exercise.language is defined and details.exercise.language == 'markdown' %}
+                            {{ icons.icon('file-text', 14) }}
+                        {% else %}
+                            {{ icons.icon('php', 14) }}
+                        {% endif %}
                         <span style="color: var(--text-bright); font-weight: 500;">{{ details.exercise.filename ?? (lesson.slug ~ '.php') }} (Monaco Editor)</span>
-                        <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10.5px;">PHP 8.4</span>
+                        <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10.5px;">{{ details.exercise.language_badge|default('PHP 8.4') }}</span>
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <!-- Real-time Lint Badge -->
                         <div id="lint-status-badge">
-                            <span style="color: var(--accent-success); display: flex; align-items: center; gap: 4px;">
-                                {{ icons.icon('check-circle', 12) }}
-                                <span>Sintaxis válida (0 errores)</span>
-                            </span>
+                            {% if details.exercise.language is defined and details.exercise.language == 'markdown' %}
+                                <span style="color: var(--accent-success); display: flex; align-items: center; gap: 4px;">
+                                    {{ icons.icon('check-circle', 12) }}
+                                    <span>Especificación técnica (Markdown / Gherkin)</span>
+                                </span>
+                            {% else %}
+                                <span style="color: var(--accent-success); display: flex; align-items: center; gap: 4px;">
+                                    {{ icons.icon('check-circle', 12) }}
+                                    <span>Sintaxis válida (0 errores)</span>
+                                </span>
+                            {% endif %}
                         </div>
 
                         <!-- Editor Actions -->
@@ -717,7 +728,7 @@
         // Initialize Monaco Editor
         editorInstance = monaco.editor.create(document.getElementById('monaco-editor'), {
             value: initialCode,
-            language: 'php',
+            language: '{{ details.exercise.language|default("php") }}',
             theme: 'vs-dark',
             automaticLayout: true,
             fontSize: 13,
@@ -747,6 +758,8 @@
 
     function runLinter() {
         if (!editorInstance) return;
+        const exerciseLang = '{{ details.exercise.language|default("php") }}';
+        if (exerciseLang !== 'php') return;
         const code = editorInstance.getValue();
         const badge = document.getElementById('lint-status-badge');
 

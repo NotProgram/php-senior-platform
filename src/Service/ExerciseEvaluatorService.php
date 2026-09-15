@@ -36,8 +36,9 @@ class ExerciseEvaluatorService
         $hints = [];
         $passed = true;
 
-        // 1. Strict types check (Senior requirement)
-        if (!str_contains($code, 'declare(strict_types=1);')) {
+        // 1. Strict types check (Required for PHP code exercises, not for specifications)
+        $isSpecification = ($lessonSlug === 'se-sdlc-requirements');
+        if (!$isSpecification && !str_contains($code, 'declare(strict_types=1);')) {
             $passed = false;
             $hints[] = 'Falta declarar tipado estricto al inicio: declare(strict_types=1);';
         }
@@ -1474,8 +1475,49 @@ class ExerciseEvaluatorService
      */
     private function validateSeSdlcRequirements(string $code, bool &$passed, array &$hints): void
     {
+        $normalized = mb_strtolower($code);
+
+        // 1. Check if it is a technical specification (Markdown / Connextra / Gherkin BDD / NFR)
+        if (str_contains($normalized, 'como') || str_contains($normalized, 'quiero') || str_contains($normalized, 'gherkin') || str_contains($normalized, 'connextra') || str_contains($normalized, 'especificación') || str_contains($normalized, 'especificacion')) {
+            if (!str_contains($normalized, 'como') || !preg_match('/como\s*[:\s]+[^\n\r]+/iu', $code)) {
+                $passed = false;
+                $hints[] = 'Debes definir el rol de usuario en la Historia de Usuario utilizando la plantilla Connextra: "Como [rol de usuario]".';
+            }
+            if (!str_contains($normalized, 'quiero') || !preg_match('/quiero\s*[:\s]+[^\n\r]+/iu', $code)) {
+                $passed = false;
+                $hints[] = 'Debes definir la acción o capacidad requerida utilizando la plantilla: "Quiero [acción o funcionalidad]".';
+            }
+            if (!str_contains($normalized, 'para') || !preg_match('/para\s*[:\s]+[^\n\r]+/iu', $code)) {
+                $passed = false;
+                $hints[] = 'Debes definir el beneficio o valor de negocio esperado utilizando la plantilla: "Para [beneficio medible]".';
+            }
+
+            // Check BDD / Gherkin Acceptance Criteria (Dado que / Cuando / Entonces)
+            if (!str_contains($normalized, 'dado') && !str_contains($normalized, 'given')) {
+                $passed = false;
+                $hints[] = 'Los criterios de aceptación deben incluir precondiciones BDD ("Dado que... / Given...").';
+            }
+            if (!str_contains($normalized, 'cuando') && !str_contains($normalized, 'when')) {
+                $passed = false;
+                $hints[] = 'Los criterios de aceptación deben incluir la acción disparadora BDD ("Cuando... / When...").';
+            }
+            if (!str_contains($normalized, 'entonces') && !str_contains($normalized, 'then')) {
+                $passed = false;
+                $hints[] = 'Los criterios de aceptación deben incluir el resultado verificable BDD ("Entonces... / Then...").';
+            }
+
+            // Check Non-Functional Requirements (SLA / Latency / Performance)
+            if (!str_contains($normalized, 'p95') && !str_contains($normalized, 'latencia') && !str_contains($normalized, 'ms') && !str_contains($normalized, 'sla') && !str_contains($normalized, 'disponibilidad')) {
+                $passed = false;
+                $hints[] = 'Debes especificar al menos un requerimiento no funcional cuantitativo (ej. latencia p95 en milisegundos o disponibilidad en %).';
+            }
+
+            return;
+        }
+
         $clean = $this->stripComments($code);
 
+        // Backwards compatibility for UserStorySpecification PHP class
         if (str_contains($clean, 'UserStorySpecification')) {
             if (!str_contains($clean, 'class UserStorySpecification')) {
                 $passed = false;
@@ -1510,7 +1552,7 @@ class ExerciseEvaluatorService
         }
 
         $passed = false;
-        $hints[] = 'Debes implementar la clase UserStorySpecification con los métodos isInvestCompliant(): bool y hasNonFunctionalSla(): bool.';
+        $hints[] = 'Debes completar la especificación técnica de requerimientos incluyendo Historia de Usuario (Como/Quiero/Para), Criterios BDD (Dado/Cuando/Entonces) y Requerimientos No Funcionales (SLA/Latencia).';
     }
 
     /**

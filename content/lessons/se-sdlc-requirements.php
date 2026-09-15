@@ -223,131 +223,116 @@ final readonly class UserStorySpecification
         ],
     ],
     'exercise' => [
-        'title' => 'Validador de Especificación de User Stories & INVEST',
-        'objective' => 'Implementar la clase UserStorySpecification para modelar una historia de usuario ágil, validar que cumpla los criterios INVEST (Rol, Meta, Valor de negocio y Criterios de Aceptación) y verificar la existencia de un SLA de latencia cuantitativo.',
-        'instructions' => 'Crea la clase UserStorySpecification dentro del namespace App\\Engineering. En su constructor debe recibir: public string $role, public string $goal, public string $businessValue, public array $acceptanceCriteria = [], public ?int $maxLatencyMs = null. Implementa dos métodos públicos: isInvestCompliant(): bool (retorna true si rol, goal y businessValue no están vacíos tras trim, y acceptanceCriteria tiene al menos 1 elemento) y hasNonFunctionalSla(): bool (retorna true si maxLatencyMs no es null y es mayor a 0).',
-        'filename' => 'UserStorySpecification.php',
+        'type' => 'specification',
+        'language' => 'markdown',
+        'language_badge' => 'Markdown / BDD',
+        'filename' => 'user-story-specification.md',
+        'title' => 'Taller de Especificación: User Story, Criterios BDD y SLA No Funcional',
+        'objective' => 'Redactar una especificación técnica formal de requerimientos para el caso de uso "Cancelación de Pedidos en E-commerce", definiendo la Historia de Usuario (Connextra), Criterios de Aceptación BDD (Dado/Cuando/Entonces), Requerimientos No Funcionales (SLA p95) y verificando los atributos de calidad INVEST sin necesidad de código PHP.',
+        'instructions' => 'En este taller de ingeniería no necesitas programar una clase PHP. Tu rol como ingeniero es formalizar el requerimiento en el editor de especificación Markdown: 1) Redacta la Historia de Usuario siguiendo la fórmula Connextra ("Como [rol], Quiero [acción], Para [beneficio]"). 2) Formula dos escenarios de Criterios de Aceptación en formato Gherkin ("Dado que..., Cuando..., Entonces..."). 3) Define un Requerimiento No Funcional cuantitativo (ej. latencia p95 < 300ms o disponibilidad 99.9%). 4) Audita y certifica la lista de verificación INVEST.',
         'guide' => [
-            'explanation' => 'En ingeniería de software no empezamos tirando código sin rumbo. Este reto modela cómo un ingeniero formaliza un requerimiento: asegura que la historia tenga el formato estándar (Como [rol], Quiero [meta], Para [valor]), que sea comprobable (Testable en INVEST mediante criterios de aceptación) y que tenga una métrica de calidad no funcional (SLA).',
+            'explanation' => 'En la fase de análisis del SDLC no empezamos tirando código sin rumbo; especificamos con rigor el comportamiento esperado. Este taller entrena tu habilidad para redactar requerimientos inequívocos que guíen al equipo de desarrollo y QA antes de comenzar a codificar.',
             'steps' => [
-                'Paso 1: Define <code>class UserStorySpecification</code> en el namespace <code>App\\Engineering</code> con sus propiedades en el constructor.',
-                'Paso 2: En <code>isInvestCompliant(): bool</code>, usa <code>trim()</code> para verificar que <code>$this->role</code>, <code>$this->goal</code> y <code>$this->businessValue</code> contengan texto no vacío.',
-                'Paso 3: Verifica que <code>count($this->acceptanceCriteria) > 0</code> para asegurar que la historia sea Testeable (criterio INVEST).',
-                'Paso 4: En <code>hasNonFunctionalSla(): bool</code>, comprueba que <code>$this->maxLatencyMs !== null && $this->maxLatencyMs > 0</code>.',
+                'Paso 1: Define el rol del usuario, la acción concreta y el beneficio de negocio usando la fórmula Connextra (Como / Quiero / Para).',
+                'Paso 2: Formula al menos dos criterios de aceptación BDD (Camino Feliz y Caso Borde) con la sintaxis Dado que / Cuando / Entonces.',
+                'Paso 3: Establece un requerimiento no funcional medible (SLA de latencia en milisegundos o disponibilidad en %).',
+                'Paso 4: Revisa los 6 criterios INVEST para certificar que la historia es apta para el sprint backlog.',
             ],
             'useful_functions' => [
                 [
-                    'name' => 'trim(string $str)',
-                    'desc' => 'Elimina espacios en blanco al inicio y final de una cadena de texto.',
+                    'name' => 'Fórmula Connextra',
+                    'desc' => 'Como [rol de usuario] + Quiero [capacidad del sistema] + Para [valor de negocio medible].',
                 ],
                 [
-                    'name' => 'count(array $arr)',
-                    'desc' => 'Retorna la cantidad de elementos en el array de criterios de aceptación.',
+                    'name' => 'Sintaxis Gherkin (BDD)',
+                    'desc' => 'Dado que [precondición/estado inicial] + Cuando [acción disparada] + Entonces [resultado observable].',
+                ],
+                [
+                    'name' => 'Métrica SLA / NFR',
+                    'desc' => 'Percentil de latencia (ej. p95 < 300ms) y disponibilidad de servicio (ej. 99.95%).',
                 ],
             ],
         ],
         'hints' => [
             [
-                'label' => 'Validación de Campos de la Historia',
-                'text' => 'Una historia de usuario bien formada requiere que el rol, la meta y el valor de negocio tengan contenido real.',
-                'snippet' => 'trim($this->role) !== \'\' && trim($this->goal) !== \'\' && trim($this->businessValue) !== \'\'',
+                'label' => 'Estructura Connextra',
+                'text' => 'Asegúrate de incluir las tres cláusulas: Como [rol], Quiero [acción] y Para [beneficio].',
+                'snippet' => 'Como: Cliente registrado en la tienda\nQuiero: Cancelar mi pedido pendiente desde mi panel\nPara: Recuperar mi dinero rápidamente sin llamar a soporte',
             ],
             [
-                'label' => 'Criterio Testable de INVEST',
-                'text' => 'Para que una historia pueda probarse, debe contar con al menos un criterio de aceptación.',
-                'snippet' => 'count($this->acceptanceCriteria) > 0',
+                'label' => 'Criterios de Aceptación Gherkin',
+                'text' => 'Describe el estado inicial (Dado que), la interacción (Cuando) y la respuesta del sistema (Entonces).',
+                'snippet' => 'Dado que: El pedido está en preparación\nCuando: Pulso cancelar y confirmo\nEntonces: Se cancela la orden, se repone el stock y se reembolsa el saldo',
             ],
             [
-                'label' => 'Verificación del SLA (Requerimiento No Funcional)',
-                'text' => 'Un SLA cuantitativo debe estar definido y ser un número positivo de milisegundos.',
-                'snippet' => 'return $this->maxLatencyMs !== null && $this->maxLatencyMs > 0;',
+                'label' => 'Requerimiento No Funcional (SLA)',
+                'text' => 'Todo requerimiento de nivel profesional debe incluir un límite de latencia medible (ej. p95 < 300ms).',
+                'snippet' => 'Latencia: p95 < 250ms para la confirmación de cancelación\nDisponibilidad: 99.95%',
             ],
         ],
-        'starter_code' => '<?php
+        'starter_code' => '# ESPECIFICACIÓN TÉCNICA DE REQUERIMIENTOS (SDLC)
 
-declare(strict_types=1);
+## 1. HISTORIA DE USUARIO (Formato Connextra)
+Como: [Define el rol de usuario o persona]
+Quiero: [Define la acción o funcionalidad requerida]
+Para: [Define el beneficio directo o valor de negocio medible]
 
-namespace App\\Engineering;
+## 2. CRITERIOS DE ACEPTACIÓN (Formato BDD / Gherkin)
+- Escenario 1 (Camino Feliz): Cancelación de pedido en estado pendiente
+  Dado que: [Precondición o estado inicial del pedido]
+  Cuando: [Acción que ejecuta el usuario]
+  Entonces: [Resultado observable y cambio de estado del sistema]
 
-/**
- * Especificación Técnica de Historia de Usuario en el SDLC.
- *
- * Valida la calidad de un requerimiento conforme a los criterios INVEST
- * y comprueba la existencia de métricas cuantitativas no funcionales (SLA).
- */
-class UserStorySpecification
-{
-    /**
-     * @param list<string> $acceptanceCriteria Criterios de aceptación (Given-When-Then).
-     * @param int|null $maxLatencyMs Límite de latencia SLA en milisegundos.
-     */
-    public function __construct(
-        public readonly string $role,
-        public readonly string $goal,
-        public readonly string $businessValue,
-        public readonly array $acceptanceCriteria = [],
-        public readonly ?int $maxLatencyMs = null
-    ) {}
+- Escenario 2 (Caso Borde): Intento de cancelación de pedido ya despachado
+  Dado que: [Estado del pedido cuando ya no es cancelable]
+  Cuando: [Intento de cancelación por parte del usuario]
+  Entonces: [Mensaje del sistema y alternativa ofrecida al usuario]
 
-    /**
-     * Valida que la historia cumpla los criterios INVEST:
-     * Debe tener Rol, Objetivo y Valor de Negocio no vacíos,
-     * y al menos 1 Criterio de Aceptación verificable.
-     */
-    public function isInvestCompliant(): bool
-    {
-        // PASO 1: Verifica que role, goal y businessValue no estén vacíos (usando trim)
-        // PASO 2: Verifica que acceptanceCriteria tenga al menos 1 elemento (count > 0)
-        return false;
-    }
+## 3. REQUERIMIENTO NO FUNCIONAL (SLA & Rendimiento)
+- Latencia: [Métrica cuantitativa en milisegundos, ej. p95 < 300ms]
+- Disponibilidad: [Porcentaje de disponibilidad requerido, ej. 99.9%]
+- Confiabilidad / Idempotencia: [Garantía técnica ante fallos de red o reintentos]
 
-    /**
-     * Comprueba si el requerimiento cuenta con un Acuerdo de Nivel de Servicio (SLA) definido.
-     */
-    public function hasNonFunctionalSla(): bool
-    {
-        // PASO 3: Verifica que maxLatencyMs no sea null y sea mayor a 0
-        return false;
-    }
-}
+## 4. AUDITORÍA DE CRITERIOS INVEST
+- [x] Independiente: No bloquea ni depende de otras historias del sprint.
+- [x] Negociable: Los textos y detalles de UI son discutibles con el equipo.
+- [x] Valiosa: Reduce fricción y tickets al equipo de soporte.
+- [x] Estimable: El equipo técnico puede estimar el esfuerzo con precisión.
+- [x] Pequeña: Se puede completar y probar dentro del sprint.
+- [x] Testeable: Posee criterios de aceptación objetivos verificables por QA.
 ',
-        'solution_code' => '<?php
+        'solution_code' => '# ESPECIFICACIÓN TÉCNICA DE REQUERIMIENTOS (SDLC)
 
-declare(strict_types=1);
+## 1. HISTORIA DE USUARIO (Formato Connextra)
+Como: Cliente registrado con compras activas en la tienda online
+Quiero: Cancelar mi pedido directamente desde mi panel de compras mientras esté pendiente
+Para: Recuperar mi dinero de inmediato si cometí un error sin necesidad de contactar a soporte
 
-namespace App\\Engineering;
+## 2. CRITERIOS DE ACEPTACIÓN (Formato BDD / Gherkin)
+- Escenario 1 (Camino Feliz): Cancelación de pedido en estado pendiente
+  Dado que: Tengo un pedido en estado "Pendiente de despacho" y saldo cobrado
+  Cuando: Hago clic en "Cancelar Pedido" y confirmo en el diálogo de advertencia
+  Entonces: El pedido cambia a "Cancelado", se repone el stock y se dispara el reembolso automático
 
-/**
- * Implementación de UserStorySpecification.
- */
-final readonly class UserStorySpecification
-{
-    /**
-     * @param list<string> $acceptanceCriteria
-     */
-    public function __construct(
-        public string $role,
-        public string $goal,
-        public string $businessValue,
-        public array $acceptanceCriteria = [],
-        public ?int $maxLatencyMs = null
-    ) {}
+- Escenario 2 (Caso Borde): Intento de cancelación de pedido ya despachado
+  Dado que: Mi pedido ya se encuentra en estado "En tránsito"
+  Cuando: Intento hacer clic en el botón de cancelación
+  Entonces: El sistema muestra un mensaje indicando que el pedido ya fue enviado y me ofrece el enlace de "Solicitar Devolución"
 
-    public function isInvestCompliant(): bool
-    {
-        return trim($this->role) !== \'\'
-            && trim($this->goal) !== \'\'
-            && trim($this->businessValue) !== \'\'
-            && count($this->acceptanceCriteria) > 0;
-    }
+## 3. REQUERIMIENTO NO FUNCIONAL (SLA & Rendimiento)
+- Latencia: El endpoint de confirmación de cancelación debe responder en un percentil p95 < 250ms
+- Disponibilidad: Disponibilidad del servicio de órdenes y pagos del 99.95%
+- Confiabilidad / Idempotencia: Uso obligatorio de Idempotency-Key para prevenir duplicación de reembolsos ante fallos de conexión
 
-    public function hasNonFunctionalSla(): bool
-    {
-        return $this->maxLatencyMs !== null && $this->maxLatencyMs > 0;
-    }
-}
+## 4. AUDITORÍA DE CRITERIOS INVEST
+- [x] Independiente: Puede desarrollarse y desplegarse sin esperar por el módulo de devoluciones.
+- [x] Negociable: El plazo exacto de cancelación (ej. 30 min) se puede ajustar con negocio.
+- [x] Valiosa: Disminuye llamadas al contact center en un 35% y mejora el NPS.
+- [x] Estimable: Estimada en 3 Story Points por el equipo de backend y frontend.
+- [x] Pequeña: Diseñada para completarse en un único sprint de 2 semanas.
+- [x] Testeable: Cada escenario cuenta con pasos Given-When-Then testeables con Behat / Cypress.
 ',
-        'explanation' => 'La clase formaliza el contrato de un requerimiento técnico: vincula el valor de negocio (User Story INVEST) con los atributos de calidad operativa (SLA cuantitativo), evitando ambigüedades antes de iniciar la fase de construcción del software.',
+        'explanation' => 'Esta especificación técnica formaliza el contrato de un requerimiento: vincula el valor de negocio de la Historia de Usuario con criterios de aceptación Gherkin BDD testeables y SLAs cuantitativos no funcionales, garantizando que el equipo construya exactamente lo necesario sin ambigüedad.',
     ],
     'quiz' => [
         'title' => 'Evaluación Técnica: SDLC, INVEST y Métricas de Rendimiento',
