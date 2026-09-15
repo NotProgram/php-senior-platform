@@ -78,7 +78,10 @@ final class CurriculumGraph
         'poo-enums-state-machines' => ['poo-value-objects-dtos'],
 
         // --- Symfony core ----------------------------------------------------
-        'symfony-http-kernel-lifecycle' => ['php-request-lifecycle', 'poo-encapsulation-invariants'],
+        'symfony-architecture-controllers' => ['php-request-lifecycle', 'poo-encapsulation-invariants'],
+        'symfony-autowiring-services' => ['symfony-architecture-controllers'],
+        'symfony-requests-validation' => ['symfony-autowiring-services'],
+        'symfony-http-kernel-lifecycle' => ['symfony-requests-validation'],
         'symfony-service-container' => ['symfony-http-kernel-lifecycle'],
         'symfony-event-dispatcher' => ['symfony-service-container'],
         'symfony-routing-controllers' => ['symfony-service-container'],

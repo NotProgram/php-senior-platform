@@ -154,6 +154,33 @@ final class LessonFlowTest extends FunctionalTestCase
         }
     }
 
+    public function testFoundationalSymfonyExercisesPassWithSolutions(): void
+    {
+        $this->markLessonsCompleted('php-request-lifecycle', 'poo-encapsulation-invariants');
+
+        $chain = [
+            'symfony-architecture-controllers',
+            'symfony-autowiring-services',
+            'symfony-requests-validation',
+        ];
+
+        foreach ($chain as $slug) {
+            $crawler = $this->client->request('GET', '/lesson/' . $slug);
+            self::assertResponseIsSuccessful("Lesson $slug should be accessible");
+
+            $solution = static::getContainer()->get(LessonContentService::class)
+                ->findLesson($slug)['exercise']['solution_code'];
+
+            $this->client->submit($crawler->selectButton('Ejecutar y Validar Reto')->form([
+                'submitted_code' => $solution,
+            ]));
+
+            self::assertResponseRedirects();
+            $this->client->followRedirect();
+            self::assertStringContainsString('Reto de código superado', (string) $this->client->getResponse()->getContent(), "Solution for $slug should pass");
+        }
+    }
+
     private function csrfToken(Crawler $crawler): string
     {
         return (string) $crawler->filter('input[name="_csrf_token"]')->first()->attr('value');

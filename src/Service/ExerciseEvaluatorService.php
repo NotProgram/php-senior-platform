@@ -66,7 +66,10 @@ class ExerciseEvaluatorService
             'poo-composition-over-inheritance' => $this->validateCompositionOverInheritance($code, $passed, $hints),
             'poo-value-objects-dtos' => $this->validateValueObjectsDtos($code, $passed, $hints),
             'poo-enums-state-machines' => $this->validateEnumsStateMachines($code, $passed, $hints),
-            // Symfony Framework Internals
+            // Symfony Framework
+            'symfony-architecture-controllers' => $this->validateSymfonyArchitectureControllers($code, $passed, $hints),
+            'symfony-autowiring-services' => $this->validateSymfonyAutowiringServices($code, $passed, $hints),
+            'symfony-requests-validation' => $this->validateSymfonyRequestsValidation($code, $passed, $hints),
             'symfony-http-kernel-lifecycle' => $this->validateSymfonyHttpKernel($code, $passed, $hints),
             'symfony-service-container' => $this->validateSymfonyServiceContainer($code, $passed, $hints),
             'symfony-event-dispatcher' => $this->validateSymfonyEventDispatcher($code, $passed, $hints),
@@ -1892,10 +1895,105 @@ class ExerciseEvaluatorService
         }
     }
 
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSymfonyArchitectureControllers(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class HealthCheckController')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase HealthCheckController.';
+        }
+        if (!str_contains($clean, 'extends AbstractController')) {
+            $passed = false;
+            $hints[] = 'HealthCheckController debe extender de AbstractController.';
+        }
+        if (!str_contains($clean, 'Route(') && !str_contains($clean, '#[Route')) {
+            $passed = false;
+            $hints[] = 'Debes utilizar el atributo #[Route] para mapear las acciones del controlador.';
+        }
+        if (!str_contains($clean, 'check(') && !str_contains($clean, 'check():')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método check(): JsonResponse.';
+        }
+        if (!str_contains($clean, 'checkComponent')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método checkComponent(string $component, bool $isHealthy): JsonResponse.';
+        }
+        if (!str_contains($clean, 'Response::HTTP_SERVICE_UNAVAILABLE') && !str_contains($clean, '503')) {
+            $passed = false;
+            $hints[] = 'Debes retornar el código HTTP 503 (Response::HTTP_SERVICE_UNAVAILABLE) cuando el componente no esté saludable.';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSymfonyAutowiringServices(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class UserNotifier')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase UserNotifier.';
+        }
+        if (!str_contains($clean, 'LoggerInterface')) {
+            $passed = false;
+            $hints[] = 'Debes inyectar la interfaz Psr\Log\LoggerInterface en el constructor.';
+        }
+        if (!str_contains($clean, 'getAppName')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método getAppName(): string.';
+        }
+        if (!str_contains($clean, 'notify')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método notify(string $email, string $subject, string $message): bool.';
+        }
+        if (!str_contains($clean, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'Debes lanzar InvalidArgumentException cuando el email o los textos sean inválidos.';
+        }
+        if (!str_contains($clean, '->info(')) {
+            $passed = false;
+            $hints[] = 'Debes registrar la notificación utilizando $this->logger->info(...).';
+        }
+    }
+
+    /**
+     * @param list<string> $hints
+     */
+    private function validateSymfonyRequestsValidation(string $code, bool &$passed, array &$hints): void
+    {
+        $clean = $this->stripComments($code);
+
+        if (!str_contains($clean, 'class UserRegistrationDto')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase UserRegistrationDto.';
+        }
+        if (!str_contains($clean, 'class UserRegistrationProcessor')) {
+            $passed = false;
+            $hints[] = 'Debes declarar la clase UserRegistrationProcessor.';
+        }
+        if (!str_contains($clean, 'NotBlank') || !str_contains($clean, 'Email') || !str_contains($clean, 'Length') || !str_contains($clean, 'Positive')) {
+            $passed = false;
+            $hints[] = 'Debes aplicar los atributos de validación NotBlank, Email, Length y Positive en las propiedades del DTO.';
+        }
+        if (!str_contains($clean, 'process')) {
+            $passed = false;
+            $hints[] = 'Debes implementar el método process(UserRegistrationDto $dto): array.';
+        }
+        if (!str_contains($clean, 'InvalidArgumentException')) {
+            $passed = false;
+            $hints[] = 'El procesador debe validar que la edad sea mayor o igual a 18 lanzando InvalidArgumentException.';
+        }
+    }
+
     private function stripComments(string $code): string
     {
         $clean = preg_replace('!/\*.*?\*/!s', '', $code) ?? $code;
         $clean = preg_replace('!//.*?$!m', '', $clean) ?? $clean;
-        return preg_replace('!#.*?$!m', '', $clean) ?? $clean;
+        return preg_replace('~#(?!\[).*?$~m', '', $clean) ?? $clean;
     }
 }

@@ -409,6 +409,9 @@ class RoadmapService
   ),
 ),
                 'lessons' => [
+                    ['slug' => 'symfony-architecture-controllers', 'title' => 'Arquitectura Symfony, Flex & Controladores Delgados', 'minutes' => 40, 'difficulty' => 'Fundamentos'],
+                    ['slug' => 'symfony-autowiring-services', 'title' => 'Inyección de Dependencias, Autowiring & Servicios de Dominio', 'minutes' => 45, 'difficulty' => 'Fundamentos'],
+                    ['slug' => 'symfony-requests-validation', 'title' => 'Peticiones HTTP, DTOs & Validación con MapRequestPayload', 'minutes' => 45, 'difficulty' => 'Fundamentos'],
                     ['slug' => 'symfony-http-kernel-lifecycle', 'title' => 'HttpKernel: El Ciclo de Vida Real', 'minutes' => 60, 'difficulty' => 'Senior'],
                     ['slug' => 'symfony-service-container', 'title' => 'DI Container & Compiler Passes', 'minutes' => 55, 'difficulty' => 'Senior'],
                     ['slug' => 'symfony-event-dispatcher', 'title' => 'Event Dispatcher & Subscriptions', 'minutes' => 40, 'difficulty' => 'Avanzado'],
