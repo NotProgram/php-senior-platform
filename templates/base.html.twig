@@ -1,6 +1,6 @@
 {% import 'components/icons.html.twig' as icons %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="apple-glass">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,13 @@
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
+
+    <!-- Apple Minimalist Ambient Radiant Glow (Global Mesh) -->
+    <div class="apple-global-ambient" aria-hidden="true">
+        <div class="apple-glow-orb orb-blue" style="top: -60px; left: 15%; width: 480px; height: 480px; opacity: 0.2;"></div>
+        <div class="apple-glow-orb orb-purple" style="top: 380px; right: 8%; width: 520px; height: 520px; opacity: 0.15;"></div>
+        <div class="apple-glow-orb orb-cyan" style="bottom: 60px; left: 30%; width: 420px; height: 420px; opacity: 0.13;"></div>
+    </div>
 
     <!-- VS Code Top Titlebar -->
     <header class="vscode-titlebar">
@@ -64,6 +71,10 @@
         <div class="titlebar-right">
             <button type="button" class="mobile-search-btn" id="btn-mobile-search" aria-label="Buscar en la plataforma" title="Buscar">
                 {{ icons.icon('search', 15) }}
+            </button>
+            <button type="button" class="btn-quick-export" id="btn-theme-cycle" title="Alternar tema visual (Apple Glass / Dark+ / Midnight / Daylight)">
+                <span></span>
+                <span id="theme-label">Apple Glass</span>
             </button>
             <a href="{{ path('app_export_progress') }}" class="btn-quick-export" title="Descargar copia de seguridad de mi progreso (JSON)">
                 {{ icons.icon('download', 13) }}

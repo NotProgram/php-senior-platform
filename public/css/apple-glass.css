@@ -2,7 +2,7 @@
    Senior DevLab — Apple Minimalist Glass Design System
    Inspired by Apple visionOS, macOS Sequoia & iOS design languages.
    Frosted glass acrylic, specular rim reflections, fluid micro-interactions,
-   and clean San Francisco typography hierarchies.
+   and clean San Francisco typography hierarchies across the entire platform.
    ========================================================================== */
 
 :root {
@@ -56,25 +56,25 @@
    Apple Glass Theme Preset for HTML [data-theme="apple-glass"]
    ========================================================================== */
 :root[data-theme="apple-glass"] {
-    --bg-window: #08090d;
-    --bg-titlebar: rgba(14, 16, 23, 0.75);
-    --bg-activity: rgba(10, 12, 17, 0.7);
-    --bg-sidebar: rgba(12, 14, 20, 0.65);
-    --bg-sidebar-header: rgba(15, 18, 26, 0.6);
-    --bg-editor: #0c0e14;
-    --bg-surface: rgba(22, 25, 36, 0.65);
-    --bg-card: rgba(25, 29, 42, 0.5);
-    --bg-subtle: rgba(255, 255, 255, 0.04);
+    --bg-window: #08090e;
+    --bg-titlebar: rgba(14, 16, 23, 0.72);
+    --bg-activity: rgba(10, 12, 17, 0.65);
+    --bg-sidebar: rgba(13, 15, 22, 0.58);
+    --bg-sidebar-header: rgba(16, 18, 26, 0.55);
+    --bg-editor: #090a10;
+    --bg-surface: rgba(22, 25, 36, 0.6);
+    --bg-card: rgba(255, 255, 255, 0.045);
+    --bg-subtle: rgba(255, 255, 255, 0.035);
     --bg-deep: #050608;
-    --bg-code: #08090e;
+    --bg-code: rgba(5, 6, 9, 0.75);
     --bg-tab-active: rgba(26, 31, 46, 0.75);
     --bg-tab-inactive: transparent;
     --bg-tab-hover: rgba(255, 255, 255, 0.05);
     --bg-hover: rgba(255, 255, 255, 0.07);
     --bg-hover-solid: #1c202e;
-    --border-main: rgba(255, 255, 255, 0.1);
-    --border-light: rgba(255, 255, 255, 0.06);
-    --border-strong: rgba(255, 255, 255, 0.18);
+    --border-main: rgba(255, 255, 255, 0.11);
+    --border-light: rgba(255, 255, 255, 0.07);
+    --border-strong: rgba(255, 255, 255, 0.2);
     --accent-primary: var(--apple-blue);
     --accent-primary-hi: var(--apple-blue-light);
     --accent-cyan: var(--apple-cyan);
@@ -84,22 +84,369 @@
     --text-bright: #ffffff;
     --text-primary: #e5e5ea;
     --text-body: #d1d1d6;
+    --text-soft: #9898a0;
     --text-muted: #8e8e93;
+    --text-faint: #636366;
     --shadow-md: var(--apple-glass-shadow-md);
     --shadow-lg: var(--apple-glass-shadow-lg);
+    --radius-md: var(--apple-radius-md);
+    --radius-lg: var(--apple-radius-lg);
 }
 
-:root[data-theme="apple-glass"] .vscode-titlebar,
-:root[data-theme="apple-glass"] .vscode-sidebar,
-:root[data-theme="apple-glass"] .metric-card,
-:root[data-theme="apple-glass"] .tab-item.active {
-    backdrop-filter: var(--apple-glass-blur);
-    -webkit-backdrop-filter: var(--apple-glass-blur);
-    box-shadow: var(--apple-glass-specular-soft);
+/* Global Body & Canvas when in Apple Glass Theme */
+html[data-theme="apple-glass"] body {
+    background-color: var(--bg-window);
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(1000px circle at 50% -20%, rgba(10, 132, 255, 0.08), transparent 70%),
+        radial-gradient(800px circle at 90% 40%, rgba(191, 90, 242, 0.06), transparent 60%);
+    background-size: 24px 24px, 100% 100%, 100% 100%;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Ambient Radiant Glow Orbs (Fixed Backdrop Layer) */
+.apple-global-ambient {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.apple-glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    opacity: 0.22;
+    z-index: 0;
+    will-change: transform;
+    animation: appleOrbFloat 24s ease-in-out infinite alternate;
+}
+
+.orb-blue {
+    background: radial-gradient(circle, #0a84ff 0%, rgba(10, 132, 255, 0) 70%);
+}
+.orb-purple {
+    background: radial-gradient(circle, #bf5af2 0%, rgba(191, 90, 242, 0) 70%);
+    animation-duration: 28s;
+    animation-direction: alternate-reverse;
+}
+.orb-emerald {
+    background: radial-gradient(circle, #30d158 0%, rgba(48, 209, 88, 0) 70%);
+    animation-duration: 20s;
+}
+.orb-cyan {
+    background: radial-gradient(circle, #64d2ff 0%, rgba(100, 210, 255, 0) 70%);
+    animation-duration: 22s;
+}
+
+@keyframes appleOrbFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(25px, -20px) scale(1.06); }
+    100% { transform: translate(-20px, 25px) scale(0.96); }
 }
 
 /* ==========================================================================
-   Apple Glass Components & Utilities
+   Full Platform Glass Overrides [data-theme="apple-glass"]
+   ========================================================================== */
+
+/* 1. Titlebar (macOS Menu Bar Translucent Feel) */
+html[data-theme="apple-glass"] .vscode-titlebar {
+    position: relative;
+    z-index: 40;
+    background: rgba(14, 16, 23, 0.72) !important;
+    backdrop-filter: blur(28px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.16), 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="apple-glass"] .brand-badge {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.04)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 10px !important;
+    padding: 3px 9px !important;
+}
+
+html[data-theme="apple-glass"] .menu-items .menu-item {
+    border-radius: 9999px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    padding: 4px 10px !important;
+}
+
+html[data-theme="apple-glass"] .menu-items .menu-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+/* Spotlight-Style Search Box */
+html[data-theme="apple-glass"] .titlebar-search-box {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 9999px !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="apple-glass"] .titlebar-search-box:hover,
+html[data-theme="apple-glass"] .titlebar-search-box:focus-within {
+    background: rgba(255, 255, 255, 0.11) !important;
+    border-color: rgba(10, 132, 255, 0.5) !important;
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+}
+
+html[data-theme="apple-glass"] .search-shortcut-badge {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 6px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* 2. Activity Bar (macOS Frosted Dock Feel) */
+html[data-theme="apple-glass"] .activity-bar {
+    background: rgba(10, 12, 17, 0.65) !important;
+    backdrop-filter: blur(32px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+html[data-theme="apple-glass"] .activity-btn {
+    border-radius: 12px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="apple-glass"] .activity-btn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: scale(1.08) !important;
+}
+
+html[data-theme="apple-glass"] .activity-btn.active {
+    background: rgba(255, 255, 255, 0.13) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* 3. Sidebar (Frosted Acrylic Sheet) */
+html[data-theme="apple-glass"] .sidebar {
+    background: rgba(13, 15, 22, 0.58) !important;
+    backdrop-filter: blur(32px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="apple-glass"] .sidebar-header {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+html[data-theme="apple-glass"] .tree-item {
+    border-radius: 8px !important;
+    transition: all 0.15s ease !important;
+}
+
+html[data-theme="apple-glass"] .tree-item:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+html[data-theme="apple-glass"] .tree-item.active {
+    background: rgba(10, 132, 255, 0.18) !important;
+    border: 1px solid rgba(10, 132, 255, 0.35) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+/* 4. Tabs Bar & Tabs */
+html[data-theme="apple-glass"] .tabs-bar {
+    background: rgba(11, 13, 19, 0.7) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="apple-glass"] .tab {
+    border-radius: 8px 8px 0 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+html[data-theme="apple-glass"] .tab:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+html[data-theme="apple-glass"] .tab.active {
+    background: rgba(24, 28, 40, 0.7) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    border-top: 2px solid var(--apple-blue) !important;
+    border-inline: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+/* 5. Breadcrumbs Bar */
+html[data-theme="apple-glass"] .breadcrumbs-bar {
+    background: rgba(13, 15, 22, 0.5) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* 6. Metric Cards & Surfaces (Across Dashboard, Roadmap, Lessons, Labs) */
+html[data-theme="apple-glass"] .metric-card,
+html[data-theme="apple-glass"] .dashboard-banner,
+html[data-theme="apple-glass"] .roadmap-module-card,
+html[data-theme="apple-glass"] .lesson-card,
+html[data-theme="apple-glass"] .path-card,
+html[data-theme="apple-glass"] .module-card,
+html[data-theme="apple-glass"] .card-glass,
+html[data-theme="apple-glass"] .review-card,
+html[data-theme="apple-glass"] .exam-card,
+html[data-theme="apple-glass"] .flashcard {
+    background: rgba(255, 255, 255, 0.045) !important;
+    backdrop-filter: blur(28px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), 0 14px 36px -8px rgba(0, 0, 0, 0.45) !important;
+    border-radius: var(--apple-radius-lg) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+html[data-theme="apple-glass"] .metric-card:hover,
+html[data-theme="apple-glass"] .roadmap-module-card:hover,
+html[data-theme="apple-glass"] .path-card:hover,
+html[data-theme="apple-glass"] .module-card:hover {
+    background: rgba(255, 255, 255, 0.075) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    transform: translateY(-3px) scale(1.008) !important;
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), 0 20px 48px -10px rgba(0, 0, 0, 0.6), 0 0 28px rgba(10, 132, 255, 0.18) !important;
+}
+
+/* Lesson Rows as Minimalist Glass Strips */
+html[data-theme="apple-glass"] .lesson-row {
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    border-radius: 14px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="apple-glass"] .lesson-row:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    transform: translateX(4px) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* 7. Buttons: Apple Pill Geometry with Glass Tactile Press */
+html[data-theme="apple-glass"] .btn-vs {
+    border-radius: 9999px !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    font-weight: 500 !important;
+}
+
+html[data-theme="apple-glass"] .btn-vs:hover {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="apple-glass"] .btn-vs:active {
+    transform: scale(0.97) !important;
+}
+
+html[data-theme="apple-glass"] .btn-vs-primary,
+html[data-theme="apple-glass"] .btn-primary {
+    background: rgba(10, 132, 255, 0.28) !important;
+    border-color: rgba(10, 132, 255, 0.55) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 18px rgba(10, 132, 255, 0.35) !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="apple-glass"] .btn-vs-primary:hover,
+html[data-theme="apple-glass"] .btn-primary:hover {
+    background: rgba(10, 132, 255, 0.45) !important;
+    border-color: rgba(10, 132, 255, 0.75) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 8px 26px rgba(10, 132, 255, 0.5) !important;
+}
+
+/* 8. Badges: Translucent Pill Chips */
+html[data-theme="apple-glass"] .user-badge,
+html[data-theme="apple-glass"] .btn-quick-export,
+html[data-theme="apple-glass"] .badge {
+    border-radius: 9999px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+    transition: all 0.2s ease !important;
+}
+
+html[data-theme="apple-glass"] .user-badge:hover,
+html[data-theme="apple-glass"] .btn-quick-export:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* 9. Floating Search Command Palette (Apple Spotlight Experience) */
+html[data-theme="apple-glass"] .search-palette {
+    background: rgba(18, 21, 30, 0.78) !important;
+    backdrop-filter: blur(40px) saturate(210%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(210%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 24px !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 32px 80px -16px rgba(0, 0, 0, 0.8), 0 0 40px rgba(10, 132, 255, 0.2) !important;
+}
+
+html[data-theme="apple-glass"] .search-palette-input {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+}
+
+html[data-theme="apple-glass"] .search-result-item {
+    border-radius: 12px !important;
+    transition: all 0.15s ease !important;
+}
+
+html[data-theme="apple-glass"] .search-result-item:hover,
+html[data-theme="apple-glass"] .search-result-item.selected {
+    background: rgba(10, 132, 255, 0.22) !important;
+    border: 1px solid rgba(10, 132, 255, 0.4) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+/* 10. Mobile Drawer (Apple iOS/iPadOS Frosted Glass Sheet) */
+html[data-theme="apple-glass"] .mobile-nav-drawer {
+    background: rgba(14, 16, 24, 0.8) !important;
+    backdrop-filter: blur(36px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 20px 60px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ==========================================================================
+   Apple Glass Components & Utilities (Available globally)
    ========================================================================== */
 
 /* Translucent Frosted Glass Card */
@@ -273,29 +620,126 @@
     flex-shrink: 0;
 }
 
-/* Ambient Radiant Glow Orbs (Subtle Backdrop Depth) */
-.apple-glow-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
-    pointer-events: none;
-    opacity: 0.28;
-    z-index: 0;
-    will-change: transform, opacity;
+/* ==========================================================================
+   Deep Apple Glass Surfaces (Dashboard, Labs, Lessons, Quizzes, Flashcards)
+   ========================================================================== */
+
+/* Universal Card & Container Glass Overrides */
+html[data-theme="apple-glass"] .skill-card,
+html[data-theme="apple-glass"] .exam-question,
+html[data-theme="apple-glass"] .flashcard,
+html[data-theme="apple-glass"] .review-meter,
+html[data-theme="apple-glass"] .devlab-card,
+html[data-theme="apple-glass"] .lab-environment,
+html[data-theme="apple-glass"] [style*="background: #202020"],
+html[data-theme="apple-glass"] [style*="background: #181818"],
+html[data-theme="apple-glass"] [style*="background: #252526"],
+html[data-theme="apple-glass"] [style*="background: #1e1e1e"],
+html[data-theme="apple-glass"] [style*="background: #121212"],
+html[data-theme="apple-glass"] [style*="background: #141414"] {
+    background: rgba(255, 255, 255, 0.045) !important;
+    backdrop-filter: blur(28px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 32px -6px rgba(0, 0, 0, 0.45) !important;
+    border-radius: 16px !important;
 }
 
-.orb-blue {
-    background: radial-gradient(circle, #0a84ff 0%, rgba(10, 132, 255, 0) 70%);
+/* Progress Bars & Tracks (Apple Style Rounded Pill) */
+html[data-theme="apple-glass"] .progress-track,
+html[data-theme="apple-glass"] [style*="background: #121212"],
+html[data-theme="apple-glass"] [style*="background: #141414"] {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px !important;
 }
 
-.orb-purple {
-    background: radial-gradient(circle, #bf5af2 0%, rgba(191, 90, 242, 0) 70%);
+html[data-theme="apple-glass"] .progress-fill {
+    border-radius: 9999px !important;
+    box-shadow: 0 0 12px currentColor !important;
 }
 
-.orb-emerald {
-    background: radial-gradient(circle, #30d158 0%, rgba(48, 209, 88, 0) 70%);
+/* Monaco Code Editor Frame */
+html[data-theme="apple-glass"] #exercise-form > div {
+    border-radius: 20px !important;
+    background: rgba(18, 20, 28, 0.72) !important;
+    backdrop-filter: blur(32px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 18px 44px -8px rgba(0, 0, 0, 0.6) !important;
+    overflow: hidden !important;
 }
 
-.orb-cyan {
-    background: radial-gradient(circle, #64d2ff 0%, rgba(100, 210, 255, 0) 70%);
+html[data-theme="apple-glass"] #exercise-form > div > div:first-child {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+/* Quiz Choices & Labels */
+html[data-theme="apple-glass"] #quiz-section label,
+html[data-theme="apple-glass"] .exam-question label.option {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(14px) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="apple-glass"] #quiz-section label:hover,
+html[data-theme="apple-glass"] .exam-question label.option:hover {
+    background: rgba(255, 255, 255, 0.09) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    transform: translateX(4px) !important;
+}
+
+html[data-theme="apple-glass"] #quiz-section label:has(input:checked),
+html[data-theme="apple-glass"] .exam-question label.option:has(input:checked) {
+    background: rgba(10, 132, 255, 0.18) !important;
+    border-color: rgba(10, 132, 255, 0.5) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 14px rgba(10, 132, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Flashcards SM-2 Arena */
+html[data-theme="apple-glass"] .flashcard {
+    border-radius: 24px !important;
+    padding: 28px !important;
+}
+
+html[data-theme="apple-glass"] .flashcard-answer {
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+}
+
+html[data-theme="apple-glass"] .grade-btn {
+    border-radius: 14px !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="apple-glass"] .grade-btn:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Minimalist Apple Scrollbars */
+html[data-theme="apple-glass"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+html[data-theme="apple-glass"] ::-webkit-scrollbar-track {
+    background: transparent;
+}
+html[data-theme="apple-glass"] ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+html[data-theme="apple-glass"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+    background-clip: padding-box;
 }

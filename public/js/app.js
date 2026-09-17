@@ -51,7 +51,7 @@
     }
 
     function initTheme() {
-        applyTheme(readStore(STORAGE.theme, 'devlab'));
+        applyTheme(readStore(STORAGE.theme, 'apple-glass'));
 
         document.querySelectorAll('[data-theme-option]').forEach(function (option) {
             option.addEventListener('click', function (event) {
