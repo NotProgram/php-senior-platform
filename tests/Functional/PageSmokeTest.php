@@ -67,4 +67,17 @@ final class PageSmokeTest extends FunctionalTestCase
             );
         }
     }
+
+    public function testSystemDesignStudioRendersAppleGlassComponents(): void
+    {
+        $crawler = $this->client->request('GET', '/system-design');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('System Design Studio', (string) $this->client->getResponse()->getContent());
+        self::assertStringContainsString('apple-glass.css', (string) $this->client->getResponse()->getContent());
+        self::assertGreaterThan(0, $crawler->filter('.sd-header-glass')->count());
+        self::assertGreaterThan(0, $crawler->filter('.apple-segmented-control')->count());
+        self::assertGreaterThan(0, $crawler->filter('.sd-inspector-glass')->count());
+    }
 }
+

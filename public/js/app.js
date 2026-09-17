@@ -14,6 +14,7 @@
 
     var THEMES = [
         { id: 'devlab', label: 'Dark+ (predeterminado)' },
+        { id: 'apple-glass', label: 'Apple Minimalist Glass (visionOS)' },
         { id: 'midnight', label: 'Midnight (azul profundo)' },
         { id: 'contrast', label: 'Alto contraste' },
         { id: 'daylight', label: 'Daylight (claro)' }

@@ -1,353 +1,1369 @@
 {% extends 'base.html.twig' %}
 {% import 'components/icons.html.twig' as icons %}
 
-{% block title %}System Design Lab | Senior DevLab{% endblock %}
+{% block title %}System Design Studio | Apple Glass Edition | Senior DevLab{% endblock %}
 
 {% block stylesheets %}
 <style>
-    .lab-container {
-        display: grid;
-        grid-template-columns: 1fr 340px;
+    /* Apple Minimalist Glass Canvas & Workspace */
+    .sd-workspace {
+        display: flex;
+        flex-direction: column;
         gap: 16px;
-        height: calc(100vh - 160px);
+        min-height: calc(100vh - 120px);
+        position: relative;
     }
-    .canvas-panel {
-        background-color: #141414;
-        border: 1px solid var(--border-main);
-        border-radius: 6px;
+
+    /* Ambient Radiant Backdrop Glow Orbs */
+    .sd-ambient-glow {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .sd-orb-1 {
+        position: absolute;
+        top: -40px;
+        left: 10%;
+        width: 380px;
+        height: 380px;
+        background: radial-gradient(circle, rgba(10, 132, 255, 0.18) 0%, rgba(10, 132, 255, 0) 70%);
+        filter: blur(80px);
+        border-radius: 50%;
+        animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+    .sd-orb-2 {
+        position: absolute;
+        top: 250px;
+        right: 8%;
+        width: 420px;
+        height: 420px;
+        background: radial-gradient(circle, rgba(191, 90, 242, 0.14) 0%, rgba(191, 90, 242, 0) 70%);
+        filter: blur(95px);
+        border-radius: 50%;
+        animation: floatOrb 22s ease-in-out infinite alternate-reverse;
+    }
+    .sd-orb-3 {
+        position: absolute;
+        bottom: 20px;
+        left: 30%;
+        width: 340px;
+        height: 340px;
+        background: radial-gradient(circle, rgba(48, 209, 88, 0.12) 0%, rgba(48, 209, 88, 0) 70%);
+        filter: blur(85px);
+        border-radius: 50%;
+        animation: floatOrb 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatOrb {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(30px, -25px) scale(1.08); }
+        100% { transform: translate(-25px, 20px) scale(0.95); }
+    }
+
+    /* Apple Frosted Glass Top Navigation */
+    .sd-header-glass {
+        position: relative;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(28px) saturate(190%);
+        -webkit-backdrop-filter: blur(28px) saturate(190%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        border-radius: 20px;
+        padding: 14px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .sd-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .sd-apple-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 18px;
+    }
+    .sd-title-text {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+        margin: 0;
+    }
+    .sd-subtitle-text {
+        font-size: 11.5px;
+        color: rgba(255, 255, 255, 0.55);
+        margin: 0;
+    }
+
+    /* Main Split Grid */
+    .sd-main-grid {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 16px;
+        height: calc(100vh - 200px);
+        min-height: 620px;
+    }
+
+    @media (max-width: 1080px) {
+        .sd-main-grid {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+    }
+
+    /* Frosted Glass Stage Container */
+    .sd-stage-glass {
+        background: rgba(15, 17, 23, 0.55);
+        backdrop-filter: blur(32px) saturate(190%);
+        -webkit-backdrop-filter: blur(32px) saturate(190%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+        border-radius: 22px;
         position: relative;
         overflow: hidden;
-        background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-        background-size: 20px 20px;
         display: flex;
         flex-direction: column;
     }
-    .canvas-toolbar {
-        height: 40px;
-        background: #1e1e1e;
-        border-bottom: 1px solid var(--border-main);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-        font-size: 12px;
-        color: var(--text-muted);
+
+    .sd-stage-grid {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+        background-size: 24px 24px;
+        opacity: 0.85;
+        pointer-events: none;
     }
-    .canvas-stage {
+
+    /* Stage Sub-Toolbar */
+    .sd-stage-toolbar {
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        color: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        z-index: 5;
+    }
+
+    .sd-canvas-viewport {
         flex: 1;
         position: relative;
         overflow: auto;
     }
-    .arch-node {
+
+    /* Apple Glass Squircle Architectural Nodes */
+    .sd-node {
         position: absolute;
-        background: #252526;
-        border: 1px solid var(--border-main);
-        border-radius: 6px;
-        padding: 10px 14px;
-        min-width: 140px;
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(24px) saturate(190%);
+        -webkit-backdrop-filter: blur(24px) saturate(190%);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+        border-radius: 18px;
+        padding: 12px 16px;
+        min-width: 170px;
         cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 10;
+        user-select: none;
     }
-    .arch-node:hover {
-        border-color: var(--accent-blue);
-        transform: scale(1.03);
+
+    .sd-node:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 18px 40px -8px rgba(0, 0, 0, 0.65), 0 0 24px rgba(10, 132, 255, 0.25);
     }
-    .arch-node.selected {
-        border-color: #4fc1ff;
-        box-shadow: 0 0 0 2px rgba(79, 193, 255, 0.3);
+
+    .sd-node.is-selected {
+        background: rgba(10, 132, 255, 0.15);
+        border-color: #0a84ff;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 16px 36px -6px rgba(10, 132, 255, 0.4), 0 0 0 2px rgba(10, 132, 255, 0.5);
     }
-    .node-header {
+
+    .sd-node.is-degraded {
+        background: rgba(255, 159, 10, 0.15) !important;
+        border-color: #ff9f0a !important;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 0 24px rgba(255, 159, 10, 0.4) !important;
+    }
+
+    .sd-node.is-failed {
+        background: rgba(255, 69, 58, 0.18) !important;
+        border-color: #ff453a !important;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 0 28px rgba(255, 69, 58, 0.5) !important;
+        animation: nodeShake 0.4s ease-in-out;
+    }
+
+    @keyframes nodeShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
+    }
+
+    .sd-node-header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 12px;
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+
+    .sd-node-squircle {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 3px 8px rgba(0, 0, 0, 0.3);
+        flex-shrink: 0;
+    }
+
+    .sd-node-title {
+        font-size: 13px;
         font-weight: 600;
         color: #ffffff;
-        margin-bottom: 4px;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
     }
-    .node-type {
+
+    .sd-node-desc {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.55);
+        font-family: var(--font-mono);
+    }
+
+    .sd-node-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 8px;
+        padding-top: 6px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
         font-size: 10.5px;
-        color: var(--text-muted);
     }
-    .inspector-panel {
-        background-color: #1e1e1e;
-        border: 1px solid var(--border-main);
-        border-radius: 6px;
+
+    .sd-node-beacon {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #30d158;
+        font-weight: 500;
+    }
+
+    .sd-pulse-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #30d158;
+        box-shadow: 0 0 8px #30d158;
+        animation: beaconPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes beaconPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    /* Frosted Glass Inspector Panel (Right) */
+    .sd-inspector-glass {
+        background: rgba(18, 20, 28, 0.65);
+        backdrop-filter: blur(36px) saturate(200%);
+        -webkit-backdrop-filter: blur(36px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+        border-radius: 22px;
         display: flex;
         flex-direction: column;
         overflow: hidden;
     }
-    .inspector-header {
-        height: 40px;
-        background: #252526;
-        border-bottom: 1px solid var(--border-main);
-        padding: 0 16px;
+
+    .sd-inspector-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sd-inspector-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #ffffff;
+        letter-spacing: -0.01em;
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 12px;
+    }
+
+    .sd-inspector-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    /* Apple Watch Style Minimalist Rings & Telemetry */
+    .sd-telemetry-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .sd-metric-box {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: blur(12px);
+    }
+
+    .sd-ring-wrap {
+        width: 38px;
+        height: 38px;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .sd-ring-wrap svg {
+        transform: rotate(-90deg);
+        width: 38px;
+        height: 38px;
+    }
+
+    .sd-ring-bg {
+        stroke: rgba(255, 255, 255, 0.1);
+        stroke-width: 3.5;
+        fill: none;
+    }
+
+    .sd-ring-bar {
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        fill: none;
+        transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.3s ease;
+    }
+
+    .sd-metric-val {
+        font-size: 14px;
         font-weight: 700;
         color: #ffffff;
+        font-family: var(--font-mono);
+        letter-spacing: -0.02em;
+    }
+
+    .sd-metric-lbl {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
     }
-    .inspector-body {
-        padding: 16px;
-        overflow-y: auto;
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: var(--text-primary);
+
+    /* Animated Flow SVG */
+    .flow-line {
+        transition: stroke 0.3s ease, stroke-width 0.3s ease;
     }
-    .inspector-tag {
-        font-size: 10.5px;
-        padding: 2px 6px;
-        border-radius: 3px;
-        background: #333333;
-        color: #cccccc;
-        display: inline-block;
-        margin-bottom: 10px;
+    .flow-line.is-active {
+        stroke-width: 2.5;
+    }
+    .packet-particle {
+        filter: drop-shadow(0 0 6px rgba(10, 132, 255, 0.8));
     }
 </style>
 {% endblock %}
 
 {% block body %}
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px;">
-    <div>
-        <h1 class="page-title" style="font-size: 20px;">
-            {{ icons.icon('sliders', 22) }}
-            <span>System Design Lab &mdash; Arquitectura Distribuida</span>
-        </h1>
-        <p class="page-subtitle">
-            Entorno interactivo para inspeccionar componentes de alta concurrencia, balanceo de carga y flujos de petici&oacute;n enterprise.
-        </p>
+<div class="sd-workspace">
+    <!-- Radiant Ambient Depth Glow (Apple Minimalist Glass Mesh) -->
+    <div class="sd-ambient-glow">
+        <div class="sd-orb-1"></div>
+        <div class="sd-orb-2"></div>
+        <div class="sd-orb-3"></div>
     </div>
-    <div style="font-size: 12px; color: #858585;">
-        <span>Haz clic sobre cualquier nodo para auditar su arquitectura</span>
-    </div>
-</div>
 
-<div class="lab-container">
-    <!-- Interactive Canvas -->
-    <div class="canvas-panel">
-        <div class="canvas-toolbar">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                {{ icons.icon('sliders', 14) }}
-                <span>Escenario: E-commerce de Alto Tr&aacute;fico (10k req/sec)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span>Flujo: Cliente &rarr; CDN &rarr; LB &rarr; Symfony &rarr; DB/Cache/Queue</span>
+    <!-- Apple Frosted Glass Top Navigation Bar -->
+    <header class="sd-header-glass">
+        <div class="sd-title-wrap">
+            <div class="sd-apple-logo"></div>
+            <div>
+                <h1 class="sd-title-text">System Design Studio</h1>
+                <p class="sd-subtitle-text">Arquitecturas Distribuidas &bull; Alta Concurrencia &bull; Resiliencia Enterprise</p>
             </div>
         </div>
 
-        <div class="canvas-stage" id="canvasStage">
-            <!-- SVG Arrow Connectors -->
-            <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#007acc" />
-                    </marker>
-                </defs>
-                <!-- Line: Client to CDN -->
-                <line x1="160" y1="90" x2="230" y2="90" stroke="#007acc" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
-                <!-- Line: CDN to LB -->
-                <line x1="370" y1="90" x2="440" y2="90" stroke="#007acc" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
-                <!-- Line: LB to Symfony -->
-                <line x1="510" y1="130" x2="510" y2="190" stroke="#007acc" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
-                <!-- Line: Symfony to Redis -->
-                <line x1="440" y1="230" x2="350" y2="230" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
-                <!-- Line: Symfony to MySQL -->
-                <line x1="580" y1="230" x2="660" y2="230" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
-                <!-- Line: Symfony to Queue -->
-                <line x1="510" y1="270" x2="510" y2="340" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
-                <!-- Line: Queue to Workers -->
-                <line x1="580" y1="380" x2="660" y2="380" stroke="#007acc" stroke-width="2" marker-end="url(#arrow)"/>
-            </svg>
+        <!-- Apple Segmented Control (Scenario Switcher) -->
+        <div class="apple-segmented-control" role="tablist">
+            <button type="button" class="apple-segmented-btn is-active" id="btn-scen-ecommerce" onclick="switchScenario('ecommerce')">
+                {{ icons.icon('layers', 13) }}
+                <span>E-Commerce 10k req/s</span>
+            </button>
+            <button type="button" class="apple-segmented-btn" id="btn-scen-fintech" onclick="switchScenario('fintech')">
+                {{ icons.icon('shield', 13) }}
+                <span>Fintech &amp; Outbox</span>
+            </button>
+            <button type="button" class="apple-segmented-btn" id="btn-scen-realtime" onclick="switchScenario('realtime')">
+                {{ icons.icon('zap', 13) }}
+                <span>Realtime &amp; Event-Driven</span>
+            </button>
+        </div>
 
-            <!-- Node 1: Client -->
-            <div class="arch-node selected" style="top: 60px; left: 30px;" onclick="selectNode('client')">
-                <div class="node-header">
-                    {{ icons.icon('user', 14) }}
-                    <span>Browser / Mobile</span>
+        <!-- Glass Actions -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="apple-glass-btn" id="btn-toggle-traffic" onclick="toggleTraffic()" title="Pausar o reanudar paquetes de tráfico">
+                {{ icons.icon('play', 12) }}
+                <span id="txt-traffic-btn">Pausar Flujo</span>
+            </button>
+            <button type="button" class="apple-glass-btn" id="btn-chaos-mode" onclick="toggleChaosMode()" title="Modo de inyección de fallas">
+                <span style="color: var(--apple-amber);">⚡</span>
+                <span id="txt-chaos-btn">Modo Caos</span>
+            </button>
+            <button type="button" class="apple-glass-btn" onclick="exportJsonSpec()" title="Exportar especificación técnica de la arquitectura">
+                {{ icons.icon('code', 12) }}
+                <span>Exportar JSON</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Studio Split Grid -->
+    <div class="sd-main-grid">
+        <!-- Interactive Frosted Glass Canvas Stage -->
+        <div class="sd-stage-glass">
+            <div class="sd-stage-grid"></div>
+
+            <div class="sd-stage-toolbar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="apple-glass-badge badge-info" id="scenarioBadge">ESCENARIO 01</span>
+                    <span id="scenarioDescription" style="font-weight: 500; color: #ffffff;">Plataforma E-commerce con pico de tráfico CyberMonday</span>
                 </div>
-                <div class="node-type">Cliente HTTP/3</div>
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <span id="trafficSpeedLabel" style="font-family: var(--font-mono); color: var(--apple-emerald);">● Tráfico en Vivo: 9,840 req/s</span>
+                    <span style="color: rgba(255,255,255,0.4);">|</span>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.6);">Haz clic en un nodo para inspeccionarlo</span>
+                </div>
             </div>
 
-            <!-- Node 2: CDN -->
-            <div class="arch-node" style="top: 60px; left: 240px;" onclick="selectNode('cdn')">
-                <div class="node-header">
-                    {{ icons.icon('zap', 14) }}
-                    <span>Edge CDN</span>
-                </div>
-                <div class="node-type">Cloudflare / Fastly</div>
-            </div>
+            <div class="sd-canvas-viewport" id="canvasViewport">
+                <!-- SVG Stream Network with Animated Glow Particles -->
+                <svg id="networkSvg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-blue" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#0a84ff" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#64d2ff" stop-opacity="0.8"/>
+                        </linearGradient>
+                        <linearGradient id="grad-green" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#30d158" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#63e6be" stop-opacity="0.8"/>
+                        </linearGradient>
+                        <linearGradient id="grad-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#bf5af2" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#ff375f" stop-opacity="0.8"/>
+                        </linearGradient>
+                        <linearGradient id="grad-amber" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#ff9f0a" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#ffd60a" stop-opacity="0.8"/>
+                        </linearGradient>
 
-            <!-- Node 3: Load Balancer -->
-            <div class="arch-node" style="top: 60px; left: 450px;" onclick="selectNode('lb')">
-                <div class="node-header">
-                    {{ icons.icon('layers', 14) }}
-                    <span>Load Balancer</span>
-                </div>
-                <div class="node-type">HAProxy / Nginx</div>
-            </div>
+                        <filter id="glow-particle" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
 
-            <!-- Node 4: Symfony App Cluster -->
-            <div class="arch-node" style="top: 200px; left: 440px;" onclick="selectNode('symfony')">
-                <div class="node-header">
-                    {{ icons.icon('symfony', 16) }}
-                    <span>Symfony Pods</span>
-                </div>
-                <div class="node-type">PHP 8.4-FPM Cluster</div>
-            </div>
+                    <g id="svgPathsGroup"></g>
+                    <g id="svgParticlesGroup"></g>
+                </svg>
 
-            <!-- Node 5: Redis -->
-            <div class="arch-node" style="top: 200px; left: 210px;" onclick="selectNode('redis')">
-                <div class="node-header">
-                    {{ icons.icon('redis', 16) }}
-                    <span>Redis Cluster</span>
-                </div>
-                <div class="node-type">Sessions &amp; Cache</div>
+                <!-- Dynamic Architectural Nodes (Rendered by JS) -->
+                <div id="nodesContainer"></div>
             </div>
+        </div>
 
-            <!-- Node 6: MySQL -->
-            <div class="arch-node" style="top: 200px; left: 670px;" onclick="selectNode('mysql')">
-                <div class="node-header">
-                    {{ icons.icon('mysql', 16) }}
-                    <span>MySQL 8.0 Primary</span>
-                </div>
-                <div class="node-type">InnoDB ACID Storage</div>
-            </div>
-
-            <!-- Node 7: Queue (Symfony Messenger) -->
-            <div class="arch-node" style="top: 350px; left: 440px;" onclick="selectNode('queue')">
-                <div class="node-header">
+        <!-- Apple Minimalist Glass Inspector Sheet -->
+        <aside class="sd-inspector-glass">
+            <div class="sd-inspector-header">
+                <div class="sd-inspector-title">
                     {{ icons.icon('sliders', 14) }}
-                    <span>Message Broker</span>
+                    <span>Inspector de Nodo</span>
                 </div>
-                <div class="node-type">RabbitMQ / Redis Streams</div>
-            </div>
-
-            <!-- Node 8: Workers -->
-            <div class="arch-node" style="top: 350px; left: 670px;" onclick="selectNode('workers')">
-                <div class="node-header">
-                    {{ icons.icon('cpu', 14) }}
-                    <span>Async Workers</span>
+                <div id="inspectorHealthBadge" class="apple-glass-badge badge-success">
+                    <span class="sd-pulse-dot"></span>
+                    <span id="inspectorHealthText">OPERACIONAL</span>
                 </div>
-                <div class="node-type">messenger:consume CLI</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Inspector Panel (Right) -->
-    <div class="inspector-panel">
-        <div class="inspector-header">
-            {{ icons.icon('sliders', 14) }}
-            <span>Auditor&iacute;a de Nodo</span>
-        </div>
-        <div class="inspector-body" id="inspectorContent">
-            <span class="inspector-tag" id="nodeTag">EDGE / CLIENTE</span>
-            <h3 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 6px;" id="nodeTitle">Browser / Mobile Client</h3>
-            <div style="font-size: 11.5px; color: var(--accent-blue); margin-bottom: 14px;" id="nodeProtocol">Protocolo: HTTP/2 &bull; TLS 1.3</div>
-
-            <div style="margin-bottom: 14px;">
-                <div style="font-weight: 600; color: #ffffff; font-size: 12px; margin-bottom: 4px;">Responsabilidad:</div>
-                <p id="nodeResponsibility">Inicia peticiones web seguras, procesa respuestas HTML/JSON y almacena tokens de sesi&oacute;n.</p>
             </div>
 
-            <div style="margin-bottom: 14px;">
-                <div style="font-weight: 600; color: #ffffff; font-size: 12px; margin-bottom: 4px;">Posible Cuello de Botella:</div>
-                <p style="color: var(--accent-yellow);" id="nodeBottleneck">Latencia de red del &uacute;ltimo kil&oacute;metro y conexi&oacute;n inestable en redes celulares.</p>
-            </div>
+            <div class="sd-inspector-body">
+                <!-- Node Identity -->
+                <div>
+                    <span class="apple-glass-badge" id="inspTag" style="font-size: 10px; margin-bottom: 8px;">EDGE / ANYCAST</span>
+                    <h2 style="font-size: 18px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em; margin: 0 0 4px 0;" id="inspTitle">Browser / Mobile Client</h2>
+                    <div style="font-size: 11.5px; color: var(--apple-blue-light); font-family: var(--font-mono);" id="inspProtocol">Protocolo: HTTP/3 (QUIC) &bull; TLS 1.3</div>
+                </div>
 
-            <div style="margin-bottom: 14px;">
-                <div style="font-weight: 600; color: #ffffff; font-size: 12px; margin-bottom: 4px;">Criterio Senior:</div>
-                <p style="color: #89d185;" id="nodeSeniorCriterion">Implementar compresi&oacute;n Brotli, cach&eacute; HTTP agresivo con cabeceras Cache-Control e Immutable para recursos est&aacute;ticos.</p>
+                <!-- Apple Watch Telemetry Glass Rings -->
+                <div class="sd-telemetry-grid">
+                    <div class="sd-metric-box">
+                        <div class="sd-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <path class="sd-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path class="sd-ring-bar" id="ringLatency" stroke="var(--apple-blue)" stroke-dasharray="100, 100" stroke-dashoffset="35" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="sd-metric-val" id="metricLatency">1.2 ms</div>
+                            <div class="sd-metric-lbl">Latencia p95</div>
+                        </div>
+                    </div>
+
+                    <div class="sd-metric-box">
+                        <div class="sd-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <path class="sd-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path class="sd-ring-bar" id="ringThroughput" stroke="var(--apple-emerald)" stroke-dasharray="100, 100" stroke-dashoffset="15" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="sd-metric-val" id="metricThroughput">9.8k QPS</div>
+                            <div class="sd-metric-lbl">Throughput</div>
+                        </div>
+                    </div>
+
+                    <div class="sd-metric-box">
+                        <div class="sd-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <path class="sd-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path class="sd-ring-bar" id="ringCache" stroke="var(--apple-purple)" stroke-dasharray="100, 100" stroke-dashoffset="8" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="sd-metric-val" id="metricCache">96.4%</div>
+                            <div class="sd-metric-lbl">Cache Hit</div>
+                        </div>
+                    </div>
+
+                    <div class="sd-metric-box">
+                        <div class="sd-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <path class="sd-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path class="sd-ring-bar" id="ringSla" stroke="var(--apple-cyan)" stroke-dasharray="100, 100" stroke-dashoffset="2" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="sd-metric-val" id="metricSla">99.99%</div>
+                            <div class="sd-metric-lbl">SLA Uptime</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsibility Card -->
+                <div class="apple-glass-card" style="padding: 14px;">
+                    <div style="font-size: 11.5px; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        {{ icons.icon('cpu', 13) }}
+                        <span>Responsabilidad Arquitectónica</span>
+                    </div>
+                    <p id="inspResp" style="font-size: 12px; color: rgba(255, 255, 255, 0.75); line-height: 1.5; margin: 0;">
+                        Inicia peticiones web seguras, renderiza la vista y almacena cookies HttpOnly de sesión.
+                    </p>
+                </div>
+
+                <!-- Bottlenecks & Failure Modes -->
+                <div class="apple-glass-card" style="padding: 14px; border-left: 3px solid var(--apple-amber);">
+                    <div style="font-size: 11.5px; font-weight: 600; color: var(--apple-amber); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 13px;">⚠️</span>
+                        <span>Cuello de Botella / Modo de Falla</span>
+                    </div>
+                    <p id="inspBottleneck" style="font-size: 12px; color: rgba(255, 255, 255, 0.8); line-height: 1.5; margin: 0;">
+                        Latencia de red del último kilómetro y retransmisión TCP bajo redes móviles deficientes.
+                    </p>
+                </div>
+
+                <!-- Senior Criteria & Mitigation -->
+                <div class="apple-glass-card" style="padding: 14px; border-left: 3px solid var(--apple-emerald);">
+                    <div style="font-size: 11.5px; font-weight: 600; color: var(--apple-emerald); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        {{ icons.icon('shield', 13) }}
+                        <span>Criterio Senior &amp; Mitigación</span>
+                    </div>
+                    <p id="inspSenior" style="font-size: 12px; color: rgba(255, 255, 255, 0.8); line-height: 1.5; margin: 0;">
+                        Establecer cabeceras Cache-Control con max-age largo para assets y habilitar DNS prefetching.
+                    </p>
+                </div>
+
+                <!-- Production Config Code Snippet -->
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        Configuración de Producción Sugerida
+                    </div>
+                    <pre style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px; font-size: 11px; font-family: var(--font-mono); color: #9cdcfe; overflow-x: auto; margin: 0; line-height: 1.4;"><code id="inspConfigCode"># Nginx HTTP/3 QUIC config
+listen 443 quic reuseport;
+add_header Alt-Svc 'h3=":443"; ma=86400';
+ssl_protocols TLSv1.3;</code></pre>
+                </div>
+
+                <!-- Chaos Mode Fault Trigger Button -->
+                <div style="margin-top: 4px;">
+                    <button type="button" class="apple-glass-btn" id="btnInjectFault" style="width: 100%; justify-content: center; gap: 8px;" onclick="triggerFaultForCurrentNode()">
+                        <span>⚡ Simular Falla en este Nodo</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </aside>
     </div>
 </div>
 
 <script>
-    const nodeDetails = {
-        client: {
-            tag: 'EDGE / CLIENTE',
-            title: 'Browser / Mobile Client',
-            protocol: 'HTTP/2 | HTTP/3 sobre TLS 1.3',
-            resp: 'Inicia peticiones web seguras, renderiza la vista y almacena cookies HttpOnly de sesión.',
-            bottleneck: 'Latencia de red del último kilómetro y retransmisión TCP bajo redes móviles deficientes.',
-            senior: 'Establecer cabeceras Cache-Control con max-age largo para assets y habilitar DNS prefetching.'
+    // System Design Scenarios Database
+    const SCENARIOS = {
+        ecommerce: {
+            title: 'E-Commerce Hyper-Scale (10k req/s)',
+            desc: 'Arquitectura desacoplada de alto tráfico para picos masivos de compra (CyberMonday, Black Friday).',
+            qps: '9,840 req/s',
+            nodes: [
+                {
+                    id: 'client',
+                    title: 'Browser / Mobile',
+                    desc: 'HTTP/3 Client',
+                    tag: 'EDGE / CLIENT',
+                    protocol: 'HTTP/3 (QUIC) | TLS 1.3',
+                    x: 40, y: 70,
+                    icon: 'user',
+                    color: 'linear-gradient(135deg, #0a84ff, #5ac8fa)',
+                    metrics: { latency: '0.8 ms', throughput: '9.8k QPS', cache: '92%', sla: '99.99%', r1: 20, r2: 12, r3: 8, r4: 2 },
+                    resp: 'Inicia peticiones web seguras, renderiza la vista y almacena cookies HttpOnly de sesión.',
+                    bottleneck: 'Latencia de red del último kilómetro y retransmisión TCP bajo redes móviles deficientes.',
+                    senior: 'Establecer cabeceras Cache-Control agresivas con max-age largo para assets y habilitar DNS prefetching con Brotli 11.',
+                    config: '# Client HTTP/3 Alt-Svc header\nadd_header Alt-Svc \'h3=":443"; ma=86400\';\nadd_header Cache-Control "public, max-age=31536000, immutable";'
+                },
+                {
+                    id: 'cdn',
+                    title: 'Edge CDN Anycast',
+                    desc: 'Cloudflare / Fastly',
+                    tag: 'CACHE DISTRIBUIDO',
+                    protocol: 'Anycast DNS | Edge Caching',
+                    x: 260, y: 70,
+                    icon: 'zap',
+                    color: 'linear-gradient(135deg, #ff9f0a, #ffd60a)',
+                    metrics: { latency: '3.2 ms', throughput: '9.8k QPS', cache: '84.5%', sla: '99.999%', r1: 25, r2: 15, r3: 15, r4: 1 },
+                    resp: 'Descarga el 80% del tráfico estático del origen, mitiga ataques DDoS L3/L4/L7 y realiza terminación SSL Anycast.',
+                    bottleneck: 'Invalidación tardía de caché (Cache Invalidation) si se publican cambios urgentes.',
+                    senior: 'Usar Cache-Tags criptográficos y Symfony AssetMapper con hash SHA-384 para invalidación instantánea.',
+                    config: '# Cloudflare Edge Cache Purge by Tag\ncurl -X POST "https://api.cloudflare.com/client/v4/zones/{id}/purge_cache" \\\n     -H "Authorization: Bearer $TOKEN" \\\n     -d \'{"tags":["product_catalog"]}\''
+                },
+                {
+                    id: 'lb',
+                    title: 'Load Balancer Cluster',
+                    desc: 'HAProxy / Nginx',
+                    tag: 'BALANCEO DE CARGA',
+                    protocol: 'TCP / SSL Termination -> FastCGI',
+                    x: 480, y: 70,
+                    icon: 'layers',
+                    color: 'linear-gradient(135deg, #30d158, #63e6be)',
+                    metrics: { latency: '1.4 ms', throughput: '9.8k QPS', cache: '0%', sla: '99.99%', r1: 15, r2: 12, r3: 95, r4: 2 },
+                    resp: 'Distribuye el tráfico entrante uniformemente entre los pods de backend mediante Round Robin ponderado o Least Connections.',
+                    bottleneck: 'SPOF (Single Point of Failure) si no existe par de alta disponibilidad activo/pasivo.',
+                    senior: 'Desplegar pares redundantes con Keepalived y VRRP con terminación SSL acelerada por hardware.',
+                    config: '# HAProxy Leastconn configuration\nbackend symfony_cluster\n    balance leastconn\n    option httpchk GET /healthz\n    server php01 10.0.1.10:9000 check maxconn 250\n    server php02 10.0.1.11:9000 check maxconn 250'
+                },
+                {
+                    id: 'symfony',
+                    title: 'Symfony 7 Cluster',
+                    desc: 'PHP 8.4-FPM Stateless',
+                    tag: 'COMPUTE / BACKEND',
+                    protocol: 'FastCGI / HTTP Interno',
+                    x: 480, y: 220,
+                    icon: 'symfony',
+                    color: 'linear-gradient(135deg, #bf5af2, #5e5ce6)',
+                    metrics: { latency: '14.5 ms', throughput: '9.8k QPS', cache: '78%', sla: '99.95%', r1: 45, r2: 18, r3: 22, r4: 5 },
+                    resp: 'Ejecuta la lógica de negocio pura, validación de DTOs, orquestación de servicios y cálculo de precios.',
+                    bottleneck: 'Agotamiento de workers PHP-FPM (pm.max_children) ante queries de base de datos lentas.',
+                    senior: 'Arquitectura 100% Stateless: sesiones a Redis, subida de archivos directa a S3 mediante URLs prefirmadas y descarte de tareas pesadas hacia la cola.',
+                    config: '# php-fpm pool config\npm = dynamic\npm.max_children = 200\npm.start_servers = 40\npm.max_requests = 1000'
+                },
+                {
+                    id: 'redis',
+                    title: 'Redis Cluster',
+                    desc: 'Sessions & L2 Cache',
+                    tag: 'IN-MEMORY STORE',
+                    protocol: 'RESP Protocol (Sub-ms TCP)',
+                    x: 230, y: 220,
+                    icon: 'redis',
+                    color: 'linear-gradient(135deg, #ff453a, #ff375f)',
+                    metrics: { latency: '0.4 ms', throughput: '18.2k QPS', cache: '96.2%', sla: '99.99%', r1: 8, r2: 8, r3: 4, r4: 1 },
+                    resp: 'Almacena sesiones compartidas de Symfony, rate limiting tokens y caché de queries de Doctrine.',
+                    bottleneck: 'OOM (Out of Memory) y saturación de ancho de banda por deserialización masiva de objetos complejos.',
+                    senior: 'Configurar política de evicción volatile-lru y serializar con igbinary / msgpack para reducir huella de memoria en un 60%.',
+                    config: '# Redis memory policy\nmaxmemory 16gb\nmaxmemory-policy volatile-lru\ntcp-keepalive 60'
+                },
+                {
+                    id: 'mysql',
+                    title: 'MySQL 8.0 Primary',
+                    desc: 'InnoDB ACID Storage',
+                    tag: 'PERSISTENCIA TRANSACCIONAL',
+                    protocol: 'MySQL Native TCP (3306)',
+                    x: 730, y: 220,
+                    icon: 'mysql',
+                    color: 'linear-gradient(135deg, #0a84ff, #00758f)',
+                    metrics: { latency: '6.2 ms', throughput: '4.5k QPS', cache: '65%', sla: '99.99%', r1: 28, r2: 25, r3: 35, r4: 2 },
+                    resp: 'Garantiza transacciones ACID para pedidos, pagos y datos críticos de integridad contable.',
+                    bottleneck: 'Bloqueos de filas (Row Locks) y saturación de I/O en SSDs ante escrituras masivas simultáneas.',
+                    senior: 'Separación estricta de lecturas (Read Replicas) y escrituras (Primary) con Doctrine Master-Slave Wrapper.',
+                    config: '# MySQL InnoDB tuning\ninnodb_buffer_pool_size = 32G\ninnodb_flush_log_at_trx_commit = 2\ninnodb_read_io_threads = 8'
+                },
+                {
+                    id: 'queue',
+                    title: 'Message Broker',
+                    desc: 'RabbitMQ / Redis Streams',
+                    tag: 'ASYNCHRONOUS MESSAGING',
+                    protocol: 'AMQP 0-9-1',
+                    x: 480, y: 370,
+                    icon: 'sliders',
+                    color: 'linear-gradient(135deg, #ff9f0a, #ff453a)',
+                    metrics: { latency: '2.1 ms', throughput: '3.4k msg/s', cache: '0%', sla: '99.99%', r1: 18, r2: 30, r3: 90, r4: 1 },
+                    resp: 'Desacopla tareas lentas (generación de facturas PDF, emails, sincronización ERP) del ciclo HTTP.',
+                    bottleneck: 'Acumulación de mensajes no consumidos si la tasa de ingestión supera a los workers disponibles.',
+                    senior: 'Implementar Dead Letter Queues (DLQ) para reintentos con backoff exponencial y alertas de Queue Lag en Prometheus.',
+                    config: '# Symfony Messenger retry strategy\nframework:\n  messenger:\n    transports:\n      async_priority:\n        dsn: \'%env(MESSENGER_TRANSPORT_DSN)%\'\n        retry_strategy:\n          max_retries: 3\n          delay: 1000\n          multiplier: 2'
+                },
+                {
+                    id: 'workers',
+                    title: 'Async Workers',
+                    desc: 'messenger:consume Daemons',
+                    tag: 'BACKGROUND PROCESSING',
+                    protocol: 'CLI Process Loop',
+                    x: 730, y: 370,
+                    icon: 'cpu',
+                    color: 'linear-gradient(135deg, #bf5af2, #ff375f)',
+                    metrics: { latency: '85 ms', throughput: '3.2k jobs/m', cache: '0%', sla: '99.9%', r1: 65, r2: 40, r3: 95, r4: 10 },
+                    resp: 'Procesos CLI en segundo plano supervisados por Supervisor o systemd que consumen mensajes de la cola de forma continua.',
+                    bottleneck: 'Fugas de memoria (Memory Leaks) en procesos de larga duración si no se reinician tras N mensajes.',
+                    senior: 'Usar flags de seguridad de Symfony: `--time-limit=3600 --memory-limit=256M` para reciclaje automático de workers sin downtime.',
+                    config: '# Supervisor worker configuration\n[program:symfony-worker]\ncommand=php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M\nnumprocs=8\nautostart=true\nautorestart=true'
+                }
+            ],
+            connections: [
+                { from: 'client', to: 'cdn', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'cdn', to: 'lb', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'lb', to: 'symfony', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'symfony', to: 'redis', color: 'url(#grad-green)', type: 'cache' },
+                { from: 'symfony', to: 'mysql', color: 'url(#grad-amber)', type: 'sql' },
+                { from: 'symfony', to: 'queue', color: 'url(#grad-purple)', type: 'async' },
+                { from: 'queue', to: 'workers', color: 'url(#grad-purple)', type: 'async' }
+            ]
         },
-        cdn: {
-            tag: 'CACHE DISTRIBUIDO',
-            title: 'Edge CDN (Cloudflare / Fastly)',
-            protocol: 'Anycast DNS | Reverse Proxy',
-            resp: 'Descargar el 80% del tráfico estático (CSS, JS, imágenes) del origen y mitigar ataques DDoS.',
-            bottleneck: 'Invalidación tardía de caché (Cache Invalidation) si se publican cambios urgentes.',
-            senior: 'Usar tags de cache (Cache-Tags) y versionado de assets con hashes criptográficos (Symfony AssetMapper).'
+        fintech: {
+            title: 'Fintech & Banking Gateway (PCI-DSS & Outbox)',
+            desc: 'Transacciones financieras críticas con cero tolerancia a pérdida de datos y consistencia bitemporal.',
+            qps: '3,200 tx/s',
+            nodes: [
+                {
+                    id: 'mobile_pos',
+                    title: 'Mobile POS / App',
+                    desc: 'SDK con mTLS & Firma',
+                    tag: 'CLIENTE FINANCIERO',
+                    protocol: 'Mutual TLS (mTLS) & Ed25519',
+                    x: 40, y: 70,
+                    icon: 'user',
+                    color: 'linear-gradient(135deg, #0a84ff, #5ac8fa)',
+                    metrics: { latency: '1.1 ms', throughput: '3.2k tx/s', cache: '0%', sla: '99.999%', r1: 18, r2: 30, r3: 95, r4: 1 },
+                    resp: 'Genera llaves criptográficas efímeras, firma payloads con claves asimétricas e inicia transacciones de pago.',
+                    bottleneck: 'Ataques Man-in-the-Middle y spoofing de firmas digitales.',
+                    senior: 'Implementar Certificate Pinning estricto y claves por dispositivo almacenadas en el Secure Enclave del hardware.',
+                    config: '# mTLS Client verification\nssl_client_certificate /etc/ssl/certs/ca.crt;\nssl_verify_client on;\nssl_verify_depth 2;'
+                },
+                {
+                    id: 'api_gw',
+                    title: 'Fintech Gateway',
+                    desc: 'Envoy / WAF PCI-DSS',
+                    tag: 'API GATEWAY SEGURO',
+                    protocol: 'gRPC / HTTP/2 + Token Bucket',
+                    x: 260, y: 70,
+                    icon: 'shield',
+                    color: 'linear-gradient(135deg, #30d158, #63e6be)',
+                    metrics: { latency: '2.4 ms', throughput: '3.2k tx/s', cache: '0%', sla: '99.999%', r1: 20, r2: 25, r3: 95, r4: 1 },
+                    resp: 'Validación de cabeceras de seguridad, inspección de rate-limiting financiero y enrutamiento con mTLS.',
+                    bottleneck: 'Sobrecarga de CPU por verificación criptográfica masiva.',
+                    senior: 'Descarga criptográfica en chips dedicados (Hardware Security Module) y tokens con HMAC de baja latencia.',
+                    config: '# Envoy Rate Limiting Filter\nrate_limit_service:\n  grpc_service:\n    envoy_grpc:\n      cluster_name: rate_limit_cluster'
+                },
+                {
+                    id: 'fraud_engine',
+                    title: 'Fraud & Risk ML',
+                    desc: 'Go / Rust Real-Time Evaluator',
+                    tag: 'ANÁLISIS DE RIESGO',
+                    protocol: 'gRPC Internal (Sub-5ms)',
+                    x: 480, y: 70,
+                    icon: 'cpu',
+                    color: 'linear-gradient(135deg, #ff9f0a, #ffd60a)',
+                    metrics: { latency: '4.8 ms', throughput: '3.2k ev/s', cache: '40%', sla: '99.95%', r1: 30, r2: 22, r3: 60, r4: 3 },
+                    resp: 'Aplica reglas de velocidad de tarjetas, geolocalización IP y detección de anomalías en milisegundos.',
+                    bottleneck: 'Falsos positivos bloqueando transacciones legítimas durante compras internacionales.',
+                    senior: 'Arquitectura Fallback: si el motor de fraude tarda >15ms, se aprueba con marca de riesgo posterior para no degradar el checkout.',
+                    config: '# Circuit breaker for Fraud API\nframework:\n  http_client:\n    scoped_clients:\n      fraud_service:\n        base_uri: \'https://fraud.internal:8443\'\n        timeout: 0.015'
+                },
+                {
+                    id: 'ledger_api',
+                    title: 'Core Ledger Service',
+                    desc: 'Symfony 7 Double-Entry',
+                    tag: 'LIBRO CONTABLE DIGITAL',
+                    protocol: 'PHP 8.4 Strict Types',
+                    x: 480, y: 220,
+                    icon: 'symfony',
+                    color: 'linear-gradient(135deg, #bf5af2, #5e5ce6)',
+                    metrics: { latency: '8.2 ms', throughput: '3.2k tx/s', cache: '25%', sla: '99.999%', r1: 32, r2: 28, r3: 75, r4: 1 },
+                    resp: 'Ejecuta el débito y crédito bajo el principio contable de partida doble. Garantiza inmutabilidad estricta.',
+                    bottleneck: 'Condiciones de carrera (Race Conditions) y doble gasto simultáneo de saldo.',
+                    senior: 'Uso de Locks distribuidos con Symfony Lock y aislamiento de transacción PostgreSQL Serializable.',
+                    config: '# Symfony Lock Factory with Redis\nservices:\n  Symfony\\Component\\Lock\\LockFactory:\n    arguments: [\'@lock.store\']\n  lock.store:\n    class: Symfony\\Component\\Lock\\Store\\RedisStore\n    arguments: [\'@snc_redis.default\']'
+                },
+                {
+                    id: 'dist_lock',
+                    title: 'Redlock / ShedLock',
+                    desc: 'Mutual Exclusion Store',
+                    tag: 'DISTRIBUTED LOCKING',
+                    protocol: 'Redis Redlock Protocol',
+                    x: 230, y: 220,
+                    icon: 'redis',
+                    color: 'linear-gradient(135deg, #ff453a, #ff375f)',
+                    metrics: { latency: '0.6 ms', throughput: '6.4k lk/s', cache: '100%', sla: '99.999%', r1: 10, r2: 10, r3: 0, r4: 1 },
+                    resp: 'Evita colisiones asegurando que una cuenta origen solo pueda ser debitada por un hilo a la vez.',
+                    bottleneck: 'Pausa de Garbage Collection provocando expiración del lock antes de culminar la transacción.',
+                    senior: 'Diseñar el lock con fencing tokens incrementales para que la base de datos rechace commits expirados.',
+                    config: '# Fencing token validation\n$lock = $lockFactory->createLock("account_{$accountId}", 2.0);\n$lock->acquire(true);'
+                },
+                {
+                    id: 'postgres_db',
+                    title: 'PostgreSQL ACID Primary',
+                    desc: 'Append-Only Ledger Table',
+                    tag: 'BASE DE DATOS INMUTABLE',
+                    protocol: 'Postgres Native (5432)',
+                    x: 730, y: 220,
+                    icon: 'database',
+                    color: 'linear-gradient(135deg, #0a84ff, #5ac8fa)',
+                    metrics: { latency: '3.8 ms', throughput: '3.2k tx/s', cache: '50%', sla: '99.999%', r1: 22, r2: 24, r3: 50, r4: 1 },
+                    resp: 'Almacena movimientos inmutables sin UPDATEs: cada cambio es un nuevo registro contable.',
+                    bottleneck: 'Bloqueos por transacciones largas que mantengan locks de lectura en el catálogo.',
+                    senior: 'Configurar `statement_timeout = 3000ms` y forzar réplicas físicas sincrónicas en modo Multi-AZ.',
+                    config: '# PostgreSQL ACID isolation\nSET TRANSACTION ISOLATION LEVEL SERIALIZABLE;\nSET statement_timeout = \'3s\';'
+                },
+                {
+                    id: 'outbox_cdc',
+                    title: 'Transactional Outbox',
+                    desc: 'Debezium / Postgres CDC',
+                    tag: 'EVENT-DRIVEN INTEGRATION',
+                    protocol: 'Logical Replication Protocol',
+                    x: 480, y: 370,
+                    icon: 'sliders',
+                    color: 'linear-gradient(135deg, #ff9f0a, #ff453a)',
+                    metrics: { latency: '1.2 ms', throughput: '3.2k ev/s', cache: '0%', sla: '99.999%', r1: 15, r2: 20, r3: 95, r4: 1 },
+                    resp: 'Captura eventos de débito directamente desde el Write-Ahead Log (WAL) para garantizar entrega exactly-once.',
+                    bottleneck: 'Retraso de replicación lógica si se satura el slot de replicación.',
+                    senior: 'Patrón Outbox: escribir el evento en la misma transacción SQL que el débito para evitar escrituras distribuidas duales.',
+                    config: '# Outbox table schema\nCREATE TABLE outbox_events (\n    id UUID PRIMARY KEY,\n    aggregate_type VARCHAR(64),\n    payload JSONB NOT NULL,\n    published_at TIMESTAMP NULL\n);'
+                },
+                {
+                    id: 'clearinghouse',
+                    title: 'Banking Network',
+                    desc: 'SWIFT / FedNow / SEPA',
+                    tag: 'INTERBANCARIO EXTERNO',
+                    protocol: 'ISO 20022 XML Messaging',
+                    x: 730, y: 370,
+                    icon: 'award',
+                    color: 'linear-gradient(135deg, #30d158, #63e6be)',
+                    metrics: { latency: '120 ms', throughput: '1.2k tx/s', cache: '0%', sla: '99.9%', r1: 75, r2: 45, r3: 95, r4: 5 },
+                    resp: 'Compensación de fondos entre bancos centrales y entidades financieras internacionales.',
+                    bottleneck: 'Timeouts de red externa y caídas del banco receptor.',
+                    senior: 'Operaciones Asíncronas con Reconciliación: responder HTTP 202 Accepted al usuario y conciliar el settlement en segundo plano.',
+                    config: '# ISO 20022 Settlement Message\n<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">\n  <FIToFICstmrCdtTrf>...</FIToFICstmrCdtTrf>\n</Document>'
+                }
+            ],
+            connections: [
+                { from: 'mobile_pos', to: 'api_gw', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'api_gw', to: 'fraud_engine', color: 'url(#grad-amber)', type: 'http' },
+                { from: 'fraud_engine', to: 'ledger_api', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'ledger_api', to: 'dist_lock', color: 'url(#grad-green)', type: 'cache' },
+                { from: 'ledger_api', to: 'postgres_db', color: 'url(#grad-amber)', type: 'sql' },
+                { from: 'postgres_db', to: 'outbox_cdc', color: 'url(#grad-purple)', type: 'async' },
+                { from: 'outbox_cdc', to: 'clearinghouse', color: 'url(#grad-purple)', type: 'async' }
+            ]
         },
-        lb: {
-            tag: 'BALANCEO DE CARGA',
-            title: 'Load Balancer (HAProxy / Nginx)',
-            protocol: 'TCP / SSL Termination -> FastCGI/HTTP',
-            resp: 'Distribuir el tráfico entrante uniformemente entre el clúster de servidores de backend mediante Round Robin o Least Connections.',
-            bottleneck: 'Single Point of Failure (SPOF) si solo hay un balanceador activo.',
-            senior: 'Desplegar pares redundantes de balanceadores con Keepalived / VRRP y realizar terminación SSL en el LB para liberar CPU de los pods de Symfony.'
-        },
-        symfony: {
-            tag: 'COMPUTE / BACKEND',
-            title: 'Symfony 7 Cluster (PHP 8.4-FPM)',
-            protocol: 'FastCGI / HTTP Interno',
-            resp: 'Ejecutar la lógica de negocio pura, validación de DTOs, orquestación de servicios y render de Twig.',
-            bottleneck: 'Agotamiento de workers PHP-FPM (pm.max_children) ante queries de base de datos bloqueantes o llamadas síncronas a APIs externas.',
-            senior: 'Hacer el backend 100% Stateless (sin estado local en disco). Las sesiones van a Redis. Tareas mayores a 50ms se despachan a la cola.'
-        },
-        redis: {
-            tag: 'IN-MEMORY STORE',
-            title: 'Redis Cluster',
-            protocol: 'RESP Protocol (Sub-millisecond TCP)',
-            resp: 'Almacenar sesiones compartidas de Symfony, rate limiting tokens y caché de queries de Doctrine.',
-            bottleneck: 'Límite de memoria RAM y políticas de evicción (OOM) si se satura sin expiración (TTL).',
-            senior: 'Establecer siempre TTL explícito en cada clave y configurar política de evicción volatile-lru.'
-        },
-        mysql: {
-            tag: 'PERSISTENCIA TRANSACCIONAL',
-            title: 'MySQL 8.0 Primary',
-            protocol: 'MySQL Native TCP (Puerto 3306)',
-            resp: 'Garantizar transacciones ACID para pedidos, pagos y datos críticos de integridad de negocio.',
-            bottleneck: 'Full Table Scans por falta de índices compuestos, bloqueos de filas (Row Locks) y queries N+1.',
-            senior: 'Nunca usar ORM a ciegas en listados masivos: optimizar con DQL parcial o Read Models dedicados. Usar réplica de lectura para consultas pesadas.'
-        },
-        queue: {
-            tag: 'ASYNCHRONOUS MESSAGING',
-            title: 'Symfony Messenger / RabbitMQ',
-            protocol: 'AMQP 0-9-1 / Redis Streams',
-            resp: 'Desacoplar tareas lentas (generación de facturas PDF, emails, sincronización ERP) del ciclo HTTP.',
-            bottleneck: 'Acumulación de mensajes no consumidos si la tasa de ingestión supera a los workers disponibles.',
-            senior: 'Implementar Dead Letter Queues (DLQ) para reintentos fallidos y alertas automáticas de retardo de cola (Queue Lag).'
-        },
-        workers: {
-            tag: 'BACKGROUND PROCESSING',
-            title: 'Async Workers (CLI Daemons)',
-            protocol: 'bin/console messenger:consume',
-            resp: 'Procesos CLI en segundo plano supervisados por Supervisor o systemd que consumen mensajes de la cola de forma continua.',
-            bottleneck: 'Memory leaks en procesos de larga duración si no se reinician tras N mensajes.',
-            senior: 'Usar flags de seguridad de Symfony: `--time-limit=3600 --memory-limit=128M` para reciclaje automático sin fugas de memoria.'
+        realtime: {
+            title: 'Realtime Streaming & WebSockets (Kafka & Mercure)',
+            desc: 'Transmisión bidireccional masiva de eventos, telemetría y colaboración en vivo.',
+            qps: '45,000 msg/s',
+            nodes: [
+                {
+                    id: 'ws_clients',
+                    title: 'Collaborative Clients',
+                    desc: 'Web / Mobile WebSockets',
+                    tag: 'CLIENTES EN VIVO',
+                    protocol: 'WSS (WebSocket Secure) / SSE',
+                    x: 40, y: 70,
+                    icon: 'user',
+                    color: 'linear-gradient(135deg, #0a84ff, #64d2ff)',
+                    metrics: { latency: '1.8 ms', throughput: '45k msg/s', cache: '0%', sla: '99.99%', r1: 22, r2: 15, r3: 95, r4: 1 },
+                    resp: 'Mantiene túneles de comunicación bidireccional permanentes para edición simultánea o feed en tiempo real.',
+                    bottleneck: 'Agotamiento de File Descriptors si el sistema operativo no soporta 100k sockets abiertos.',
+                    senior: 'Aumentar límites `sysctl -w fs.file-max=2097152` y optimizar buffers de recepción TCP (SO_RCVBUF).',
+                    config: '# Linux Kernel TCP Buffer Tuning\nsysctl -w net.core.somaxconn=65535\nsysctl -w net.ipv4.tcp_max_syn_backlog=65535'
+                },
+                {
+                    id: 'edge_gw',
+                    title: 'Anycast WS Edge',
+                    desc: 'Cloudflare Workers Gateway',
+                    tag: 'TERMINACIÓN WEBSOCKET',
+                    protocol: 'Edge WebSocket Termination',
+                    x: 260, y: 70,
+                    icon: 'zap',
+                    color: 'linear-gradient(135deg, #ff9f0a, #ffd60a)',
+                    metrics: { latency: '3.1 ms', throughput: '45k msg/s', cache: '98%', sla: '99.999%', r1: 25, r2: 12, r3: 2, r4: 1 },
+                    resp: 'Mantiene las conexiones persistentes con el usuario cerca de su ubicación geográfica.',
+                    bottleneck: 'Desconexiones masivas en cascada ante reconexiones simultáneas ("Thundering Herd").',
+                    senior: 'Implementar Exponential Backoff con Jitter aleatorio en los clientes para evitar saturar el edge al reconectar.',
+                    config: '// Exponential Backoff with Jitter\nconst delay = Math.min(10000, 1000 * Math.pow(2, attempt)) + Math.random() * 500;\nsetTimeout(reconnect, delay);'
+                },
+                {
+                    id: 'mercure_hub',
+                    title: 'Mercure Hub Cluster',
+                    desc: 'Realtime SSE/WS Broker (Go)',
+                    tag: 'FAN-OUT REALTIME',
+                    protocol: 'HTTP/2 Server-Sent Events',
+                    x: 480, y: 70,
+                    icon: 'layers',
+                    color: 'linear-gradient(135deg, #30d158, #63e6be)',
+                    metrics: { latency: '1.2 ms', throughput: '45k msg/s', cache: '0%', sla: '99.99%', r1: 16, r2: 10, r3: 95, r4: 1 },
+                    resp: 'Distribuye publicaciones desde Symfony hacia miles de clientes conectados mediante JWT autorizados.',
+                    bottleneck: 'Consumo elevado de memoria por mantener cientos de miles de conexiones idle.',
+                    senior: 'Mercure escrito en Go soporta cientos de miles de corrutinas concurrentes consumiendo apenas 5KB de RAM por conexión.',
+                    config: '# Mercure Hub environment\nMERCURE_PUBLISHER_JWT_KEY=secret\nMERCURE_SUBSCRIBER_JWT_KEY=secret\nMERCURE_EXTRA_DIRECTIVES=cors_allowed_origins *'
+                },
+                {
+                    id: 'event_dispatcher',
+                    title: 'Symfony Event Bus',
+                    desc: 'PHP 8.4 Domain Events',
+                    tag: 'ORQUESTADOR DE EVENTOS',
+                    protocol: 'Internal Event Dispatcher',
+                    x: 480, y: 220,
+                    icon: 'symfony',
+                    color: 'linear-gradient(135deg, #bf5af2, #5e5ce6)',
+                    metrics: { latency: '6.4 ms', throughput: '12k ev/s', cache: '85%', sla: '99.95%', r1: 30, r2: 18, r3: 15, r4: 4 },
+                    resp: 'Convierte acciones de usuario en eventos de dominio fuertemente tipados con PHP 8.4 Enums y readonly DTOs.',
+                    bottleneck: 'Operaciones síncronas bloqueando la publicación inmediata del evento.',
+                    senior: 'Desacoplamiento asíncrono puro: el controlador publica el evento y retorna 202 Accepted en menos de 5ms.',
+                    config: '# Symfony Messenger EventBus\nframework:\n  messenger:\n    default_bus: event.bus\n    buses:\n      event.bus:\n        middleware:\n          - validation'
+                },
+                {
+                    id: 'redis_pubsub',
+                    title: 'Redis Pub/Sub',
+                    desc: 'Ephemeral Channels Store',
+                    tag: 'DISTRIBUCIÓN EN MEMORIA',
+                    protocol: 'PUBLISH / SUBSCRIBE TCP',
+                    x: 230, y: 220,
+                    icon: 'redis',
+                    color: 'linear-gradient(135deg, #ff453a, #ff375f)',
+                    metrics: { latency: '0.3 ms', throughput: '50k msg/s', cache: '100%', sla: '99.99%', r1: 6, r2: 6, r3: 0, r4: 1 },
+                    resp: 'Enruta mensajes instantáneos entre diferentes instancias de Mercure Hub sin persistencia innecesaria.',
+                    bottleneck: 'Pérdida de mensajes si un suscriptor no está conectado al momento del PUBLISH.',
+                    senior: 'Usar Redis Streams en lugar de Pub/Sub estándar para los canales que requieran histórico de eventos.',
+                    config: '# Redis Streams XADD\nXADD live_chat * user_id 42 text "Hola equipo!"'
+                },
+                {
+                    id: 'kafka_broker',
+                    title: 'Apache Kafka Cluster',
+                    desc: 'Partitioned Event Log',
+                    tag: 'BUS DE EVENTOS DURADERO',
+                    protocol: 'Kafka Binary Protocol (9092)',
+                    x: 730, y: 220,
+                    icon: 'database',
+                    color: 'linear-gradient(135deg, #0a84ff, #bf5af2)',
+                    metrics: { latency: '3.5 ms', throughput: '45k ev/s', cache: '0%', sla: '99.999%', r1: 24, r2: 18, r3: 95, r4: 1 },
+                    resp: 'Almacena de forma ordenada y distribuida el flujo histórico de billones de eventos.',
+                    bottleneck: 'Desbalanceo de particiones por llaves de particionamiento mal distribuidas.',
+                    senior: 'Elegir llaves de partición uniformes (ej. Tenant ID o Hash de User ID) para balancear la carga entre brokers.',
+                    config: '# Kafka topic creation\nbin/kafka-topics.sh --create --topic app-events \\\n  --partitions 12 --replication-factor 3 \\\n  --bootstrap-server localhost:9092'
+                },
+                {
+                    id: 'scylla_db',
+                    title: 'ScyllaDB / Cassandra',
+                    desc: 'High-Write Time-Series',
+                    tag: 'PERSISTENCIA DISTRIBUIDA',
+                    protocol: 'CQL Native Protocol (9042)',
+                    x: 480, y: 370,
+                    icon: 'sliders',
+                    color: 'linear-gradient(135deg, #30d158, #63e6be)',
+                    metrics: { latency: '1.8 ms', throughput: '45k w/s', cache: '0%', sla: '99.999%', r1: 18, r2: 12, r3: 95, r4: 1 },
+                    resp: 'Almacena telemetría, métricas y mensajes de chat de alta velocidad con escrituras directas en LSM-trees.',
+                    bottleneck: 'Hot partitions si un canal muy activo supera el tamaño límite de 100MB por partición.',
+                    senior: 'Particionamiento compuesto con ventanas de tiempo (ej. `partition_key = (channel_id, year_month_day)`).',
+                    config: '# CQL Table with compound partition key\nCREATE TABLE chat_messages (\n    channel_id UUID,\n    bucket_date DATE,\n    message_id TIMEUUID,\n    content TEXT,\n    PRIMARY KEY ((channel_id, bucket_date), message_id)\n) WITH CLUSTERING ORDER BY (message_id DESC);'
+                },
+                {
+                    id: 'olap_workers',
+                    title: 'Analytics Workers',
+                    desc: 'ClickHouse / Vector Ingestion',
+                    tag: 'BIG DATA / OLAP',
+                    protocol: 'Batch Parquet / ClickHouse TCP',
+                    x: 730, y: 370,
+                    icon: 'cpu',
+                    color: 'linear-gradient(135deg, #ff9f0a, #ff375f)',
+                    metrics: { latency: '45 ms', throughput: '15k ev/s', cache: '0%', sla: '99.9%', r1: 55, r2: 35, r3: 95, r4: 8 },
+                    resp: 'Consume lotes desde Kafka y alimenta almacenes analíticos columnares para dashboards en tiempo real.',
+                    bottleneck: 'Saturación de I/O en disco por escrituras fila por fila.',
+                    senior: 'Bufferizado en memoria e inserción masiva en micro-batches de 5,000 registros para maximizar compresión de ClickHouse.',
+                    config: '# ClickHouse Batch insert\nINSERT INTO events_buffer VALUES (...5000 rows...);'
+                }
+            ],
+            connections: [
+                { from: 'ws_clients', to: 'edge_gw', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'edge_gw', to: 'mercure_hub', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'mercure_hub', to: 'event_dispatcher', color: 'url(#grad-blue)', type: 'http' },
+                { from: 'event_dispatcher', to: 'redis_pubsub', color: 'url(#grad-green)', type: 'cache' },
+                { from: 'event_dispatcher', to: 'kafka_broker', color: 'url(#grad-purple)', type: 'async' },
+                { from: 'kafka_broker', to: 'scylla_db', color: 'url(#grad-amber)', type: 'sql' },
+                { from: 'kafka_broker', to: 'olap_workers', color: 'url(#grad-purple)', type: 'async' }
+            ]
         }
     };
 
-    function selectNode(id) {
-        document.querySelectorAll('.arch-node').forEach(el => el.classList.remove('selected'));
-        event.currentTarget.classList.add('selected');
+    let currentScenarioKey = 'ecommerce';
+    let selectedNodeId = 'client';
+    let isTrafficActive = true;
+    let isChaosActive = false;
+    let degradedNodes = new Set();
+    let trafficInterval = null;
 
-        const info = nodeDetails[id];
-        if (!info) return;
-
-        document.getElementById('nodeTag').innerText = info.tag;
-        document.getElementById('nodeTitle').innerText = info.title;
-        document.getElementById('nodeProtocol').innerText = 'Protocolo: ' + info.protocol;
-        document.getElementById('nodeResponsibility').innerText = info.resp;
-        document.getElementById('nodeBottleneck').innerText = info.bottleneck;
-        document.getElementById('nodeSeniorCriterion').innerText = info.senior;
+    function initStudio() {
+        renderCurrentScenario();
+        startTrafficAnimation();
     }
+
+    function switchScenario(key) {
+        if (!SCENARIOS[key]) return;
+        currentScenarioKey = key;
+        degradedNodes.clear();
+
+        document.querySelectorAll('.apple-segmented-btn').forEach(btn => btn.classList.remove('is-active'));
+        const activeBtn = document.getElementById(`btn-scen-${key}`);
+        if (activeBtn) activeBtn.classList.add('is-active');
+
+        const scen = SCENARIOS[key];
+        document.getElementById('scenarioDescription').innerText = scen.desc;
+        document.getElementById('trafficSpeedLabel').innerText = `● Tráfico en Vivo: ${scen.qps}`;
+
+        const badge = document.getElementById('scenarioBadge');
+        if (key === 'ecommerce') badge.innerText = 'ESCENARIO 01 (E-COMMERCE)';
+        if (key === 'fintech') badge.innerText = 'ESCENARIO 02 (FINTECH / PCI)';
+        if (key === 'realtime') badge.innerText = 'ESCENARIO 03 (STREAMING)';
+
+        selectedNodeId = scen.nodes[0].id;
+        renderCurrentScenario();
+    }
+
+    function renderCurrentScenario() {
+        const scen = SCENARIOS[currentScenarioKey];
+        const container = document.getElementById('nodesContainer');
+        container.innerHTML = '';
+
+        // Render Nodes
+        scen.nodes.forEach(node => {
+            const el = document.createElement('div');
+            el.className = `sd-node ${node.id === selectedNodeId ? 'is-selected' : ''}`;
+            if (degradedNodes.has(node.id)) {
+                el.classList.add('is-degraded');
+            }
+            el.id = `node-${node.id}`;
+            el.style.left = `${node.x}px`;
+            el.style.top = `${node.y}px`;
+            el.onclick = () => onNodeClick(node.id);
+
+            el.innerHTML = `
+                <div class="sd-node-header">
+                    <div class="sd-node-squircle" style="background: ${node.color};">
+                        ${getIconSvg(node.icon)}
+                    </div>
+                    <div>
+                        <div class="sd-node-title">${node.title}</div>
+                        <div class="sd-node-desc">${node.desc}</div>
+                    </div>
+                </div>
+                <div class="sd-node-footer">
+                    <div class="sd-node-beacon">
+                        <span class="sd-pulse-dot" style="${degradedNodes.has(node.id) ? 'background-color: var(--apple-amber); box-shadow: 0 0 8px var(--apple-amber);' : ''}"></span>
+                        <span style="color: ${degradedNodes.has(node.id) ? 'var(--apple-amber)' : 'var(--apple-emerald)'}; font-weight: 600;">
+                            ${degradedNodes.has(node.id) ? 'DEGRADADO' : 'OPERATIVO'}
+                        </span>
+                    </div>
+                    <span style="color: rgba(255,255,255,0.6); font-family: var(--font-mono);">${node.metrics.latency}</span>
+                </div>
+            `;
+            container.appendChild(el);
+        });
+
+        // Render SVG Connectors with smooth Bezier Splines
+        renderSvgConnections();
+        updateInspector(selectedNodeId);
+    }
+
+    function renderSvgConnections() {
+        const scen = SCENARIOS[currentScenarioKey];
+        const pathsGroup = document.getElementById('svgPathsGroup');
+        pathsGroup.innerHTML = '';
+
+        scen.connections.forEach((conn, index) => {
+            const fromNode = scen.nodes.find(n => n.id === conn.from);
+            const toNode = scen.nodes.find(n => n.id === conn.to);
+            if (!fromNode || !toNode) return;
+
+            // Compute center anchors
+            const x1 = fromNode.x + 90;
+            const y1 = fromNode.y + 40;
+            const x2 = toNode.x + 90;
+            const y2 = toNode.y + 40;
+
+            // Generate Apple Bezier Spline
+            const dx = Math.abs(x2 - x1) * 0.5;
+            const dy = Math.abs(y2 - y1) * 0.5;
+            const cx1 = x1 + (x2 > x1 ? dx : -dx);
+            const cy1 = y1;
+            const cx2 = x2 - (x2 > x1 ? dx : -dx);
+            const cy2 = y2;
+
+            const pathData = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('id', `conn-${conn.from}-${conn.to}`);
+            path.setAttribute('stroke', conn.color);
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-dasharray', '6 4');
+            path.setAttribute('class', 'flow-line');
+            path.style.opacity = '0.7';
+
+            pathsGroup.appendChild(path);
+        });
+    }
+
+    function startTrafficAnimation() {
+        if (trafficInterval) clearInterval(trafficInterval);
+        const particlesGroup = document.getElementById('svgParticlesGroup');
+        particlesGroup.innerHTML = '';
+
+        trafficInterval = setInterval(() => {
+            if (!isTrafficActive) return;
+            spawnTrafficPulse();
+        }, 320);
+    }
+
+    function spawnTrafficPulse() {
+        const scen = SCENARIOS[currentScenarioKey];
+        const particlesGroup = document.getElementById('svgParticlesGroup');
+        if (!particlesGroup) return;
+
+        // Select a random connection to send a luminous pulse
+        const conn = scen.connections[Math.floor(Math.random() * scen.connections.length)];
+        const pathEl = document.getElementById(`conn-${conn.from}-${conn.to}`);
+        if (!pathEl) return;
+
+        const pathLength = pathEl.getTotalLength();
+        if (!pathLength) return;
+
+        const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        particle.setAttribute('r', '4');
+        particle.setAttribute('fill', '#ffffff');
+        particle.setAttribute('class', 'packet-particle');
+        particle.style.opacity = '0.9';
+
+        particlesGroup.appendChild(particle);
+
+        let startTime = performance.now();
+        const duration = 1200 + Math.random() * 400;
+
+        function animate(now) {
+            const elapsed = now - startTime;
+            const progress = elapsed / duration;
+
+            if (progress >= 1) {
+                if (particle.parentNode) particle.parentNode.removeChild(particle);
+                return;
+            }
+
+            const point = pathEl.getPointAtLength(progress * pathLength);
+            particle.setAttribute('cx', point.x);
+            particle.setAttribute('cy', point.y);
+
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    function toggleTraffic() {
+        isTrafficActive = !isTrafficActive;
+        const btn = document.getElementById('txt-traffic-btn');
+        btn.innerText = isTrafficActive ? 'Pausar Flujo' : 'Reanudar Flujo';
+    }
+
+    function toggleChaosMode() {
+        isChaosActive = !isChaosActive;
+        const btn = document.getElementById('btn-chaos-mode');
+        const txt = document.getElementById('txt-chaos-btn');
+
+        if (isChaosActive) {
+            btn.classList.add('btn-primary');
+            txt.innerText = 'Caos Activo (Haz clic en un nodo)';
+        } else {
+            btn.classList.remove('btn-primary');
+            txt.innerText = 'Modo Caos';
+        }
+    }
+
+    function onNodeClick(id) {
+        if (isChaosActive) {
+            toggleNodeDegradation(id);
+        } else {
+            selectNode(id);
+        }
+    }
+
+    function selectNode(id) {
+        selectedNodeId = id;
+        document.querySelectorAll('.sd-node').forEach(el => el.classList.remove('is-selected'));
+        const nodeEl = document.getElementById(`node-${id}`);
+        if (nodeEl) nodeEl.classList.add('is-selected');
+
+        updateInspector(id);
+    }
+
+    function toggleNodeDegradation(id) {
+        if (degradedNodes.has(id)) {
+            degradedNodes.delete(id);
+        } else {
+            degradedNodes.add(id);
+        }
+        renderCurrentScenario();
+    }
+
+    function triggerFaultForCurrentNode() {
+        toggleNodeDegradation(selectedNodeId);
+    }
+
+    function updateInspector(id) {
+        const scen = SCENARIOS[currentScenarioKey];
+        const node = scen.nodes.find(n => n.id === id);
+        if (!node) return;
+
+        document.getElementById('inspTag').innerText = node.tag;
+        document.getElementById('inspTitle').innerText = node.title;
+        document.getElementById('inspProtocol').innerText = `Protocolo: ${node.protocol}`;
+        document.getElementById('inspResp').innerText = node.resp;
+        document.getElementById('inspBottleneck').innerText = node.bottleneck;
+        document.getElementById('inspSenior').innerText = node.senior;
+        document.getElementById('inspConfigCode').innerText = node.config;
+
+        const isDegraded = degradedNodes.has(id);
+        const healthBadge = document.getElementById('inspectorHealthBadge');
+        const healthText = document.getElementById('inspectorHealthText');
+
+        if (isDegraded) {
+            healthBadge.className = 'apple-glass-badge badge-warning';
+            healthText.innerText = 'DEGRADADO (FAILOVER ACTIVO)';
+            document.getElementById('metricLatency').innerText = '148 ms';
+            document.getElementById('ringLatency').style.stroke = 'var(--apple-amber)';
+            document.getElementById('ringLatency').style.strokeDashoffset = '70';
+        } else {
+            healthBadge.className = 'apple-glass-badge badge-success';
+            healthText.innerText = 'OPERACIONAL';
+            document.getElementById('metricLatency').innerText = node.metrics.latency;
+            document.getElementById('ringLatency').style.stroke = 'var(--apple-blue)';
+            document.getElementById('ringLatency').style.strokeDashoffset = node.metrics.r1;
+        }
+
+        document.getElementById('metricThroughput').innerText = node.metrics.throughput;
+        document.getElementById('metricCache').innerText = node.metrics.cache;
+        document.getElementById('metricSla').innerText = node.metrics.sla;
+
+        document.getElementById('ringThroughput').style.strokeDashoffset = node.metrics.r2;
+        document.getElementById('ringCache').style.strokeDashoffset = node.metrics.r3;
+        document.getElementById('ringSla').style.strokeDashoffset = node.metrics.r4;
+    }
+
+    function exportJsonSpec() {
+        const scen = SCENARIOS[currentScenarioKey];
+        const payload = {
+            studio: "Senior DevLab System Design Studio - Apple Glass Edition",
+            scenario_key: currentScenarioKey,
+            scenario_title: scen.title,
+            qps_target: scen.qps,
+            exported_at: new Date().toISOString(),
+            nodes: scen.nodes.map(n => ({
+                id: n.id,
+                title: n.title,
+                tag: n.tag,
+                protocol: n.protocol,
+                status: degradedNodes.has(n.id) ? "DEGRADED" : "OPERATIONAL",
+                senior_mitigation: n.senior,
+                metrics: n.metrics
+            })),
+            connections: scen.connections
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `system-design-${currentScenarioKey}-spec.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function getIconSvg(name) {
+        const icons = {
+            user: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+            zap: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+            layers: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+            symfony: '<svg width="15" height="15" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#000" stroke="#fff" stroke-width="1.5"/><path d="M14.5 10C12.5 10 10.5 11.2 10.5 13.5C10.5 18 19 16 19 20C19 22 17 22.8 15 22.8C12.8 22.8 11.5 21.8 10.8 20.8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>',
+            redis: '<svg width="15" height="15" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#DC382D"/><polygon points="16,8 25,13 16,18 7,13" fill="#FFF"/><polygon points="16,14 25,19 16,24 7,19" fill="#FEE2E2"/></svg>',
+            mysql: '<svg width="15" height="15" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#00758F"/><path d="M8 21C11 21 13 18 15 14C17 10 20 9 24 10C22 14 19 19 16 22C13 25 10 24 8 21Z" fill="#F29111"/><circle cx="21" cy="13" r="1.5" fill="#FFF"/></svg>',
+            database: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>',
+            sliders: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>',
+            cpu: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>',
+            shield: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
+            award: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/></svg>'
+        };
+        return icons[name] || icons.cpu;
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', initStudio);
 </script>
 {% endblock %}

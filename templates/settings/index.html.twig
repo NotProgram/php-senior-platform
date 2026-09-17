@@ -87,6 +87,34 @@
         {% endif %}
     </div>
 
+    <!-- Theme Selection Card -->
+    <div class="metric-card" style="padding: 20px;">
+        <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+            {{ icons.icon('sliders', 16) }}
+            <span>Apariencia y Estética Visual</span>
+        </h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Elige el tema visual del entorno de aprendizaje, incluyendo la estética minimalista de cristal esmerilado de Apple (visionOS / macOS).
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="apple-glass-btn" data-theme-option="apple-glass" style="font-size: 12px; gap: 6px;">
+                <span> Apple Minimalist Glass</span>
+            </button>
+            <button type="button" class="apple-glass-btn" data-theme-option="devlab" style="font-size: 12px; gap: 6px;">
+                <span>Dark+ (VS Code)</span>
+            </button>
+            <button type="button" class="apple-glass-btn" data-theme-option="midnight" style="font-size: 12px; gap: 6px;">
+                <span>Midnight (Azul)</span>
+            </button>
+            <button type="button" class="apple-glass-btn" data-theme-option="contrast" style="font-size: 12px; gap: 6px;">
+                <span>Alto Contraste</span>
+            </button>
+            <button type="button" class="apple-glass-btn" data-theme-option="daylight" style="font-size: 12px; gap: 6px;">
+                <span>Daylight (Claro)</span>
+            </button>
+        </div>
+    </div>
+
     <!-- Developer Profile Card -->
     <div class="metric-card" style="padding: 20px;">
         <h2 style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
