@@ -61,18 +61,6 @@
                 applyTheme(next);
             });
         });
-
-        var cycle = document.getElementById('btn-theme-cycle');
-        if (cycle) {
-            cycle.addEventListener('click', function () {
-                var current = document.documentElement.getAttribute('data-theme') || 'devlab';
-                var index = 0;
-                THEMES.forEach(function (theme, i) { if (theme.id === current) { index = i; } });
-                var next = THEMES[(index + 1) % THEMES.length].id;
-                writeStore(STORAGE.theme, next);
-                applyTheme(next);
-            });
-        }
     }
 
     /* -------------------------------------------------------------- Sidebar */

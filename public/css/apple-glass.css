@@ -625,18 +625,14 @@ html[data-theme="apple-glass"] .mobile-nav-drawer {
    ========================================================================== */
 
 /* Universal Card & Container Glass Overrides */
+html[data-theme="apple-glass"] .apple-glass-card,
 html[data-theme="apple-glass"] .skill-card,
+html[data-theme="apple-glass"] .metric-card,
 html[data-theme="apple-glass"] .exam-question,
 html[data-theme="apple-glass"] .flashcard,
 html[data-theme="apple-glass"] .review-meter,
 html[data-theme="apple-glass"] .devlab-card,
-html[data-theme="apple-glass"] .lab-environment,
-html[data-theme="apple-glass"] [style*="background: #202020"],
-html[data-theme="apple-glass"] [style*="background: #181818"],
-html[data-theme="apple-glass"] [style*="background: #252526"],
-html[data-theme="apple-glass"] [style*="background: #1e1e1e"],
-html[data-theme="apple-glass"] [style*="background: #121212"],
-html[data-theme="apple-glass"] [style*="background: #141414"] {
+html[data-theme="apple-glass"] .lab-environment {
     background: rgba(255, 255, 255, 0.045) !important;
     backdrop-filter: blur(28px) saturate(190%) !important;
     -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
@@ -646,13 +642,13 @@ html[data-theme="apple-glass"] [style*="background: #141414"] {
 }
 
 /* Progress Bars & Tracks (Apple Style Rounded Pill) */
-html[data-theme="apple-glass"] .progress-track,
-html[data-theme="apple-glass"] [style*="background: #121212"],
-html[data-theme="apple-glass"] [style*="background: #141414"] {
+html[data-theme="apple-glass"] .progress,
+html[data-theme="apple-glass"] .progress-track {
     background: rgba(255, 255, 255, 0.08) !important;
     border-radius: 9999px !important;
 }
 
+html[data-theme="apple-glass"] .progress-bar,
 html[data-theme="apple-glass"] .progress-fill {
     border-radius: 9999px !important;
     box-shadow: 0 0 12px currentColor !important;

@@ -104,7 +104,7 @@
 </div>
 
 <!-- Multi-Category Progress Dashboard -->
-<div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px; margin-bottom: 24px;">
+<div class="apple-glass-card" style="padding: 22px 24px; border-radius: 18px; margin-bottom: 24px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
         <h2 style="font-size: 14px; font-weight: 700; margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;">
             {{ icons.icon('activity', 15) }}
@@ -115,105 +115,105 @@
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
         <!-- Software Engineering -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #9cdcfe; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('book-open', 13) }} Ingenier&iacute;a &amp; SOLID
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.seProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.seProgress }}%; height: 100%; background: #4fc1ff;"></div>
             </div>
         </div>
 
         <!-- Git & GitHub -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #ce9178; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('git', 13) }} Git &amp; Flujo Colaborativo
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.gitProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.gitProgress }}%; height: 100%; background: #f05032;"></div>
             </div>
         </div>
 
         <!-- PHP Moderno -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #4F5D95; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('php', 13) }} PHP 8.4 Internals
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.phpProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.phpProgress }}%; height: 100%; background: #4F5D95;"></div>
             </div>
         </div>
 
         <!-- Symfony Internals -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #ffffff; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('symfony', 13) }} Symfony 8.1 Core
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.symfonyProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.symfonyProgress }}%; height: 100%; background: #007acc;"></div>
             </div>
         </div>
 
         <!-- Testing & Quality -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #89d185; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('test-tube', 13) }} Testing &amp; PHPUnit
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.testingProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.testingProgress }}%; height: 100%; background: #89d185;"></div>
             </div>
         </div>
 
         <!-- Software Architecture -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #dcdcaa; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('layers', 13) }} Arquitectura &amp; DDD
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.archProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.archProgress }}%; height: 100%; background: #dcdcaa;"></div>
             </div>
         </div>
 
         <!-- DevOps & CI/CD -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #1d63ed; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('docker', 13) }} DevOps &amp; CI/CD
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.devopsProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.devopsProgress }}%; height: 100%; background: #1d63ed;"></div>
             </div>
         </div>
 
         <!-- Professional Developer -->
-        <div class="skill-card" style="background: #202020; border: 1px solid var(--border-light); border-radius: 5px; padding: 12px 14px;">
+        <div class="skill-card apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
                 <span style="color: #b5cea8; font-weight: 600; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('shield', 13) }} Liderazgo &amp; Decisi&oacute;n
                 </span>
                 <span style="font-family: var(--font-mono); color: #d4d4d4;">{{ metrics.profProgress }}%</span>
             </div>
-            <div style="width: 100%; height: 5px; background: #121212; border-radius: 2.5px; overflow: hidden;">
+            <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
                 <div class="progress-fill" style="width: {{ metrics.profProgress }}%; height: 100%; background: #b5cea8;"></div>
             </div>
         </div>
@@ -221,7 +221,7 @@
 </div>
 
 <!-- Active Mission & Engineering Focus -->
-<div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px; margin-bottom: 28px;">
+<div class="apple-glass-card" style="padding: 22px 24px; border-radius: 18px; margin-bottom: 28px;">
     <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
         <!-- Left: Active Lesson & Target -->
         <div style="border-right: 1px solid var(--border-light); padding-right: 20px;">
@@ -251,7 +251,7 @@
                 Frentes Activos de Ingenier&iacute;a
             </div>
             
-            <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="apple-glass-card" style="border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <span style="font-size: 10.5px; color: #858585; text-transform: uppercase;">Proyecto Senior Activo</span>
                     <div style="font-size: 12.5px; font-weight: 600; color: #ce9178;">{{ metrics.currentProject }}</div>
@@ -259,7 +259,7 @@
                 {{ icons.icon('terminal', 16) }}
             </div>
 
-            <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="apple-glass-card" style="border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <span style="font-size: 10.5px; color: #858585; text-transform: uppercase;">Desaf&iacute;o de Dise&ntilde;o</span>
                     <div style="font-size: 12.5px; font-weight: 600; color: #4fc1ff;">{{ metrics.currentChallenge }}</div>
@@ -267,7 +267,7 @@
                 {{ icons.icon('sliders', 16) }}
             </div>
 
-            <div style="background: #202020; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="apple-glass-card" style="border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <span style="font-size: 10.5px; color: #858585; text-transform: uppercase;">Competencia Git &amp; CI</span>
                     <div style="font-size: 12.5px; font-weight: 600; color: #89d185;">{{ metrics.currentGitSkill }}</div>

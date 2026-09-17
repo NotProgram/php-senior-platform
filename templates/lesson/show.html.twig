@@ -93,16 +93,16 @@
         {{ icons.icon('help-circle', 16) }}
         <span>1. Qué problema resuelve y por qué existe</span>
     </h2>
-    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px; margin-bottom: 16px;">
+    <div class="apple-glass-card" style="padding: 20px; border-radius: 18px; margin-bottom: 18px;">
         <p style="color: #cccccc; font-size: 13.5px; line-height: 1.7; margin-bottom: 12px;">
             {{ details.overview.concept }}
         </p>
         <div class="lesson-problem-solution-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
-            <div style="background: #201515; border-left: 3px solid var(--accent-red); padding: 12px 14px; border-radius: 0 4px 4px 0;">
+            <div style="background: rgba(244, 63, 94, 0.08); border-left: 3px solid var(--accent-red); border: 1px solid rgba(244, 63, 94, 0.2); padding: 12px 14px; border-radius: 12px;">
                 <div style="font-size: 12px; font-weight: 700; color: var(--accent-red); margin-bottom: 4px;">{{ details.overview.problem_label ?? 'El Problema Arquitectural:' }}</div>
                 <div style="font-size: 12.5px; color: #d4d4d4; line-height: 1.6;">{{ details.overview.problem }}</div>
             </div>
-            <div style="background: #152218; border-left: 3px solid var(--accent-success); padding: 12px 14px; border-radius: 0 4px 4px 0;">
+            <div style="background: rgba(48, 209, 88, 0.08); border-left: 3px solid var(--accent-success); border: 1px solid rgba(48, 209, 88, 0.2); padding: 12px 14px; border-radius: 12px;">
                 <div style="font-size: 12px; font-weight: 700; color: var(--accent-success); margin-bottom: 4px;">{{ details.overview.solution_label ?? 'La Solución de Diseño Senior:' }}</div>
                 <div style="font-size: 12.5px; color: #d4d4d4; line-height: 1.6;">{{ details.overview.solution }}</div>
             </div>
@@ -117,7 +117,7 @@
         {{ icons.icon('cpu', 16) }}
         <span>Modelo Mental CS50: {{ details.mental_model.title }}</span>
     </h2>
-    <div style="background: #191b22; border: 1px solid rgba(79, 193, 255, 0.3); border-left: 4px solid #4fc1ff; border-radius: 0 6px 6px 0; padding: 20px;">
+    <div class="apple-glass-card" style="border-left: 4px solid #4fc1ff; border-radius: 18px; padding: 20px;">
         <div style="font-size: 11px; font-weight: 700; color: #4fc1ff; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
             {{ icons.icon('help-circle', 14) }}
             <span>La Analogía del Mundo Real</span>
@@ -126,11 +126,11 @@
             {{ details.mental_model.analogy|sanitize_html('app.lesson_content') }}
         </p>
         {% if details.mental_model.ascii_diagram is defined and details.mental_model.ascii_diagram %}
-            <div style="background: #0f1117; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 4px; padding: 14px; margin-bottom: 14px; overflow-x: auto;">
+            <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 14px; overflow-x: auto;">
                 <pre style="margin: 0; font-family: var(--font-mono); font-size: 12px; color: #89d185; line-height: 1.45;">{{ details.mental_model.ascii_diagram }}</pre>
             </div>
         {% endif %}
-        <div style="background: rgba(0, 0, 0, 0.3); border-radius: 4px; padding: 10px 14px; display: flex; align-items: flex-start; gap: 8px;">
+        <div style="background: rgba(0, 0, 0, 0.25); border-radius: 10px; padding: 10px 14px; display: flex; align-items: flex-start; gap: 8px;">
             <span style="color: #f59e0b; margin-top: 1px;">{{ icons.icon('check-circle', 14) }}</span>
             <div style="font-size: 12.5px; color: #cccccc; line-height: 1.5;">
                 <strong style="color: #ffffff;">Conexión con la Arquitectura:</strong> {{ details.mental_model.key_concept }}
@@ -140,14 +140,14 @@
 </div>
 {% endif %}
 
-<!-- 2. Cómo funciona internamente (Internals) -->
-<div style="margin-bottom: 28px;">
+<!-- 2. Cómo funciona por dentro (Internals) -->
+<div id="como-funciona" style="margin-bottom: 28px;">
     <h2 style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
         {{ icons.icon('cpu', 16) }}
         <span>2. {{ details.internals.title }}</span>
     </h2>
     
-    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px;">
+    <div class="apple-glass-card" style="padding: 20px; border-radius: 18px;">
         <div style="display: flex; flex-direction: column; gap: 14px;">
             {% for step in details.internals.steps %}
                 <div style="display: flex; gap: 12px; align-items: flex-start;">
@@ -171,10 +171,10 @@
         {{ icons.icon('video', 16) }}
         <span>Video Masterclass: {{ details.video.title }}</span>
     </h2>
-    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px;">
+    <div class="apple-glass-card" style="padding: 20px; border-radius: 18px;">
         <div class="lesson-video-grid" style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;">
             <div>
-                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid #2d2d2d; background: #000000;">
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1); background: #000000;">
                     <iframe 
                         src="https://www.youtube-nocookie.com/embed/{{ details.video.youtube_id }}" 
                         title="{{ details.video.title }}"
@@ -195,8 +195,8 @@
                     {{ details.video.description }}
                 </p>
                 {% if details.video.chapters is defined and details.video.chapters %}
-                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px;">
-                        <div style="font-size: 11px; font-weight: 700; color: #858585; text-transform: uppercase; margin-bottom: 6px;">Capítulos Clave:</div>
+                    <div class="apple-glass-card" style="padding: 12px 14px; border-radius: 12px;">
+                        <div style="font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; margin-bottom: 6px;">Capítulos Clave:</div>
                         <ul style="margin: 0; padding-left: 16px; font-size: 11.5px; color: #9cdcfe; line-height: 1.7;">
                             {% for time, chapter in details.video.chapters %}
                                 <li><strong>{{ time }}</strong> &mdash; {{ chapter }}</li>
@@ -205,8 +205,8 @@
                     </div>
                 {% endif %}
                 {% if details.video.key_takeaways is defined and details.video.key_takeaways %}
-                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px;">
-                        <div style="font-size: 11px; font-weight: 700; color: #858585; text-transform: uppercase; margin-bottom: 6px;">Ideas Clave:</div>
+                    <div class="apple-glass-card" style="padding: 12px 14px; border-radius: 12px;">
+                        <div style="font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; margin-bottom: 6px;">Ideas Clave:</div>
                         <ul style="margin: 0; padding-left: 16px; font-size: 11.5px; color: #cccccc; line-height: 1.7;">
                             {% for takeaway in details.video.key_takeaways %}
                                 <li>{{ takeaway }}</li>
@@ -229,7 +229,7 @@
     </h2>
     <div style="display: flex; flex-direction: column; gap: 16px;">
         {% for section in details.deep_dive %}
-            <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid var(--accent-blue); border-radius: 0 6px 6px 0; padding: 18px 20px;">
+            <div class="apple-glass-card" style="border-left: 3px solid var(--accent-blue); border-radius: 16px; padding: 18px 20px;">
                 <h3 style="font-size: 14px; font-weight: 700; color: #9cdcfe; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
                     {{ icons.icon(section.icon|default('file-text'), 15) }}
                     <span>{{ section.title }}</span>
@@ -238,10 +238,10 @@
                     {{ section.content|sanitize_html('app.lesson_content') }}
                 </div>
                 {% if section.code is defined and section.code %}
-                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 14px; font-family: var(--font-mono); font-size: 12px; color: #d4d4d4; overflow-x: auto; white-space: pre-wrap; line-height: 1.5; margin-top: 10px;">{{ section.code }}</div>
+                    <div style="background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 14px; font-family: var(--font-mono); font-size: 12px; color: #d4d4d4; overflow-x: auto; white-space: pre-wrap; line-height: 1.5; margin-top: 10px;">{{ section.code }}</div>
                 {% endif %}
                 {% if section.takeaways is defined and section.takeaways %}
-                    <div style="margin-top: 12px; background: rgba(0, 122, 204, 0.08); border: 1px solid rgba(0, 122, 204, 0.25); border-radius: 4px; padding: 10px 14px;">
+                    <div style="margin-top: 12px; background: rgba(0, 122, 204, 0.12); border: 1px solid rgba(0, 122, 204, 0.3); border-radius: 10px; padding: 10px 14px;">
                         <span style="font-size: 11.5px; font-weight: 700; color: #4fc1ff; text-transform: uppercase; letter-spacing: 0.5px;">Conclusión Clave:</span>
                         <p style="font-size: 12px; color: #d4d4d4; margin: 4px 0 0 0; line-height: 1.5;">{{ section.takeaways }}</p>
                     </div>
@@ -377,16 +377,16 @@
         {% if details.citations is defined and details.citations %}
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
                 {% for citation in details.citations %}
-                    <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 16px;">
+                    <div class="apple-glass-card" style="border-left: 3px solid #f59e0b; border-radius: 14px; padding: 16px 18px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 11px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px;">{{ citation.topic }}</span>
-                            <span style="font-size: 11px; color: #858585;">{{ citation.source }}</span>
+                            <span style="font-size: 11px; color: rgba(255, 255, 255, 0.5);">{{ citation.source }}</span>
                         </div>
-                        <blockquote style="margin: 0 0 10px 0; font-style: italic; color: #e5e5e5; font-size: 12.5px; line-height: 1.6; border-left: 2px solid #333333; padding-left: 10px;">
+                        <blockquote style="margin: 0 0 10px 0; font-style: italic; color: #e5e5e5; font-size: 12.5px; line-height: 1.6; border-left: 2px solid rgba(255, 255, 255, 0.2); padding-left: 10px;">
                             &ldquo;{{ citation.quote }}&rdquo;
                         </blockquote>
-                        <div style="font-size: 11.5px; color: #858585; text-align: right;">&mdash; <strong>{{ citation.author }}</strong></div>
-                        <div style="margin-top: 10px; font-size: 12px; color: #cccccc; line-height: 1.5; background: #121212; padding: 8px 10px; border-radius: 4px;">
+                        <div style="font-size: 11.5px; color: rgba(255, 255, 255, 0.6); text-align: right;">&mdash; <strong>{{ citation.author }}</strong></div>
+                        <div style="margin-top: 10px; font-size: 12px; color: rgba(255, 255, 255, 0.85); line-height: 1.5; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 10px 12px; border-radius: 10px;">
                             <strong style="color: #9cdcfe;">Por qué importa entenderlo:</strong> {{ citation.explanation }}
                         </div>
                     </div>
@@ -395,24 +395,24 @@
         {% endif %}
 
         {% if details.external_references is defined and details.external_references %}
-            <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 16px;">
-                <div style="font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <div class="apple-glass-card" style="padding: 18px 20px; border-radius: 18px;">
+                <div style="font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('book-open', 14) }}
                     <span>Documentación Oficial &amp; Especificaciones Técnicas Recomendadas:</span>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
                     {% for ref in details.external_references %}
-                        <a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; text-decoration: none;" class="ref-link">
+                        <a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer" class="ref-link apple-glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; text-decoration: none; border-radius: 14px;">
                             <div style="flex: 1; min-width: 0; padding-right: 8px;">
                                 <div style="font-size: 12.5px; font-weight: 600; color: #4fc1ff; display: flex; align-items: center; gap: 5px;">
                                     <span>{{ ref.title }}</span>
                                     {{ icons.icon('external-link', 11) }}
                                 </div>
                                 {% if ref.description is defined %}
-                                    <div style="font-size: 11px; color: #858585; margin-top: 2px;">{{ ref.description }}</div>
+                                    <div style="font-size: 11px; color: rgba(255, 255, 255, 0.6); margin-top: 2px;">{{ ref.description }}</div>
                                 {% endif %}
                             </div>
-                            <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10px; white-space: nowrap;">
+                            <span class="apple-glass-badge badge-info" style="font-size: 10px; white-space: nowrap;">
                                 {{ ref.type|default('DOCS') }}
                             </span>
                         </a>
@@ -438,7 +438,7 @@
         {% endif %}
     </div>
 
-    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px; margin-bottom: 14px;">
+    <div class="apple-glass-card" style="padding: 22px 24px; border-radius: 18px; margin-bottom: 18px;">
         <div style="font-size: 13px; color: #d4d4d4; margin-bottom: 10px;">
             <strong>Objetivo:</strong> {{ details.exercise.objective }}
         </div>
@@ -448,7 +448,7 @@
 
         <!-- Guía Didáctica y Explicación del Reto -->
         {% if details.exercise.guide is defined and details.exercise.guide %}
-            <div style="background: #202020; border: 1px solid rgba(0, 122, 204, 0.35); border-left: 4px solid var(--accent-blue); border-radius: 0 4px 4px 0; padding: 16px 18px; margin-bottom: 18px;">
+            <div class="apple-glass-card" style="border-left: 4px solid var(--accent-blue); border-radius: 14px; padding: 18px 20px; margin-bottom: 18px;">
                 <div style="font-size: 13px; font-weight: 700; color: #9cdcfe; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('help-circle', 15) }}
                     <span>Guía Didáctica para Resolver este Reto</span>
@@ -465,7 +465,7 @@
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
                         {% for step in details.exercise.guide.steps %}
-                            <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: #cccccc; background: #161616; padding: 10px 12px; border-radius: 4px; border: 1px solid var(--border-light);">
+                            <div class="apple-glass-card" style="display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: #cccccc; padding: 12px 14px; border-radius: 12px;">
                                 <span style="font-family: var(--font-mono); color: #4fc1ff; font-weight: 700; min-width: 22px;">0{{ loop.index }}.</span>
                                 <div style="line-height: 1.5;">{{ step|sanitize_html('app.lesson_content') }}</div>
                             </div>
@@ -474,7 +474,7 @@
                 {% endif %}
 
                 {% if details.exercise.guide.useful_functions is defined and details.exercise.guide.useful_functions %}
-                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 14px;">
+                    <div class="apple-glass-card" style="padding: 14px 16px; border-radius: 14px;">
                         <span style="font-size: 11px; font-weight: 700; color: #89d185; text-transform: uppercase;">Funciones Nativas de PHP Clave:</span>
                         <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
                             {% for fn in details.exercise.guide.useful_functions %}
@@ -490,7 +490,7 @@
 
         <!-- Pistas Progresivas de Razonamiento (Scaffolded Hints) -->
         {% if details.exercise.hints is defined and details.exercise.hints %}
-            <div style="background: #17181c; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px 16px; margin-bottom: 18px;">
+            <div class="apple-glass-card" style="border-radius: 16px; padding: 16px 18px; margin-bottom: 18px;">
                 <div style="font-size: 12px; font-weight: 700; color: #9cdcfe; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                     {{ icons.icon('help-circle', 14) }}
                     <span>¿Atascado en el reto? Pistas Progresivas de Razonamiento:</span>
@@ -504,11 +504,11 @@
                     {% endfor %}
                 </div>
                 {% for hintIndex, hint in details.exercise.hints %}
-                    <div id="hint-{{ hintIndex }}" style="display: none; margin-top: 8px; background: #111215; border-left: 3px solid #4fc1ff; border-radius: 0 4px 4px 0; padding: 10px 14px; font-size: 12px; color: #d4d4d4; line-height: 1.6;">
+                    <div id="hint-{{ hintIndex }}" class="apple-glass-card" style="display: none; margin-top: 8px; border-left: 3px solid #4fc1ff; border-radius: 12px; padding: 12px 16px; font-size: 12px; color: #d4d4d4; line-height: 1.6;">
                         <strong style="color: #4fc1ff;">Pista {{ hintIndex + 1 }}{% if hint.label is defined %} &mdash; {{ hint.label }}{% endif %}:</strong>
                         <div style="margin-top: 4px;">{{ hint.text|sanitize_html('app.lesson_content') }}</div>
                         {% if hint.snippet is defined and hint.snippet %}
-                            <pre style="margin: 8px 0 0 0; background: #0c0d10; padding: 8px 10px; border-radius: 3px; font-family: var(--font-mono); font-size: 11.5px; color: #ce9178; overflow-x: auto;"><code>{{ hint.snippet }}</code></pre>
+                            <pre style="margin: 8px 0 0 0; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); padding: 10px 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 11.5px; color: #ce9178; overflow-x: auto;"><code>{{ hint.snippet }}</code></pre>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -518,7 +518,7 @@
         <!-- Code Editor Form with Monaco Editor -->
         <form id="exercise-form" action="{{ path('app_lesson_exercise', {lessonSlug: lesson.slug}) }}" method="POST">
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('submit') }}">
-            <div style="border: 1px solid var(--border-main); border-radius: 4px; overflow: hidden; margin-bottom: 12px; background: #1e1e1e;">
+            <div style="border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: rgba(18, 20, 28, 0.65); backdrop-filter: blur(20px);">
                 <div style="background: #252526; padding: 6px 14px; font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-main);">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         {% if details.exercise.language is defined and details.exercise.language == 'markdown' %}
@@ -580,7 +580,7 @@
         <!-- Solution Block (Collapsible) -->
         <div id="solutionBlock" style="display: none; margin-top: 16px; border-top: 1px solid var(--border-light); padding-top: 14px;">
             <div style="font-size: 12px; font-weight: 700; color: #4fc1ff; margin-bottom: 8px;">Solución de Referencia Senior:</div>
-            <pre style="background: #141414; border: 1px solid var(--border-main); border-radius: 4px; padding: 12px; font-family: var(--font-mono); font-size: 12px; color: #89d185; overflow-x: auto;"><code>{{ details.exercise.solution_code }}</code></pre>
+            <pre style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 14px; font-family: var(--font-mono); font-size: 12px; color: #89d185; overflow-x: auto;"><code>{{ details.exercise.solution_code }}</code></pre>
             <p style="font-size: 12px; color: #a0a0a0; margin-top: 8px;">{{ details.exercise.explanation }}</p>
         </div>
     </div>
@@ -604,13 +604,13 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('submit') }}">
         <div style="display: flex; flex-direction: column; gap: 16px;">
             {% for q in details.quiz.questions %}
-                <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 18px;">
+                <div class="apple-glass-card" style="padding: 20px; border-radius: 18px;">
                     <div style="font-size: 13.5px; font-weight: 600; color: #ffffff; margin-bottom: 12px;">
                         {{ loop.index }}. {{ q.question }}
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 8px;">
                         {% for optKey, optText in q.options %}
-                            <label style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #252526; border: 1px solid var(--border-light); border-radius: 4px; cursor: pointer; font-size: 12.5px; color: #d4d4d4;">
+                            <label class="apple-glass-card" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 12.5px; color: #d4d4d4;">
                                 <input type="radio" name="answers[{{ q.id }}]" value="{{ optKey }}" required 
                                     {{ latest_quiz and latest_quiz.answers[q.id]|default('') == optKey ? 'checked' : '' }}>
                                 <span><strong>{{ optKey|upper }})</strong> {{ optText }}</span>

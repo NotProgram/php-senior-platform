@@ -32,10 +32,10 @@
         {{ icons.icon('video', 16) }}
         <span>Video Masterclass del Módulo: {{ module.video.title }}</span>
     </h2>
-    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px;">
+    <div class="apple-glass-card" style="padding: 22px 24px; border-radius: 18px;">
         <div style="display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start;">
             <div>
-                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid #2d2d2d; background: #000000;">
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1); background: #000000;">
                     <iframe 
                         src="https://www.youtube-nocookie.com/embed/{{ module.video.youtube_id }}" 
                         title="{{ module.video.title }}"
@@ -56,7 +56,7 @@
                     {{ module.video.description }}
                 </p>
                 {% if module.video.key_takeaways is defined and module.video.key_takeaways %}
-                    <div style="background: #121212; border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 14px;">
+                    <div class="apple-glass-card" style="padding: 12px 16px; border-radius: 12px;">
                         <div style="font-size: 11px; font-weight: 700; color: #4fc1ff; text-transform: uppercase; margin-bottom: 8px;">Conceptos Clave del Video:</div>
                         <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: #d4d4d4; line-height: 1.7;">
                             {% for item in module.video.key_takeaways %}
@@ -80,16 +80,16 @@
     </h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
         {% for citation in module.citations %}
-            <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 16px;">
+            <div class="apple-glass-card" style="border-left: 3px solid #f59e0b; border-radius: 14px; padding: 16px 18px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                     <span style="font-size: 11px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px;">{{ citation.topic }}</span>
                     <span style="font-size: 11px; color: #858585;">{{ citation.source }}</span>
                 </div>
-                <blockquote style="margin: 0 0 10px 0; font-style: italic; color: #e5e5e5; font-size: 12.5px; line-height: 1.6; border-left: 2px solid #333333; padding-left: 10px;">
+                <blockquote style="margin: 0 0 10px 0; font-style: italic; color: #e5e5e5; font-size: 12.5px; line-height: 1.6; border-left: 2px solid rgba(255, 255, 255, 0.2); padding-left: 10px;">
                     &ldquo;{{ citation.quote }}&rdquo;
                 </blockquote>
                 <div style="font-size: 11.5px; color: #858585; text-align: right;">&mdash; <strong>{{ citation.author }}</strong></div>
-                <div style="margin-top: 10px; font-size: 12px; color: #cccccc; line-height: 1.5; background: #121212; padding: 8px 10px; border-radius: 4px;">
+                <div style="margin-top: 10px; font-size: 12px; color: rgba(255, 255, 255, 0.85); line-height: 1.5; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 10px 12px; border-radius: 10px;">
                     <strong style="color: #9cdcfe;">Por qué importa en la práctica:</strong> {{ citation.explanation }}
                 </div>
             </div>
@@ -107,7 +107,7 @@
     </h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
         {% for resource in module.resources %}
-            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px; text-decoration: none;" class="ref-link">
+            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" class="ref-link apple-glass-card" style="display: flex; align-items: center; justify-content: space-between; border-radius: 14px; padding: 14px 16px; text-decoration: none;">
                 <div style="flex: 1; min-width: 0; padding-right: 10px;">
                     <div style="font-size: 13px; font-weight: 600; color: #4fc1ff; display: flex; align-items: center; gap: 6px;">
                         <span>{{ resource.title }}</span>
@@ -115,7 +115,7 @@
                     </div>
                     <div style="font-size: 11.5px; color: #858585; margin-top: 4px; line-height: 1.4;">{{ resource.description }}</div>
                 </div>
-                <span class="user-badge" style="background: rgba(0, 122, 204, 0.15); border-color: rgba(0, 122, 204, 0.4); color: #4fc1ff; font-size: 10.5px; white-space: nowrap;">
+                <span class="apple-glass-badge badge-info" style="font-size: 10.5px; white-space: nowrap;">
                     {{ resource.type|default('DOCS') }}
                 </span>
             </a>
@@ -135,7 +135,7 @@
         {% if module.lessons is defined and module.lessons %}
             {% for lesson in module.lessons %}
                 {% set status = status_map[lesson.slug] ?? null %}
-                <div class="metric-card module-lesson-card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #181818; border: 1px solid var(--border-main); border-radius: 6px;">
+                <div class="metric-card module-lesson-card apple-glass-card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; border-radius: 14px;">
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <span class="user-badge" style="background: rgba(0, 122, 204, 0.12); border-color: rgba(0, 122, 204, 0.35); color: #4fc1ff; font-size: 12px; font-weight: 700; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
                             {{ loop.index }}

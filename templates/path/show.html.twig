@@ -29,13 +29,13 @@
     </div>
 
     <!-- Progreso Global del Path -->
-    <div style="background: #181818; border: 1px solid var(--border-main); border-radius: 6px; padding: 14px 18px; min-width: 220px;">
+    <div class="apple-glass-card" style="padding: 16px 20px; border-radius: 14px; min-width: 220px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Progreso de la Ruta</span>
             <span style="font-weight: 700; font-size: 14px; color: {{ path.percent == 100 ? 'var(--accent-success)' : '#4fc1ff' }};">{{ path.percent }}%</span>
         </div>
-        <div style="height: 6px; background: #252526; border-radius: 3px; overflow: hidden; margin-bottom: 10px;">
-            <div style="width: {{ path.percent }}%; height: 100%; background: {{ path.accent|default('var(--accent-blue)') }};"></div>
+        <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden; margin-bottom: 10px;">
+            <div class="progress-fill" style="width: {{ path.percent }}%; height: 100%; background: {{ path.accent|default('var(--accent-blue)') }};"></div>
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
             <span>{{ path.completed }} de {{ path.total }} lecciones</span>
@@ -46,11 +46,11 @@
 
 <!-- Audience & Outcome Callouts -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 28px;">
-    <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid #f59e0b; border-radius: 0 4px 4px 0; padding: 14px 16px;">
+    <div class="apple-glass-card" style="border-left: 3px solid #f59e0b; border-radius: 14px; padding: 16px 18px;">
         <div style="font-size: 11.5px; font-weight: 700; color: #f59e0b; text-transform: uppercase; margin-bottom: 4px;">¿Para quién es esta ruta?</div>
         <p style="font-size: 12.5px; color: #d4d4d4; line-height: 1.5; margin: 0;">{{ path.audience }}</p>
     </div>
-    <div style="background: #181818; border: 1px solid var(--border-main); border-left: 3px solid var(--accent-success); border-radius: 0 4px 4px 0; padding: 14px 16px;">
+    <div class="apple-glass-card" style="border-left: 3px solid var(--accent-success); border-radius: 14px; padding: 16px 18px;">
         <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-success); text-transform: uppercase; margin-bottom: 4px;">Resultado al Completarla</div>
         <p style="font-size: 12.5px; color: #d4d4d4; line-height: 1.5; margin: 0;">{{ path.outcome }}</p>
     </div>
@@ -59,9 +59,9 @@
 <!-- Fases de la Ruta -->
 <div style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 32px;">
     {% for phase in path.phases %}
-    <div style="background: #181818; border: 1px solid {{ phase.is_active ? 'var(--accent-blue)' : (phase.is_complete ? 'rgba(137, 209, 133, 0.4)' : 'var(--border-main)') }}; border-radius: 6px; overflow: hidden;">
+    <div class="apple-glass-card" style="border-radius: 18px; overflow: hidden;">
         <!-- Phase Header -->
-        <div style="background: #202020; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-light);">
+        <div style="padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.03);">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <span style="font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: {{ phase.is_complete ? 'var(--accent-success)' : (phase.is_active ? '#4fc1ff' : 'var(--text-muted)') }};">
                     FASE 0{{ phase.number }}
@@ -140,7 +140,7 @@
 
             <!-- Checkpoint de la Fase -->
             {% if phase.checkpoint %}
-            <div style="background: #121212; border-left: 3px solid #89d185; border-radius: 0 4px 4px 0; padding: 10px 14px; font-size: 12px; color: #cccccc; display: flex; align-items: center; gap: 8px;">
+            <div class="apple-glass-card" style="border-left: 3px solid #89d185; border-radius: 12px; padding: 12px 16px; font-size: 12px; color: #cccccc; display: flex; align-items: center; gap: 8px;">
                 <strong style="color: var(--accent-success); flex-shrink: 0;">Checkpoint de Cierre:</strong>
                 <span>{{ phase.checkpoint }}</span>
             </div>
@@ -152,7 +152,7 @@
 
 <!-- Criterio de Salida Final (Exit Criteria) -->
 {% if path.exit_criteria is defined and path.exit_criteria %}
-<div style="background: #141414; border: 1px solid var(--border-main); border-radius: 6px; padding: 20px 24px;">
+<div class="apple-glass-card" style="border-radius: 18px; padding: 22px 24px;">
     <h2 style="font-size: 15px; font-weight: 700; color: #ffffff; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
         {{ icons.icon('award', 16) }}
         <span>Criterio de Acreditación / Exit Criteria</span>
